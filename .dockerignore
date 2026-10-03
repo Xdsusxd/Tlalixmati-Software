@@ -1,0 +1,11 @@
+node_modules
+apps/web/node_modules
+apps/web/.next
+.next
+.git
+.venv
+venv
+__pycache__
+*.pyc
+.coverage
+.pytest_cache
