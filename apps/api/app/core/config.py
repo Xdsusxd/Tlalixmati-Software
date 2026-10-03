@@ -102,6 +102,8 @@ def detectar_gpu_local() -> GPUInfo:
     )
 
 
+from dotenv import load_dotenv
+
 @lru_cache()
 def get_configuracion() -> ConfiguracionSistema:
     """
@@ -109,6 +111,10 @@ def get_configuracion() -> ConfiguracionSistema:
     una instancia única validada de ConfiguracionSistema.
     """
     raiz = encontrar_directorio_raiz()
+    env_path = raiz / ".env"
+    if env_path.exists():
+        load_dotenv(env_path)
+
     yaml_path = raiz / "config" / "system.yaml"
     
     data_yaml: Dict[str, Any] = {}

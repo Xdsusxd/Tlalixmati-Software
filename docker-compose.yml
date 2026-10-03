@@ -23,16 +23,16 @@ services:
   # === Servicio API (FastAPI) ===
   api:
     build:
-      context: ./apps/api
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: apps/api/Dockerfile
     ports:
       - "8000:8000"
-    environment:
-      - SUPABASE_URL=${SUPABASE_URL}
-      - SUPABASE_KEY=${SUPABASE_KEY}
-      - DATABASE_URL=${DATABASE_URL}
+    env_file:
+      - .env
     volumes:
-      - ./apps/api:/app
+      - ./apps/api/app:/app/apps/api/app
+      - ./packages:/app/packages
+      - ./config:/app/config
     restart: unless-stopped
 
 # Nota: No incluimos una base de datos local aquí ya que Tlalixmati utiliza Supabase (cloud)

@@ -1,0 +1,50 @@
+@import "tailwindcss";
+
+:root {
+  /* Paleta Orgánica Biophilic + Tierra + Minimalista */
+  --bg-main: #FBFBF9;
+  --bg-card: #FFFFFF;
+  --bg-surface-muted: #F4F5F0;
+  
+  --text-primary: #0F172A;
+  --text-secondary: #475569;
+  --text-muted: #64748B;
+  
+  --brand-forest: #14532D;
+  --brand-emerald: #15803D;
+  --brand-leaf: #22C55E;
+  
+  --earth-harvest: #854D0E;
+  --earth-clay: #78350F;
+  --earth-sand: #D97706;
+  
+  --border-light: #E2E8F0;
+  --border-subtle: #E5E7EB;
+  
+  --status-connected: #16A34A;
+  --status-warning: #D97706;
+  --status-disconnected: #94A3B8;
+  --status-error: #DC2626;
+}
+
+body {
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Transiciones suaves recomendadas por UI/UX Pro Max */
+.smooth-transition {
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Efecto de elevación suave para tarjetas */
+.card-elevation {
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px 0 rgba(0, 0, 0, 0.02);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-elevation:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.06), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+}
