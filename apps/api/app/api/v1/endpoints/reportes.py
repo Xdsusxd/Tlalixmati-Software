@@ -54,6 +54,31 @@ async def generar_reporte(datos: Optional[GenerarReporteRequest] = None):
 
 
 @router.get(
+    "/reciente/descargar",
+    summary="Descargar el reporte más reciente en PDF",
+    description="Descarga directamente el último informe técnico generado con fotos y fases del cultivo."
+)
+async def descargar_reporte_reciente():
+    """Retorna el PDF más reciente disponible."""
+    srv = get_reporte_service()
+    reportes = srv.listar_reportes()
+    if not reportes:
+        nuevo = srv.generar_reporte(titulo="Reporte Agronómico Reciente")
+        reporte_id = nuevo["id"]
+    else:
+        reporte_id = reportes[0]["id"]
+
+    pdf_bytes = srv.obtener_pdf_bytes(reporte_id)
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition": f'attachment; filename="reporte_reciente_tlalixmati.pdf"'
+        }
+    )
+
+
+@router.get(
     "/{reporte_id}/descargar",
     summary="Descargar reporte en formato PDF",
     description="Descarga el archivo binario PDF correspondiente al identificador provisto."
