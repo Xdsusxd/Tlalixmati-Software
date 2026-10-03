@@ -1,0 +1,39 @@
+# Configuración global del sistema Tlalixmati
+# Este archivo contiene configuración del sistema, NO datos agrícolas
+
+proyecto:
+  nombre: Tlalixmati
+  version: 0.1.0
+  descripcion: Plataforma inteligente de monitoreo agrícola
+
+# Componentes físicos de Tlahuicole
+# La identidad proviene del hardware real, no de identificadores inventados
+esp32:
+  habilitado: false
+  modelo: null
+  identificacion: automatico  # Se obtiene del hardware real cuando esté conectado
+
+raspberry:
+  habilitada: false
+  modelo: null
+  identificacion: automatico  # Se obtiene del hardware real cuando esté conectada
+
+camara:
+  habilitada: false
+  modelo: null
+  driver: null
+
+vision:
+  habilitada: false
+  modelo: null
+
+comunicacion:
+  protocolo: null  # UART recomendado, pero no fijar hasta conocer el hardware
+
+# Configuración de servicios
+servicios:
+  api:
+    puerto: 8000
+    host: "0.0.0.0"
+  web:
+    puerto: 3000
