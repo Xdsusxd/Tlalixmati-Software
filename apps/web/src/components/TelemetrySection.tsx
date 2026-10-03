@@ -9,8 +9,8 @@ interface TelemetrySectionProps {
 }
 
 export function TelemetrySection({ sensoresTexto }: TelemetrySectionProps) {
-  // Datos vacíos intencionales: NO INVENTAR MEDICIONES
-  const datosGrafica: Array<{ hora: string; valor: number | null }> = [
+  // Datos reales en espera: Cero simulación de datos inventados
+  const datosGrafica = [
     { hora: "00:00", valor: null },
     { hora: "04:00", valor: null },
     { hora: "08:00", valor: null },
@@ -20,82 +20,101 @@ export function TelemetrySection({ sensoresTexto }: TelemetrySectionProps) {
   ];
 
   return (
-    <section className="bg-white rounded-2xl border border-stone-200 p-6 card-elevation">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-4 border-b border-stone-100 gap-2">
+    <section className="neo-box p-6 sm:p-8">
+      {/* Encabezado */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-6 border-b-2 border-stone-800 gap-4">
         <div>
-          <h2 className="text-lg font-bold text-stone-900 tracking-tight">Telemetría y Sensores de Campo</h2>
-          <p className="text-xs text-stone-500">Lecturas físicas transmitidas por el ESP32 en tiempo real.</p>
+          <div className="flex items-center space-x-3">
+            <h2 className="text-2xl font-black text-stone-900 tracking-tight uppercase">
+              Telemetría y Sensores Físicos
+            </h2>
+            <span className="neo-badge text-xs px-3 py-1 bg-stone-100 text-stone-900">
+              ESP32 Link
+            </span>
+          </div>
+          <p className="text-sm font-medium text-stone-600 mt-1.5">
+            Lecturas físicas de suelo y ambiente transmitidas en tiempo real.
+          </p>
         </div>
-        <span className="self-start sm:self-auto text-xs px-2.5 py-1 rounded-full bg-stone-100 text-stone-600 font-medium border border-stone-200">
+
+        <span className="neo-badge text-xs px-3 py-1 bg-stone-100 text-stone-800 font-extrabold self-start sm:self-auto uppercase">
           {sensoresTexto || "Sin datos"}
         </span>
       </div>
 
-      {/* Tarjetas de Métricas Sensoriales */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-5">
+      {/* Grid de Métricas */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-6">
         
         {/* Humedad de Suelo */}
-        <div className="p-3.5 rounded-xl bg-stone-50 border border-stone-200/70">
-          <div className="flex items-center space-x-2 text-stone-500">
-            <Droplets className="h-4 w-4 text-emerald-600" />
-            <span className="text-xs font-medium">Humedad Suelo</span>
+        <div className="p-4 rounded-2xl border-2 border-stone-800 bg-stone-50 shadow-[3px_3px_0px_0px_#1C1917] flex flex-col justify-between">
+          <div className="flex items-center space-x-2 text-stone-700">
+            <div className="p-2 rounded-xl bg-emerald-200 border border-stone-900 text-emerald-950">
+              <Droplets className="h-4 w-4" />
+            </div>
+            <span className="text-xs font-black uppercase">Humedad Suelo</span>
           </div>
-          <div className="mt-2 text-xl font-bold text-stone-800">-- %</div>
-          <span className="text-[11px] text-stone-400 font-medium">Sin datos</span>
+          <div className="mt-3 text-2xl font-black text-stone-900">-- %</div>
+          <span className="text-[11px] font-bold text-stone-400 mt-1">Sin datos</span>
         </div>
 
         {/* Temperatura Ambiente */}
-        <div className="p-3.5 rounded-xl bg-stone-50 border border-stone-200/70">
-          <div className="flex items-center space-x-2 text-stone-500">
-            <Thermometer className="h-4 w-4 text-amber-600" />
-            <span className="text-xs font-medium">Temperatura</span>
+        <div className="p-4 rounded-2xl border-2 border-stone-800 bg-stone-50 shadow-[3px_3px_0px_0px_#1C1917] flex flex-col justify-between">
+          <div className="flex items-center space-x-2 text-stone-700">
+            <div className="p-2 rounded-xl bg-amber-200 border border-stone-900 text-amber-950">
+              <Thermometer className="h-4 w-4" />
+            </div>
+            <span className="text-xs font-black uppercase">Temperatura</span>
           </div>
-          <div className="mt-2 text-xl font-bold text-stone-800">-- °C</div>
-          <span className="text-[11px] text-stone-400 font-medium">Sin datos</span>
+          <div className="mt-3 text-2xl font-black text-stone-900">-- °C</div>
+          <span className="text-[11px] font-bold text-stone-400 mt-1">Sin datos</span>
         </div>
 
         {/* Radiación Solar */}
-        <div className="p-3.5 rounded-xl bg-stone-50 border border-stone-200/70">
-          <div className="flex items-center space-x-2 text-stone-500">
-            <Sun className="h-4 w-4 text-yellow-600" />
-            <span className="text-xs font-medium">Radiación Solar</span>
+        <div className="p-4 rounded-2xl border-2 border-stone-800 bg-stone-50 shadow-[3px_3px_0px_0px_#1C1917] flex flex-col justify-between">
+          <div className="flex items-center space-x-2 text-stone-700">
+            <div className="p-2 rounded-xl bg-yellow-200 border border-stone-900 text-yellow-950">
+              <Sun className="h-4 w-4" />
+            </div>
+            <span className="text-xs font-black uppercase">Radiación</span>
           </div>
-          <div className="mt-2 text-xl font-bold text-stone-800">-- lux</div>
-          <span className="text-[11px] text-stone-400 font-medium">Sin datos</span>
+          <div className="mt-3 text-2xl font-black text-stone-900">-- lux</div>
+          <span className="text-[11px] font-bold text-stone-400 mt-1">Sin datos</span>
         </div>
 
-        {/* Batería / Alimentación */}
-        <div className="p-3.5 rounded-xl bg-stone-50 border border-stone-200/70">
-          <div className="flex items-center space-x-2 text-stone-500">
-            <BatteryMedium className="h-4 w-4 text-stone-600" />
-            <span className="text-xs font-medium">Alimentación</span>
+        {/* Alimentación */}
+        <div className="p-4 rounded-2xl border-2 border-stone-800 bg-stone-50 shadow-[3px_3px_0px_0px_#1C1917] flex flex-col justify-between">
+          <div className="flex items-center space-x-2 text-stone-700">
+            <div className="p-2 rounded-xl bg-stone-200 border border-stone-900 text-stone-900">
+              <BatteryMedium className="h-4 w-4" />
+            </div>
+            <span className="text-xs font-black uppercase">Voltaje VCC</span>
           </div>
-          <div className="mt-2 text-xl font-bold text-stone-800">-- V</div>
-          <span className="text-[11px] text-stone-400 font-medium">Sin datos</span>
+          <div className="mt-3 text-2xl font-black text-stone-900">-- V</div>
+          <span className="text-[11px] font-bold text-stone-400 mt-1">Sin datos</span>
         </div>
 
       </div>
 
-      {/* Gráfica Recharts con Estado Vacío Explícito */}
-      <div className="mt-6 p-4 rounded-xl border border-stone-200/80 bg-stone-50/40 relative">
-        <div className="text-xs font-semibold text-stone-700 mb-3">Historial de Telemetría (Últimas 24 horas)</div>
+      {/* Gráfica Recharts enmarcada */}
+      <div className="mt-6 p-5 rounded-2xl border-2 border-stone-800 bg-stone-50/70 relative shadow-[3px_3px_0px_0px_#1C1917]">
+        <div className="text-xs font-black text-stone-800 uppercase mb-3">Historial de Telemetría (24 Horas)</div>
         
         <div className="h-48 w-full relative">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={datosGrafica}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" vertical={false} />
-              <XAxis dataKey="hora" stroke="#94A3B8" fontSize={11} />
-              <YAxis stroke="#94A3B8" fontSize={11} domain={[0, 100]} />
+              <CartesianGrid strokeDasharray="2 2" stroke="#CBD5E1" vertical={false} />
+              <XAxis dataKey="hora" stroke="#64748B" fontSize={11} />
+              <YAxis stroke="#64748B" fontSize={11} domain={[0, 100]} />
               <Tooltip />
-              <Line type="monotone" dataKey="valor" stroke="#16A34A" strokeWidth={2} dot={false} />
+              <Line type="monotone" dataKey="valor" stroke="#15803D" strokeWidth={3} dot={false} />
             </LineChart>
           </ResponsiveContainer>
 
-          {/* Mensaje de Estado Vacío */}
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/70 backdrop-blur-[1px] rounded-lg">
-            <AlertCircle className="h-6 w-6 text-stone-400 mb-1" />
-            <span className="text-xs font-medium text-stone-600">Sin mediciones de hardware disponibles</span>
-            <span className="text-[11px] text-stone-400 mt-0.5">El gráfico trazará datos tan pronto el ESP32 transmita lecturas reales</span>
+          {/* Mensaje de espera de datos reales */}
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/70 backdrop-blur-[1px] rounded-xl border border-stone-300">
+            <AlertCircle className="h-6 w-6 text-stone-600 mb-1" />
+            <span className="text-xs font-black text-stone-800 uppercase">Sin mediciones de hardware disponibles</span>
+            <span className="text-[11px] font-medium text-stone-500 mt-0.5">El gráfico trazará datos tan pronto el ESP32 reporte lecturas físicas</span>
           </div>
         </div>
       </div>
