@@ -128,7 +128,7 @@ export default function DashboardPage() {
     setVision(null);
   };
 
-  // 1. Pantalla de Entrada / Hero Stage en Gris y Negro (solo se muestra al entrar)
+  // 1. Pantalla de Entrada / Hero Stage en Gris y Negro (solo al entrar)
   if (cargando) {
     return (
       <LoadingHeroStage
@@ -150,36 +150,27 @@ export default function DashboardPage() {
     );
   }
 
-  // 3. Tablero Desbloqueado y Autenticado (Monocromático: Blanco, Negro y Gris)
+  // 3. Tablero Desbloqueado y Autenticado (Gris y Negro Principales)
   return (
-    <div className="min-h-screen flex flex-col bg-[#f8f8fa] text-[#111111] font-friendly">
+    <div className="min-h-screen flex flex-col bg-[#0f0f11] text-[#f4f4f5] font-friendly">
       <Navbar
         apiConectada={apiConectada}
         autenticado={autenticado}
         vistaActiva={vistaActiva}
         onCambiarVista={handleCambiarVista}
-        cultivoNombre={
-          cultivo
-            ? `${cultivo.nombre}${cultivo.variedad ? ` · ${cultivo.variedad}` : ""}`
-            : undefined
-        }
         onRefresh={verificarSesionYCargarDatos}
         onLogout={handleLogout}
       />
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         
-        {/* Encabezado Principal con Tipografía Gruesa y Amigable */}
-        <div className="mb-7 flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-3 border-b border-gray-200 pb-4">
+        {/* Encabezado Principal con Tipografía Gruesa y Amigable (Sin Parcela Experimental) */}
+        <div className="mb-7 flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-3 border-b border-[#27272a] pb-4">
           <div>
-            <div className="flex items-center gap-2">
-              <span className="micro-label">Plataforma Agrícola</span>
-              <span className="text-gray-400 text-xs">/</span>
-              <span className="text-xs font-mono font-bold text-gray-500">
-                {cultivo?.ubicacion || "Lote de Producción"}
-              </span>
+            <div className="flex items-center gap-2 mb-1">
+              <span className="micro-label text-gray-500">Plataforma Agrícola</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#111111] heading-chunky mt-1">
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white heading-chunky">
               {vistaActiva === "panorama" && "Supervisión del Cultivo"}
               {vistaActiva === "camara" && "Cámara en Vivo & Visión Artificial"}
               {vistaActiva === "telemetria" && "Condiciones del Terreno & Clima"}
@@ -187,18 +178,12 @@ export default function DashboardPage() {
               {vistaActiva === "informes" && "Informes del Cultivo & Bitácora"}
             </h1>
           </div>
-
-          <div className="text-xs font-mono font-bold text-gray-500 bg-white px-3 py-1 rounded-full border border-gray-200 self-start sm:self-auto shadow-2xs">
-            {cultivo
-              ? `${cultivo.nombre} · Ciclo Activo`
-              : "Lote de Monitoreo Activo"}
-          </div>
         </div>
 
         {/* Contenedor dinámico de vistas */}
         <div ref={mainContentRef}>
           {/* ═══════════════════════════════════════════════════════════════
-             VISTA 1: PANORAMA (Composición Monocromática Asimétrica)
+             VISTA 1: PANORAMA (Gris y Negro como Principales)
              ═══════════════════════════════════════════════════════════════ */}
           {vistaActiva === "panorama" && (
             <div className="space-y-7">
@@ -293,14 +278,14 @@ export default function DashboardPage() {
         </div>
       </main>
 
-      {/* Pie de Página (Sin la palabra Studio) */}
-      <footer className="border-t border-gray-200 bg-white py-6 mt-12 text-xs text-gray-500">
+      {/* Pie de Página en Gris Carbón */}
+      <footer className="border-t border-[#27272a] bg-[#121215] py-6 mt-12 text-xs text-gray-500">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <span className="font-extrabold text-[#111111]">Tlalixmati</span>
-            <span className="font-medium">— Plataforma Inteligente de Monitoreo & Robótica Agrícola</span>
+            <span className="font-extrabold text-white">Tlalixmati</span>
+            <span className="font-medium text-gray-400">— Plataforma Inteligente de Monitoreo & Robótica Agrícola</span>
           </div>
-          <div className="font-mono text-xs font-semibold text-gray-400">
+          <div className="font-mono text-xs font-semibold text-gray-500">
             Nodo de Campo: Tlahuicole (ESP32 + Raspberry Pi)
           </div>
         </div>

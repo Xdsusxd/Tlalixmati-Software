@@ -33,28 +33,28 @@ export function LiveCameraSection({ analisisTexto, vision, compacto = false }: L
   const streamUrl = `${api.getStreamUrl()}?t=${streamKey}`;
   const camaraConectada = Boolean(estadoCamara?.conectada);
 
-  // Diagnóstico visual en blanco, negro y gris
-  let iconoDiagnostico = <AlertCircle className="w-4 h-4 text-gray-400 shrink-0" />;
+  // Diagnóstico visual en gris y negro
+  let iconoDiagnostico = <AlertCircle className="w-4 h-4 text-gray-500 shrink-0" />;
   let textoDiagnostico = "Cámara no conectada. En espera de transmisión óptica desde el hardware de campo.";
   let badgeTexto = "Óptica en espera";
 
   if (camaraConectada) {
     if (vision && vision.activo) {
       if (vision.es_anomalia) {
-        iconoDiagnostico = <AlertTriangle className="w-4 h-4 text-[#111111] shrink-0" />;
+        iconoDiagnostico = <AlertTriangle className="w-4 h-4 text-white shrink-0" />;
         textoDiagnostico = `Alerta fitosanitaria: ${vision.clase_actual} (${((vision.confianza || 0) * 100).toFixed(1)}% confianza en GPU ${vision.dispositivo || "RTX 4050"}).`;
         badgeTexto = "Anomalía Detectada";
       } else {
-        iconoDiagnostico = <CheckCircle2 className="w-4 h-4 text-[#111111] shrink-0" />;
+        iconoDiagnostico = <CheckCircle2 className="w-4 h-4 text-white shrink-0" />;
         textoDiagnostico = `Follaje saludable: ${vision.clase_actual || "Sano"} (${((vision.confianza || 0) * 100).toFixed(1)}% certeza, ${vision.conteo_especimenes ?? 0} plantas visibles).`;
         badgeTexto = "Follaje Óptimo";
       }
     } else if (analisisTexto && analisisTexto !== "Sin resultados") {
-      iconoDiagnostico = <CheckCircle2 className="w-4 h-4 text-[#111111] shrink-0" />;
+      iconoDiagnostico = <CheckCircle2 className="w-4 h-4 text-white shrink-0" />;
       textoDiagnostico = analisisTexto;
       badgeTexto = "Transmisión Activa";
     } else {
-      iconoDiagnostico = <Activity className="w-4 h-4 text-gray-500 shrink-0" />;
+      iconoDiagnostico = <Activity className="w-4 h-4 text-gray-400 shrink-0" />;
       textoDiagnostico = "Cámara transmitiendo en directo. Ciclo de inferencia IA en espera.";
       badgeTexto = "En Directo";
     }
@@ -63,10 +63,10 @@ export function LiveCameraSection({ analisisTexto, vision, compacto = false }: L
   return (
     <div className="card-mono p-6 sm:p-7">
       {/* Encabezado */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-4 border-b border-gray-100 gap-3 mb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-4 border-b border-[#27272a] gap-3 mb-4">
         <div>
           <div className="flex items-center gap-2.5">
-            <h3 className="text-base font-extrabold tracking-tight text-[#111111] heading-chunky">
+            <h3 className="text-base font-extrabold tracking-tight text-white heading-chunky">
               Cámara en Vivo del Cultivo
             </h3>
             <span
@@ -74,13 +74,13 @@ export function LiveCameraSection({ analisisTexto, vision, compacto = false }: L
             >
               <span
                 className={`w-1.5 h-1.5 rounded-full ${
-                  camaraConectada ? "bg-white animate-pulse" : "bg-gray-400"
+                  camaraConectada ? "bg-white animate-pulse" : "bg-gray-500"
                 }`}
               />
               {camaraConectada ? "En Directo" : "Desconectado"}
             </span>
           </div>
-          <p className="text-xs font-medium text-gray-500 mt-1">
+          <p className="text-xs font-medium text-gray-400 mt-1">
             Supervisión foliar continua transmitida directamente desde el nodo de campo.
           </p>
         </div>
@@ -95,11 +95,11 @@ export function LiveCameraSection({ analisisTexto, vision, compacto = false }: L
         </button>
       </div>
 
-      {/* Visor de Video Monocromático */}
+      {/* Visor de Video en Negro Puro con Borde Gris */}
       <div
         className={`relative rounded-2xl overflow-hidden aspect-video ${
           compacto ? "max-h-[380px]" : "max-h-[500px]"
-        } w-full flex items-center justify-center bg-[#111111] border border-gray-200`}
+        } w-full flex items-center justify-center bg-[#000000] border border-[#27272a]`}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -110,10 +110,10 @@ export function LiveCameraSection({ analisisTexto, vision, compacto = false }: L
         />
 
         {/* HUD Superior Izquierdo: Hardware y FPS */}
-        <div className="absolute top-3.5 left-3.5 flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-mono font-bold bg-black/80 text-white border border-white/10 backdrop-blur-md">
+        <div className="absolute top-3.5 left-3.5 flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-mono font-bold bg-[#121215]/90 text-white border border-[#2e2e33] backdrop-blur-md">
           <span
             className={`w-2 h-2 rounded-full ${
-              camaraConectada ? "bg-white animate-pulse" : "bg-gray-500"
+              camaraConectada ? "bg-white animate-pulse" : "bg-gray-600"
             }`}
           />
           <span>
@@ -125,7 +125,7 @@ export function LiveCameraSection({ analisisTexto, vision, compacto = false }: L
 
         {/* HUD Superior Derecho: Inferencia IA */}
         {vision?.activo && (
-          <div className="absolute top-3.5 right-3.5 flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-mono font-bold bg-black/80 text-white border border-white/10 backdrop-blur-md">
+          <div className="absolute top-3.5 right-3.5 flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-mono font-bold bg-[#121215]/90 text-white border border-[#2e2e33] backdrop-blur-md">
             <Zap className="w-3.5 h-3.5 text-white" />
             <span>
               {vision.clase_actual} ({((vision.confianza || 0) * 100).toFixed(0)}%)
@@ -134,16 +134,16 @@ export function LiveCameraSection({ analisisTexto, vision, compacto = false }: L
         )}
       </div>
 
-      {/* Franja de Diagnóstico Agronómico en Blanco, Negro y Gris */}
-      <div className="mt-4 p-3.5 rounded-xl bg-gray-50 border border-gray-200 flex flex-col sm:flex-row sm:items-center sm:justify-between text-xs gap-2">
-        <div className="flex items-center gap-2.5 text-gray-700">
+      {/* Franja de Diagnóstico Agronómico en Gris Carbón */}
+      <div className="mt-4 p-3.5 rounded-xl bg-[#121215] border border-[#27272a] flex flex-col sm:flex-row sm:items-center sm:justify-between text-xs gap-2">
+        <div className="flex items-center gap-2.5 text-gray-300">
           {iconoDiagnostico}
           <span>
-            <strong className="text-[#111111] font-bold">Diagnóstico:</strong>{" "}
-            <span className="font-medium text-gray-600">{textoDiagnostico}</span>
+            <strong className="text-white font-bold">Diagnóstico:</strong>{" "}
+            <span className="font-medium text-gray-400">{textoDiagnostico}</span>
           </span>
         </div>
-        <span className="text-xs font-bold font-mono text-gray-500 bg-white px-2.5 py-0.5 rounded-lg border border-gray-200 shrink-0">
+        <span className="text-xs font-bold font-mono text-gray-400 bg-[#18181b] px-2.5 py-0.5 rounded-lg border border-[#27272a] shrink-0">
           {badgeTexto}
         </span>
       </div>

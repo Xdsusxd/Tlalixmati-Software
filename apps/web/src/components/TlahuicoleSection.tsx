@@ -54,10 +54,10 @@ export function TlahuicoleSection({ tlahuicole }: TlahuicoleSectionProps) {
   return (
     <div className="card-mono p-6 sm:p-7">
       {/* Encabezado */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-4 border-b border-gray-100 gap-3 mb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-4 border-b border-[#27272a] gap-3 mb-4">
         <div>
           <div className="flex items-center gap-2.5">
-            <h3 className="text-base font-extrabold tracking-tight text-[#111111] heading-chunky">
+            <h3 className="text-base font-extrabold tracking-tight text-white heading-chunky">
               Equipo de Campo (Tlahuicole)
             </h3>
             <span
@@ -65,24 +65,24 @@ export function TlahuicoleSection({ tlahuicole }: TlahuicoleSectionProps) {
             >
               <span
                 className={`w-1.5 h-1.5 rounded-full ${
-                  sistemaActivo ? "bg-white animate-pulse" : "bg-gray-400"
+                  sistemaActivo ? "bg-white animate-pulse" : "bg-gray-600"
                 }`}
               />
               {sistemaActivo ? "Sistema Operativo" : "Hardware en Espera"}
             </span>
           </div>
-          <p className="text-xs font-medium text-gray-500 mt-1">
+          <p className="text-xs font-medium text-gray-400 mt-1">
             Supervisión física de los nodos de campo encargados de adquirir datos y transmitir video.
           </p>
         </div>
 
-        <div className="text-xs font-mono font-bold text-gray-500 bg-gray-100 px-3 py-1 rounded-full border border-gray-200 self-start sm:self-auto">
+        <div className="text-xs font-mono font-bold text-gray-400 bg-[#121215] px-3 py-1 rounded-full border border-[#27272a] self-start sm:self-auto">
           {tlahuicole?.resumen_operativo || "Protocolo de bus activo"}
         </div>
       </div>
 
       {/* Lista de Nodos Físicos */}
-      <div className="divide-y divide-gray-100">
+      <div className="divide-y divide-[#27272a]">
         {hardwareNodes.map((item, idx) => (
           <div
             key={idx}
@@ -90,10 +90,10 @@ export function TlahuicoleSection({ tlahuicole }: TlahuicoleSectionProps) {
           >
             <div className="flex items-start gap-3.5">
               <div
-                className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 mt-0.5 ${
+                className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 mt-0.5 border ${
                   item.conectado
-                    ? "bg-[#111111] text-white shadow-xs"
-                    : "bg-gray-100 text-gray-500"
+                    ? "bg-[#000000] border-[#2e2e33] text-white shadow-xs"
+                    : "bg-[#121215] border-[#27272a] text-gray-500"
                 }`}
               >
                 {item.icon}
@@ -101,14 +101,14 @@ export function TlahuicoleSection({ tlahuicole }: TlahuicoleSectionProps) {
 
               <div>
                 <div className="flex items-center gap-2 flex-wrap">
-                  <h4 className="text-sm font-extrabold text-[#111111]">
+                  <h4 className="text-sm font-extrabold text-white">
                     {item.titulo}
                   </h4>
-                  <span className="text-xs font-semibold text-gray-500">
+                  <span className="text-xs font-semibold text-gray-400">
                     · {item.nodo}
                   </span>
                 </div>
-                <p className="text-xs text-gray-500 mt-0.5 leading-relaxed font-medium">
+                <p className="text-xs text-gray-400 mt-0.5 leading-relaxed font-medium">
                   {item.descripcion}
                 </p>
               </div>
@@ -116,7 +116,7 @@ export function TlahuicoleSection({ tlahuicole }: TlahuicoleSectionProps) {
 
             <div className="flex items-center gap-3 self-end md:self-auto shrink-0">
               {item.identificador ? (
-                <span className="font-mono text-xs font-bold px-2.5 py-1 rounded-lg bg-gray-100 border border-gray-200 text-[#111111]">
+                <span className="font-mono text-xs font-bold px-2.5 py-1 rounded-lg bg-[#121215] border border-[#27272a] text-white">
                   {item.tipoId}: {item.identificador}
                 </span>
               ) : null}
@@ -127,7 +127,7 @@ export function TlahuicoleSection({ tlahuicole }: TlahuicoleSectionProps) {
                 {item.conectado ? (
                   <CheckCircle2 className="w-3.5 h-3.5 text-white" />
                 ) : (
-                  <CircleDashed className="w-3.5 h-3.5 text-gray-400" />
+                  <CircleDashed className="w-3.5 h-3.5 text-gray-500" />
                 )}
                 <span>{item.estadoTexto}</span>
               </span>

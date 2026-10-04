@@ -68,54 +68,54 @@ export function AccessGate({ apiConectada, onLoginSuccess }: AccessGateProps) {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-between p-6 sm:p-10 bg-[#f8f8fa] text-[#111111]">
+    <div className="min-h-screen flex flex-col justify-between p-6 sm:p-10 bg-[#0f0f11] text-[#f4f4f5]">
       {/* Barra superior */}
       <div className="max-w-md w-full mx-auto flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-[#111111] flex items-center justify-center text-white shadow-xs">
+          <div className="w-9 h-9 rounded-xl bg-[#000000] border border-[#27272a] flex items-center justify-center text-white shadow-xs">
             <svg className="w-5 h-5" viewBox="0 0 32 32" fill="none">
               <path d="M8 12l4-6h8l4 6-2 13H10z" fill="#ffffff" />
-              <path d="M9 13h14l-2 7H11z" fill="#111111" />
+              <path d="M9 13h14l-2 7H11z" fill="#18181b" />
             </svg>
           </div>
-          <span className="text-xl font-extrabold tracking-tight heading-chunky text-[#111111]">
+          <span className="text-xl font-extrabold tracking-tight heading-chunky text-[#ffffff]">
             Tlalixmati
           </span>
         </div>
 
-        <div className="flex items-center gap-2 text-xs font-bold text-gray-500">
+        <div className="flex items-center gap-2 text-xs font-bold text-gray-400">
           <span
-            className={`w-2 h-2 rounded-full ${apiConectada ? "bg-[#111111]" : "bg-gray-300"}`}
+            className={`w-2 h-2 rounded-full ${apiConectada ? "bg-white" : "bg-gray-600"}`}
           />
           <span>{apiConectada ? "Servicio Activo" : "Conectando..."}</span>
         </div>
       </div>
 
-      {/* Tarjeta Central de Acceso (Monocromática y Amigable) */}
+      {/* Tarjeta Central en Gris y Negro */}
       <div ref={cardRef} className="max-w-sm w-full mx-auto my-auto py-8">
-        <div className="bg-white rounded-3xl border border-gray-200 p-8 sm:p-9 shadow-xs">
+        <div className="bg-[#18181b] rounded-3xl border border-[#27272a] p-8 sm:p-9 shadow-xl">
           <div className="mb-6">
-            <div className="w-12 h-12 rounded-2xl bg-gray-100 border border-gray-200 flex items-center justify-center text-[#111111] mb-4">
+            <div className="w-12 h-12 rounded-2xl bg-[#121215] border border-[#27272a] flex items-center justify-center text-white mb-4">
               <Lock className="w-5 h-5" />
             </div>
-            <h2 className="text-2xl font-black tracking-tight text-[#111111] heading-chunky">
+            <h2 className="text-2xl font-black tracking-tight text-white heading-chunky">
               Acceso al Tablero
             </h2>
-            <p className="text-xs text-gray-500 mt-1 font-medium leading-relaxed">
+            <p className="text-xs text-gray-400 mt-1 font-medium leading-relaxed">
               Introduce la clave para desbloquear el monitoreo de campo y la visión en vivo.
             </p>
           </div>
 
           {error && (
-            <div className="mb-5 p-3.5 rounded-xl text-xs flex items-start gap-2.5 bg-gray-100 border border-gray-300 text-[#111111] font-semibold">
-              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-[#111111]" />
+            <div className="mb-5 p-3.5 rounded-xl text-xs flex items-start gap-2.5 bg-[#222226] border border-[#3f3f46] text-white font-semibold">
+              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5 text-gray-300" />
               <span>{error}</span>
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">
+              <label className="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-2">
                 Contraseña
               </label>
               <div className="relative">
@@ -127,12 +127,12 @@ export function AccessGate({ apiConectada, onLoginSuccess }: AccessGateProps) {
                   required
                   autoFocus
                   disabled={cargando}
-                  className="w-full px-4 py-3 pr-11 text-sm bg-white rounded-xl border-2 border-gray-200 text-[#111111] placeholder:text-gray-400 font-medium focus:outline-none focus:border-[#111111] transition-all disabled:opacity-50"
+                  className="w-full px-4 py-3 pr-11 text-sm bg-[#121215] rounded-xl border-2 border-[#27272a] text-white placeholder:text-gray-500 font-medium focus:outline-none focus:border-white transition-all disabled:opacity-50"
                 />
                 <button
                   type="button"
                   onClick={() => setMostrarPassword(!mostrarPassword)}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-[#111111] transition-colors"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-white transition-colors"
                   tabIndex={-1}
                 >
                   {mostrarPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -150,15 +150,15 @@ export function AccessGate({ apiConectada, onLoginSuccess }: AccessGateProps) {
             </button>
           </form>
 
-          <div className="mt-6 pt-5 border-t border-gray-100 flex items-center justify-center gap-1.5 text-xs font-semibold text-gray-400">
-            <ShieldCheck className="w-4 h-4 text-gray-600" />
+          <div className="mt-6 pt-5 border-t border-[#27272a] flex items-center justify-center gap-1.5 text-xs font-semibold text-gray-500">
+            <ShieldCheck className="w-4 h-4 text-gray-400" />
             <span>Sesión protegida con cookie cifrada</span>
           </div>
         </div>
       </div>
 
       {/* Pie de página discreto */}
-      <div className="text-center text-xs font-semibold text-gray-400">
+      <div className="text-center text-xs font-semibold text-gray-500">
         Tlalixmati &copy; {new Date().getFullYear()} — Plataforma de Monitoreo Agrícola
       </div>
     </div>

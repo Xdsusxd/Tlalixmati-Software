@@ -35,7 +35,7 @@ export function LoadingHeroStage({
     >
       {/* 1. Título de Marca con Tipografía Gruesa y Amigable */}
       <h1 className="hero-brand-mono heading-chunky">
-        Tlalixmati<sup>TM</sup>
+        Tlalixmati
       </h1>
 
       {/* 2. SVG: Casco Robótico en Blanco, Gris y Negro con Acentos en Negro */}

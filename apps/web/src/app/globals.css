@@ -1,40 +1,40 @@
 @import "tailwindcss";
 
 /* ═══════════════════════════════════════════════════════════════
-   TLALIXMATI — DESIGN SYSTEM: BLANCO, NEGRO & GRIS
+   TLALIXMATI — DESIGN SYSTEM: GRIS Y NEGRO PRINCIPALES
+   Colores Dominantes: Gris carbón, Negro profundo y Blanco secundario.
    Tipografía: Gruesa, amigable, única (Plus Jakarta Sans).
-   Paleta: 100% Monocromática (Blanco, Negro, Grises). Acentos en Negro.
-   Zero Neón, Zero Colores Artificiales, Zero Studio.
+   Zero Neón, Zero TM, Zero Studio.
    ═══════════════════════════════════════════════════════════════ */
 
 :root {
   --font-sans: var(--font-friendly), system-ui, -apple-system, sans-serif;
   --font-mono: var(--font-geist-mono), monospace;
 
-  /* ── Paleta Estricta: Negro, Blanco y Gris ── */
-  --black: #111111;
-  --black-deep: #000000;
-  --white: #ffffff;
-  --gray-50: #f8f8fa;
-  --gray-100: #f1f1f3;
-  --gray-200: #e4e4e7;
-  --gray-300: #d4d4d8;
-  --gray-400: #a1a1aa;
-  --gray-500: #71717a;
-  --gray-600: #52525b;
-  --gray-700: #3f3f46;
-  --gray-800: #27272a;
+  /* ── Paleta Estricta: Gris y Negro como Principales ── */
+  --canvas: #0f0f11;       /* Fondo dominante gris obsidiana */
+  --surface: #18181b;      /* Tarjetas y superficies en grafito oscuro */
+  --surface-hover: #222226;/* Superficie activa/hover */
+  --surface-elevated: #1f1f23;
+  --black: #000000;        /* Negro puro para acentos */
+  --black-subtle: #111113;
+
+  /* ── Escala de Grises ── */
   --gray-900: #18181b;
+  --gray-800: #27272a;
+  --gray-700: #3f3f46;
+  --gray-600: #52525b;
+  --gray-500: #71717a;
+  --gray-400: #a1a1aa;
+  --gray-300: #d4d4d8;
+  --gray-200: #e4e4e7;
+  --gray-100: #f4f4f5;
+  --white: #ffffff;
 
-  /* ── Superficies ── */
-  --bg-canvas: #f8f8fa;
-  --bg-surface: #ffffff;
-  --bg-subtle: #f1f1f3;
-
-  /* ── Bordes y Líneas ── */
-  --border-subtle: #e4e4e7;
-  --border-hover: #d4d4d8;
-  --border-dark: #111111;
+  /* ── Bordes en Gris ── */
+  --border-subtle: #27272a;
+  --border-hover: #3f3f46;
+  --border-strong: #52525b;
 }
 
 * {
@@ -49,8 +49,8 @@ html, body {
 }
 
 body {
-  background-color: var(--bg-canvas);
-  color: var(--black);
+  background-color: var(--canvas);
+  color: var(--gray-100);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -66,7 +66,7 @@ body {
   font-family: var(--font-sans);
   font-weight: 800;
   letter-spacing: -0.035em;
-  color: var(--black);
+  color: #ffffff;
 }
 
 .font-numeral-bold {
@@ -74,6 +74,7 @@ body {
   font-feature-settings: "tnum" 1;
   font-weight: 800;
   letter-spacing: -0.03em;
+  color: #ffffff;
 }
 
 .micro-label {
@@ -84,25 +85,25 @@ body {
   color: var(--gray-500);
 }
 
-/* ── Botones Monocromáticos (Acentos en Negro) ── */
+/* ── Botones en Negro y Gris (Acentos en Negro) ── */
 .btn-black {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
   padding: 0.55rem 1.15rem;
-  background: var(--black);
+  background: #000000;
   color: #ffffff;
   font-weight: 700;
   font-size: 0.8125rem;
   border-radius: 0.625rem;
-  border: 1px solid var(--black);
+  border: 1.5px solid #2e2e33;
   cursor: pointer;
   transition: all 0.15s ease;
 }
 .btn-black:hover {
-  background: #27272a;
-  border-color: #27272a;
+  background: #18181b;
+  border-color: var(--gray-500);
 }
 .btn-black:active {
   transform: scale(0.98);
@@ -119,32 +120,33 @@ body {
   justify-content: center;
   gap: 0.5rem;
   padding: 0.55rem 1.15rem;
-  background: #ffffff;
-  color: var(--gray-800);
+  background: #18181b;
+  color: var(--gray-300);
   font-weight: 700;
   font-size: 0.8125rem;
   border-radius: 0.625rem;
-  border: 1.5px solid var(--gray-200);
+  border: 1.5px solid #27272a;
   cursor: pointer;
   transition: all 0.15s ease;
 }
 .btn-outline-gray:hover {
-  background: var(--gray-100);
-  color: var(--black);
-  border-color: var(--gray-400);
+  background: #27272a;
+  color: #ffffff;
+  border-color: var(--gray-500);
 }
 .btn-outline-gray:active {
   transform: scale(0.98);
 }
 
-/* ── Segmented Control Monocromático ── */
+/* ── Segmented Control en Gris y Negro ── */
 .segmented-track-mono {
   display: inline-flex;
   align-items: center;
   gap: 3px;
-  background: #ebebee;
+  background: #121215;
   padding: 4px;
   border-radius: 0.75rem;
+  border: 1px solid #27272a;
 }
 
 .segmented-item-mono {
@@ -155,7 +157,7 @@ body {
   font-size: 0.75rem;
   font-weight: 700;
   border-radius: 0.55rem;
-  color: var(--gray-600);
+  color: var(--gray-400);
   background: transparent;
   border: none;
   cursor: pointer;
@@ -163,27 +165,28 @@ body {
   white-space: nowrap;
 }
 .segmented-item-mono:hover {
-  color: var(--black);
+  color: #ffffff;
 }
 .segmented-item-mono.active {
-  background: #ffffff;
-  color: var(--black);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  background: #27272a;
+  color: #ffffff;
+  border: 1px solid #3f3f46;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
 }
 
-/* ── Tarjetas Monocromáticas con Bordes Suaves ── */
+/* ── Tarjetas en Gris Oscuro (#18181b) ── */
 .card-mono {
-  background: #ffffff;
+  background: #18181b;
   border: 1.5px solid var(--border-subtle);
   border-radius: 1.15rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02), 0 6px 20px rgba(0, 0, 0, 0.02);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
   transition: border-color 0.18s ease;
 }
 .card-mono:hover {
-  border-color: var(--gray-300);
+  border-color: var(--border-hover);
 }
 
-/* ── Píldoras de Estado Monocromáticas (Sin verde/amarillo/rojo) ── */
+/* ── Píldoras de Estado en Negro y Gris ── */
 .pill-mono-active {
   display: inline-flex;
   align-items: center;
@@ -192,8 +195,9 @@ body {
   border-radius: 9999px;
   font-size: 0.6875rem;
   font-weight: 700;
-  background: var(--black);
+  background: #000000;
   color: #ffffff;
+  border: 1px solid #2e2e33;
 }
 
 .pill-mono-subtle {
@@ -204,9 +208,9 @@ body {
   border-radius: 9999px;
   font-size: 0.6875rem;
   font-weight: 600;
-  background: var(--gray-100);
-  color: var(--gray-700);
-  border: 1px solid var(--gray-200);
+  background: #121215;
+  color: var(--gray-400);
+  border: 1px solid #27272a;
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -225,9 +229,8 @@ body {
   z-index: 100;
   color: #ffffff;
   font-family: var(--font-sans);
-  /* Fondo monocromático profundo */
   background:
-    radial-gradient(circle at 50% 48%, rgba(60, 60, 65, 0.25) 0%, rgba(25, 25, 28, 0.6) 50%, rgba(10, 10, 12, 1) 100%),
+    radial-gradient(circle at 50% 48%, rgba(45, 45, 50, 0.35) 0%, rgba(18, 18, 20, 0.7) 50%, rgba(10, 10, 12, 1) 100%),
     linear-gradient(135deg, #18181b 0%, #09090b 100%);
 }
 
@@ -244,16 +247,6 @@ body {
   color: #ffffff;
 }
 
-.hero-brand-mono sup {
-  display: inline-block;
-  margin-left: .03em;
-  font-size: .40em;
-  font-weight: 800;
-  line-height: 1;
-  vertical-align: top;
-  color: var(--gray-400);
-}
-
 .hero-robot-mono {
   position: absolute;
   top: 50%;
@@ -264,7 +257,7 @@ body {
   max-height: 50svh;
   height: auto;
   display: block;
-  filter: drop-shadow(0 6px 24px rgba(0, 0, 0, 0.6));
+  filter: drop-shadow(0 6px 24px rgba(0, 0, 0, 0.7));
   user-select: none;
   -webkit-user-drag: none;
 }
@@ -288,7 +281,7 @@ body {
   width: 2px;
   height: 9.8%;
   border-radius: 2px;
-  background: var(--gray-500);
+  background: var(--gray-700);
 }
 
 .hero-footer-mono {
@@ -302,14 +295,12 @@ body {
   z-index: 10;
 }
 
-/* Media queries responsive del robot */
 @media (max-aspect-ratio: 1/1) {
   .hero-brand-mono { top: 5.5%; left: 7%; font-size: clamp(2.2rem, 9.5vw, 3.8rem); }
   .hero-robot-mono { top: 50%; left: 50%; width: min(76%, 42svh); max-height: 42svh; transform: translate(-50%, -50%); }
   .hero-subtitle-mono { right: 7%; bottom: 7%; font-size: clamp(1.8rem, 8vw, 3.2rem); }
 }
 
-/* ── Coreografía de Ensamblaje en Blanco, Gris y Negro ── */
 @media (prefers-reduced-motion: no-preference) {
   .hero-stage-mono.is-entering .hero-brand-mono {
     will-change: transform, opacity, clip-path;
@@ -356,6 +347,6 @@ body {
 
 /* ── Focus Accesible ── */
 *:focus-visible {
-  outline: 2px solid var(--black);
+  outline: 2px solid var(--white);
   outline-offset: 2px;
 }
