@@ -28,6 +28,7 @@ class ServicioEdgeRaspberry:
             indice_camara=self.config.camara_index,
             ancho=self.config.ancho_frame,
             alto=self.config.alto_frame,
+            fps_objetivo=self.config.fps_captura,
         )
         self.enlace_esp32 = EnlaceESP32(
             puerto=self.config.puerto_serial,
@@ -37,7 +38,7 @@ class ServicioEdgeRaspberry:
         self.ejecutando = False
 
     def registrar_en_servidor(self) -> bool:
-        """Registra la Raspberry Pi ante la API utilizando su número de serie real."""
+        """Registra la Raspberry Pi ante la API utilizando su número de serie real y capacidades de cámara."""
         if not self.serial_hardware:
             logger.warning("No se pudo obtener el serial de hardware de la Raspberry Pi.")
             return False
@@ -49,7 +50,8 @@ class ServicioEdgeRaspberry:
             "habilitado": True,
             "metadatos": {
                 "rol": "Edge Computing & Camara",
-                "fps": self.config.fps_captura,
+                "fps_nativo": self.camara.fps,
+                "resolucion_nativa": f"{self.camara.ancho}x{self.camara.alto}",
             }
         }
         try:
@@ -65,18 +67,23 @@ class ServicioEdgeRaspberry:
         return False
 
     def enviar_fotograma(self) -> bool:
-        """Captura un fotograma y lo envía al endpoint de la cámara en la API."""
+        """Captura un fotograma y lo envía al endpoint de la cámara en la API a su resolución y FPS nativos."""
         frame_bytes = self.camara.capturar_frame_jpeg()
         if not frame_bytes:
             return False
 
         url = f"{self.config.api_url}/api/v1/camara/frame"
+        headers = {
+            "Content-Type": "image/jpeg",
+            "X-Resolucion": f"{self.camara.ancho}x{self.camara.alto}",
+            "X-FPS": f"{self.camara.fps:.1f}",
+        }
         try:
             with httpx.Client(timeout=3.0) as client:
                 res = client.post(
                     url,
                     content=frame_bytes,
-                    headers={"Content-Type": "image/jpeg"}
+                    headers=headers
                 )
                 return res.status_code == 200
         except Exception:
@@ -112,22 +119,36 @@ class ServicioEdgeRaspberry:
             "frame_enviado": frame_enviado,
             "telemetria": datos_sensores,
             "serial_rpi": self.serial_hardware,
+            "ancho": self.camara.ancho,
+            "alto": self.camara.alto,
+            "fps": self.camara.fps,
         }
 
     async def bucle_principal(self):
-        """Bucle asíncrono para ejecución continua en la Raspberry Pi."""
+        """Bucle asíncrono para transmisión continua a la tasa máxima nativa del hardware óptico."""
+        import time
         self.ejecutando = True
         logger.info("Iniciando servicio Edge Tlalixmati en Raspberry Pi...")
         self.camara.iniciar()
         self.enlace_esp32.conectar()
         self.registrar_en_servidor()
 
-        intervalo_frame = 1.0 / max(1, self.config.fps_captura)
+        # Determinar cadencia de muestreo a partir de los FPS máximos reales
+        fps_efectivo = self.camara.fps if self.camara.fps > 0 else 30.0
+        intervalo_frame = 1.0 / max(1.0, fps_efectivo)
+        logger.info(
+            f"Streaming óptico configurado a {fps_efectivo:.1f} FPS "
+            f"({self.camara.ancho}x{self.camara.alto}) - intervalo {intervalo_frame * 1000:.1f}ms"
+        )
 
         while self.ejecutando:
+            t_inicio = time.time()
             self.enviar_fotograma()
             self.procesar_telemetria_esp32()
-            await asyncio.sleep(intervalo_frame)
+            
+            t_transcurrido = time.time() - t_inicio
+            t_espera = max(0.001, intervalo_frame - t_transcurrido)
+            await asyncio.sleep(t_espera)
 
     def detener(self):
         """Detiene el servicio y libera hardware."""

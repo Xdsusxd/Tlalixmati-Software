@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
-import { Camera, RefreshCw, CheckCircle, AlertTriangle } from "lucide-react";
-import { api } from "@/lib/api";
+import React, { useState, useEffect } from "react";
+import { Camera, RefreshCw, CheckCircle, Video } from "lucide-react";
+import { api, CamaraEstadoResponse } from "@/lib/api";
 
 interface LiveCameraSectionProps {
   analisisTexto: string;
@@ -10,9 +10,22 @@ interface LiveCameraSectionProps {
 
 export function LiveCameraSection({ analisisTexto }: LiveCameraSectionProps) {
   const [streamKey, setStreamKey] = useState<number>(Date.now());
+  const [estadoCamara, setEstadoCamara] = useState<CamaraEstadoResponse | null>(null);
+
+  const cargarEstado = async () => {
+    const est = await api.getCamaraEstado();
+    if (est) setEstadoCamara(est);
+  };
+
+  useEffect(() => {
+    cargarEstado();
+    const interval = setInterval(cargarEstado, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   const recargarStream = () => {
     setStreamKey(Date.now());
+    cargarEstado();
   };
 
   const streamUrl = `${api.getStreamUrl()}?t=${streamKey}`;
@@ -32,7 +45,7 @@ export function LiveCameraSection({ analisisTexto }: LiveCameraSectionProps) {
             </div>
           </div>
           <p className="text-xs text-stone-500 mt-1">
-            Visualización fotográfica continua del área foliar y el estado de las plantas en campo.
+            Visualización óptica continua del área foliar a máxima resolución y tasa nativa de hardware.
           </p>
         </div>
 
@@ -57,10 +70,14 @@ export function LiveCameraSection({ analisisTexto }: LiveCameraSectionProps) {
             className="w-full h-full object-contain"
           />
 
-          {/* Indicador de Transmisión */}
-          <div className="absolute top-3 left-3 flex items-center space-x-2 px-3 py-1 rounded-lg bg-stone-900/80 backdrop-blur-xs text-white text-xs font-medium">
-            <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span>Monitoreo Activo</span>
+          {/* Indicador de Transmisión Dinámica */}
+          <div className="absolute top-3 left-3 flex items-center space-x-2 px-3 py-1 rounded-lg bg-stone-900/85 backdrop-blur-xs text-white text-xs font-medium">
+            <span className={`h-2 w-2 rounded-full ${estadoCamara?.conectada ? "bg-emerald-400 animate-pulse" : "bg-amber-400"}`} />
+            <span>
+              {estadoCamara?.conectada
+                ? `${estadoCamara.resolucion} @ ${estadoCamara.fps} FPS (Nativo)`
+                : "Autodetección Máxima en Espera"}
+            </span>
           </div>
         </div>
 
@@ -73,7 +90,7 @@ export function LiveCameraSection({ analisisTexto }: LiveCameraSectionProps) {
             </span>
           </div>
           <span className="text-[11px] text-stone-400 font-medium">
-            Captura 100% física de campo
+            {estadoCamara?.conectada ? `Hardware activo: ${estadoCamara.resolucion}` : "Captura 100% física de campo"}
           </span>
         </div>
       </div>
