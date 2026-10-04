@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
-import { Lock, AlertCircle, ShieldCheck, Eye, EyeOff, ArrowRight } from "lucide-react";
+import React, { useState, useRef, useEffect } from "react";
+import { Lock, ArrowRight, AlertCircle, ShieldCheck, Eye, EyeOff } from "lucide-react";
+import gsap from "gsap";
 import { api } from "@/lib/api";
 
 interface AccessGateProps {
@@ -15,6 +16,18 @@ export function AccessGate({ apiConectada, onLoginSuccess }: AccessGateProps) {
   const [error, setError] = useState<string | null>(null);
   const [cargando, setCargando] = useState(false);
 
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (cardRef.current) {
+      gsap.fromTo(
+        cardRef.current,
+        { opacity: 0, y: 14, scale: 0.985 },
+        { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: "power2.out" }
+      );
+    }
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!password.trim()) return;
@@ -26,9 +39,26 @@ export function AccessGate({ apiConectada, onLoginSuccess }: AccessGateProps) {
       const res = await api.login(password);
       if (res.autenticado) {
         setPassword("");
-        onLoginSuccess();
+        if (cardRef.current) {
+          gsap.to(cardRef.current, {
+            opacity: 0,
+            y: -10,
+            duration: 0.3,
+            ease: "power2.in",
+            onComplete: onLoginSuccess,
+          });
+        } else {
+          onLoginSuccess();
+        }
       } else {
         setError(res.mensaje || "Contraseña de acceso incorrecta.");
+        if (cardRef.current) {
+          gsap.fromTo(
+            cardRef.current,
+            { x: -6 },
+            { x: 0, duration: 0.35, ease: "elastic.out(1, 0.4)" }
+          );
+        }
       }
     } catch {
       setError("No se pudo conectar con el servidor de autenticación.");
@@ -38,108 +68,74 @@ export function AccessGate({ apiConectada, onLoginSuccess }: AccessGateProps) {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-between p-4 sm:p-6 lg:p-8 bg-[#f8f9fa]">
-      {/* Barra superior minimalista */}
+    <div className="min-h-screen flex flex-col justify-between p-6 sm:p-10 bg-[#fafafa] text-[#18181b]">
+      {/* Barra superior discreta */}
       <div className="max-w-md w-full mx-auto flex items-center justify-between">
         <div className="flex items-center gap-2.5">
-          <div
-            className="h-8 w-8 rounded-lg flex items-center justify-center shrink-0"
-            style={{ backgroundColor: "#045fd8" }}
-          >
-            <svg className="h-5 w-5" viewBox="0 0 32 32" fill="none">
-              <path d="M8 12l4-6h8l4 6-2 13H10z" fill="#ffffff" />
-              <path d="M9 13h14l-2 7H11z" fill="#091f39" />
+          <div className="w-7 h-7 rounded-md bg-[#18181b] flex items-center justify-center text-white">
+            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="12" cy="12" r="9" />
+              <circle cx="12" cy="12" r="3" />
             </svg>
           </div>
-          <span
-            className="text-base font-bold tracking-tight text-gray-900"
-            style={{ letterSpacing: "-0.025em" }}
-          >
+          <span className="text-sm font-semibold tracking-[-0.02em] font-display">
             Tlalixmati
-            <sup className="text-[10px] font-semibold ml-0.5 text-[#0069e9]">TM</sup>
           </span>
         </div>
 
-        <div
-          className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium border"
-          style={{
-            background: apiConectada ? "rgba(0, 105, 233, 0.06)" : "#f3f4f6",
-            borderColor: apiConectada ? "rgba(0, 105, 233, 0.20)" : "#e5e7eb",
-            color: apiConectada ? "#055bd3" : "#6b7280",
-          }}
-        >
+        <div className="flex items-center gap-1.5 text-[11px] font-mono text-[#71717a]">
           <span
-            className={`h-1.5 w-1.5 rounded-full ${apiConectada ? "animate-pulse" : ""}`}
-            style={{ background: apiConectada ? "#0069e9" : "#9ca3af" }}
+            className={`w-1.5 h-1.5 rounded-full ${apiConectada ? "bg-[#15803d]" : "bg-[#a1a1aa]"}`}
           />
-          {apiConectada ? "Servicio Activo" : "Conectando..."}
+          <span>{apiConectada ? "En línea" : "Conectando..."}</span>
         </div>
       </div>
 
-      {/* Tarjeta Central de Login */}
-      <div className="max-w-md w-full mx-auto my-8">
-        <div className="bg-white rounded-2xl border border-gray-200 p-7 sm:p-9 shadow-xs">
-          {/* Encabezado */}
-          <div className="flex items-center gap-3 mb-6">
-            <div
-              className="p-3 rounded-xl shrink-0"
-              style={{
-                background: "rgba(0, 105, 233, 0.08)",
-                border: "1px solid rgba(0, 105, 233, 0.16)",
-              }}
-            >
-              <Lock className="h-5 w-5" style={{ color: "#0069e9" }} />
+      {/* Tarjeta Central Minimalista */}
+      <div ref={cardRef} className="max-w-sm w-full mx-auto my-auto py-8">
+        <div className="bg-white rounded-2xl border border-[rgba(24,24,27,0.08)] p-8 shadow-[0_2px_12px_rgba(0,0,0,0.03)]">
+          <div className="mb-6">
+            <div className="w-10 h-10 rounded-xl bg-[#f4f4f5] border border-[rgba(24,24,27,0.06)] flex items-center justify-center text-[#18181b] mb-4">
+              <Lock className="w-4 h-4" />
             </div>
-            <div>
-              <h2
-                className="text-xl font-bold tracking-tight text-gray-900"
-                style={{ letterSpacing: "-0.02em" }}
-              >
-                Acceso al Tablero
-              </h2>
-              <p className="text-xs text-gray-500">
-                Identificación requerida para monitorear el cultivo
-              </p>
-            </div>
+            <h2 className="text-xl font-semibold tracking-tight text-[#18181b] font-display">
+              Acceso al Sistema
+            </h2>
+            <p className="text-xs text-[#71717a] mt-1 leading-relaxed">
+              Ingrese la clave del sistema para desbloquear el tablero y la telemetría en directo.
+            </p>
           </div>
 
-          <p className="text-xs leading-relaxed text-gray-600 mb-6">
-            El monitoreo óptico en vivo, la telemetría del suelo y los informes agronómicos están
-            protegidos. Ingrese la contraseña del sistema para desbloquear el tablero.
-          </p>
-
-          {/* Mensaje de Error */}
           {error && (
-            <div className="mb-5 p-3 rounded-xl text-xs flex items-start gap-2.5 border border-red-200 bg-red-50 text-red-700">
-              <AlertCircle className="h-4 w-4 shrink-0 mt-0.5 text-red-500" />
+            <div className="mb-4 p-3 rounded-lg text-xs flex items-start gap-2 bg-[rgba(185,28,28,0.06)] border border-[rgba(185,28,28,0.18)] text-[#b91c1c]">
+              <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
               <span>{error}</span>
             </div>
           )}
 
-          {/* Formulario */}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold text-gray-700 mb-1.5">
-                Contraseña del Sistema
+              <label className="block text-[11px] font-medium text-[#71717a] uppercase tracking-wider mb-1.5">
+                Contraseña
               </label>
               <div className="relative">
                 <input
                   type={mostrarPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Ingrese la contraseña"
+                  placeholder="Clave de acceso"
                   required
                   autoFocus
                   disabled={cargando}
-                  className="w-full px-3.5 py-2.5 pr-10 rounded-lg text-sm bg-white border border-gray-300 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-[#0069e9] focus:ring-2 focus:ring-[#0069e9]/20 transition-all disabled:opacity-50"
+                  className="w-full px-3.5 py-2.5 pr-10 text-sm bg-white rounded-lg border border-[rgba(24,24,27,0.14)] text-[#18181b] placeholder:text-[#a1a1aa] focus:outline-none focus:border-[#18181b] focus:ring-1 focus:ring-[#18181b] transition-all disabled:opacity-50"
                 />
                 <button
                   type="button"
                   onClick={() => setMostrarPassword(!mostrarPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600 transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-[#a1a1aa] hover:text-[#18181b] transition-colors"
                   tabIndex={-1}
                 >
-                  {mostrarPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  {mostrarPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
                 </button>
               </div>
             </div>
@@ -147,24 +143,23 @@ export function AccessGate({ apiConectada, onLoginSuccess }: AccessGateProps) {
             <button
               type="submit"
               disabled={cargando || !password.trim()}
-              className="btn-primary w-full py-2.5 text-sm justify-center"
+              className="btn-graphite w-full py-2.5 text-xs font-semibold"
             >
               <span>{cargando ? "Verificando..." : "Desbloquear Tablero"}</span>
-              <ArrowRight className="h-4 w-4" />
+              <ArrowRight className="w-3.5 h-3.5 ml-1" />
             </button>
           </form>
 
-          {/* Aviso de Seguridad */}
-          <div className="mt-6 pt-5 border-t border-gray-100 flex items-center justify-center gap-2 text-[11px] text-gray-400">
-            <ShieldCheck className="h-4 w-4 text-[#0069e9]" />
-            <span>Sesión cifrada con cookie segura HttpOnly</span>
+          <div className="mt-6 pt-5 border-t border-[rgba(24,24,27,0.06)] flex items-center justify-center gap-1.5 text-[11px] text-[#a1a1aa]">
+            <ShieldCheck className="w-3.5 h-3.5 text-[#71717a]" />
+            <span>Sesión cifrada con cookie segura</span>
           </div>
         </div>
       </div>
 
-      {/* Pie de Página */}
-      <div className="text-center text-[11px] text-gray-400">
-        Tlalixmati<sup className="ml-0.5">TM</sup> © {new Date().getFullYear()} — Plataforma de Monitoreo Agrícola
+      {/* Pie de página discreto */}
+      <div className="text-center text-[11px] text-[#a1a1aa]">
+        Tlalixmati Plataforma Agrícola &copy; {new Date().getFullYear()}
       </div>
     </div>
   );

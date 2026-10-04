@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useRef } from "react";
 import gsap from "gsap";
-import { Navbar } from "@/components/Navbar";
+import { Navbar, VistaTab } from "@/components/Navbar";
 import { TlahuicoleSection } from "@/components/TlahuicoleSection";
 import { LiveCameraSection } from "@/components/LiveCameraSection";
 import { TelemetrySection } from "@/components/TelemetrySection";
@@ -21,10 +21,6 @@ import {
   VisionEstadoResponse,
 } from "@/lib/api";
 
-const BLUE = "#0069e9";
-const BLUE_LIGHT = "rgba(0, 105, 233, 0.08)";
-const BLUE_BORDER = "rgba(0, 105, 233, 0.22)";
-
 export default function DashboardPage() {
   const [tlahuicole, setTlahuicole] = useState<TlahuicoleEstado | null>(null);
   const [reportes, setReportes] = useState<ReporteInfoResponse[]>([]);
@@ -36,8 +32,9 @@ export default function DashboardPage() {
   const [apiConectada, setApiConectada] = useState<boolean>(false);
   const [autenticado, setAutenticado] = useState<boolean>(false);
   const [cargando, setCargando] = useState<boolean>(true);
+  const [vistaActiva, setVistaActiva] = useState<VistaTab>("panorama");
 
-  const containerRef = useRef<HTMLDivElement>(null);
+  const mainContentRef = useRef<HTMLDivElement>(null);
 
   const verificarSesionYCargarDatos = async () => {
     try {
@@ -95,23 +92,29 @@ export default function DashboardPage() {
     return () => clearInterval(interval);
   }, []);
 
-  // Animación de entrada con GSAP para las secciones del dashboard
-  useEffect(() => {
-    if (!cargando && autenticado && containerRef.current) {
-      const children = containerRef.current.children;
-      gsap.fromTo(
-        children,
-        { opacity: 0, y: 14 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.4,
-          stagger: 0.08,
-          ease: "power2.out",
-        }
-      );
+  // Animación de transición GSAP al cambiar de pestaña
+  const handleCambiarVista = (nuevaVista: VistaTab) => {
+    if (nuevaVista === vistaActiva) return;
+
+    if (mainContentRef.current) {
+      gsap.to(mainContentRef.current, {
+        opacity: 0,
+        y: 6,
+        duration: 0.15,
+        ease: "power2.in",
+        onComplete: () => {
+          setVistaActiva(nuevaVista);
+          gsap.fromTo(
+            mainContentRef.current,
+            { opacity: 0, y: 10 },
+            { opacity: 1, y: 0, duration: 0.28, ease: "power2.out" }
+          );
+        },
+      });
+    } else {
+      setVistaActiva(nuevaVista);
     }
-  }, [cargando, autenticado]);
+  };
 
   const handleLogout = async () => {
     await api.logout();
@@ -125,7 +128,7 @@ export default function DashboardPage() {
     setVision(null);
   };
 
-  // 1. Pantalla de Entrada / Loading Hero Stage (solo se muestra al ingresar por primera vez)
+  // 1. Pantalla de Entrada / Loading Hero Stage (solo se muestra al ingresar)
   if (cargando) {
     return (
       <LoadingHeroStage
@@ -147,85 +150,160 @@ export default function DashboardPage() {
     );
   }
 
-  // 3. Tablero Desbloqueado y Autenticado (Minimalista Azul)
+  // 3. Tablero Desbloqueado y Autenticado (Apple-Grade Minimalist Architecture)
   return (
-    <div className="min-h-screen flex flex-col bg-[#f8f9fa] text-gray-900 font-sans">
+    <div className="min-h-screen flex flex-col bg-[#fbfbfb] text-[#18181b] font-sans">
       <Navbar
         apiConectada={apiConectada}
         autenticado={autenticado}
-        onOpenLogin={() => {}}
+        vistaActiva={vistaActiva}
+        onCambiarVista={handleCambiarVista}
+        cultivoNombre={
+          cultivo
+            ? `${cultivo.nombre}${cultivo.variedad ? ` · ${cultivo.variedad}` : ""}`
+            : undefined
+        }
+        onRefresh={verificarSesionYCargarDatos}
         onLogout={handleLogout}
       />
 
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-7">
-        {/* Encabezado del Tablero */}
-        <div className="mb-7">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <div>
-              <div className="flex items-center gap-2.5">
-                <h2
-                  className="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900"
-                  style={{ letterSpacing: "-0.03em" }}
-                >
-                  Monitoreo del Cultivo
-                </h2>
-                <span className="badge-blue">EN VIVO</span>
-              </div>
-              <p className="mt-1 text-xs sm:text-sm text-gray-500">
-                Supervisión agronómica en tiempo real, imágenes ópticas de campo y auditoría de eventos.
-              </p>
-            </div>
-
-            {/* Badge de cultivo activo */}
-            <div
-              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold self-start sm:self-auto border"
-              style={{
-                background: BLUE_LIGHT,
-                borderColor: BLUE_BORDER,
-                color: "#055bd3",
-              }}
-            >
-              <span
-                className="h-2 w-2 rounded-full animate-pulse"
-                style={{ background: BLUE }}
-              />
-              <span>
-                {cultivo
-                  ? `${cultivo.nombre}${cultivo.variedad ? ` · ${cultivo.variedad}` : ""}`
-                  : "Lote de Monitoreo Activo"}
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        
+        {/* Encabezado Editorial de la Vista */}
+        <div className="mb-6 flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-2 border-b border-[rgba(24,24,27,0.06)] pb-4">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="micro-label">Plataforma Agronómica</span>
+              <span className="text-[#a1a1aa] text-xs">/</span>
+              <span className="text-xs font-mono text-[#71717a]">
+                {cultivo?.ubicacion || "Lote de Producción"}
               </span>
             </div>
+            <h1 className="text-2xl sm:text-3xl font-semibold tracking-[-0.03em] text-[#18181b] font-display mt-1">
+              {vistaActiva === "panorama" && "Supervisión Integral de Campo"}
+              {vistaActiva === "camara" && "Canal de Visión Óptica & GPU"}
+              {vistaActiva === "telemetria" && "Análisis Físico & Microclimático"}
+              {vistaActiva === "hardware" && "Topología de Nodos Tlahuicole"}
+              {vistaActiva === "informes" && "Informes Técnicos & Auditoría"}
+            </h1>
+          </div>
+
+          <div className="text-xs text-[#71717a] font-mono self-start sm:self-auto">
+            {cultivo
+              ? `${cultivo.nombre} · Ciclo Activo`
+              : "Lote de Monitoreo Activo"}
           </div>
         </div>
 
-        {/* Módulos Principales del Tablero */}
-        <div ref={containerRef} className="space-y-5">
-          <TlahuicoleSection tlahuicole={tlahuicole} />
+        {/* Contenedor con animación suave de cambio de vista */}
+        <div ref={mainContentRef}>
+          {/* ═══════════════════════════════════════════════════════════════
+             VISTA 1: PANORAMA (Executive Asymmetrical Dashboard)
+             ═══════════════════════════════════════════════════════════════ */}
+          {vistaActiva === "panorama" && (
+            <div className="space-y-7">
+              {/* Franja de KPIs Tipográficos Suizos (respirando con espacio) */}
+              <TelemetrySection
+                sensoresTexto={tlahuicole?.sensores}
+                telemetria={telemetria}
+                historial={historial}
+                compacto={true}
+              />
 
-          <LiveCameraSection
-            analisisTexto={tlahuicole?.analisis || "Sin anomalías"}
-            vision={vision}
-          />
+              {/* Grid Asimétrico: Óptica a la izquierda, Inteligencia a la derecha */}
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                
+                {/* Columna Principal (7 columnas): Cámara y Visión en Vivo */}
+                <div className="lg:col-span-7 space-y-6">
+                  <LiveCameraSection
+                    analisisTexto={tlahuicole?.analisis || "Sin anomalías"}
+                    vision={vision}
+                  />
 
-          <TelemetrySection
-            sensoresTexto={tlahuicole?.sensores || "Sin datos"}
-            telemetria={telemetria}
-            historial={historial}
-          />
+                  {/* Informes Técnicos rápidos */}
+                  <ReportsSection reportesIniciales={reportes} />
+                </div>
 
-          <EventsSection eventos={eventos} />
+                {/* Columna Lateral (5 columnas): Hardware y Bitácora */}
+                <div className="lg:col-span-5 space-y-6">
+                  <TlahuicoleSection tlahuicole={tlahuicole} />
 
-          <ReportsSection reportesIniciales={reportes} />
+                  <EventsSection eventos={eventos} />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ═══════════════════════════════════════════════════════════════
+             VISTA 2: CÁMARA & VISIÓN (Full-width Optical Station)
+             ═══════════════════════════════════════════════════════════════ */}
+          {vistaActiva === "camara" && (
+            <div className="space-y-6">
+              <LiveCameraSection
+                analisisTexto={tlahuicole?.analisis || "Sin anomalías"}
+                vision={vision}
+              />
+              <EventsSection
+                eventos={eventos.filter(
+                  (e) => e.origen.toLowerCase().includes("vision") || e.nivel === "critico"
+                )}
+              />
+            </div>
+          )}
+
+          {/* ═══════════════════════════════════════════════════════════════
+             VISTA 3: TELEMETRÍA (Deep-dive Sensors & Trends)
+             ═══════════════════════════════════════════════════════════════ */}
+          {vistaActiva === "telemetria" && (
+            <div className="space-y-6">
+              <TelemetrySection
+                sensoresTexto={tlahuicole?.sensores}
+                telemetria={telemetria}
+                historial={historial}
+                compacto={false}
+              />
+            </div>
+          )}
+
+          {/* ═══════════════════════════════════════════════════════════════
+             VISTA 4: HARDWARE (Tlahuicole Profiler)
+             ═══════════════════════════════════════════════════════════════ */}
+          {vistaActiva === "hardware" && (
+            <div className="space-y-6">
+              <TlahuicoleSection tlahuicole={tlahuicole} />
+              <EventsSection
+                eventos={eventos.filter(
+                  (e) =>
+                    e.origen.toLowerCase().includes("esp32") ||
+                    e.origen.toLowerCase().includes("raspberry") ||
+                    e.origen.toLowerCase().includes("sistema")
+                )}
+              />
+            </div>
+          )}
+
+          {/* ═══════════════════════════════════════════════════════════════
+             VISTA 5: INFORMES & BITÁCORA
+             ═══════════════════════════════════════════════════════════════ */}
+          {vistaActiva === "informes" && (
+            <div className="space-y-6">
+              <ReportsSection reportesIniciales={reportes} />
+              <EventsSection eventos={eventos} />
+            </div>
+          )}
         </div>
       </main>
 
-      {/* Pie de Página */}
-      <footer className="border-t border-gray-200 bg-white py-5 mt-10 text-xs text-center text-gray-400">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <span>
-            Tlalixmati<sup className="ml-0.5 text-[#0069e9]">TM</sup> — Plataforma de Monitoreo y Robótica Agrícola
-          </span>
-          <span>Unidad de Campo: Tlahuicole (ESP32 + Raspberry Pi)</span>
+      {/* Pie de Página Editorial */}
+      <footer className="border-t border-[rgba(24,24,27,0.06)] bg-[#ffffff] py-6 mt-12 text-xs text-[#a1a1aa]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <span className="font-semibold text-[#18181b] font-display">Tlalixmati</span>
+            <span>— Plataforma Inteligente de Monitoreo & Robótica Agrícola</span>
+          </div>
+          <div className="font-mono text-[11px] text-[#71717a]">
+            Nodo de Campo: Tlahuicole (ESP32 + Raspberry Pi)
+          </div>
         </div>
       </footer>
     </div>

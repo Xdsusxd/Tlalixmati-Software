@@ -1,17 +1,12 @@
 "use client";
 
 import React, { useState } from "react";
-import { AlertTriangle, AlertCircle, Info, ShieldAlert, Clock, ScrollText } from "lucide-react";
+import { ScrollText, Clock, ShieldAlert, AlertTriangle, Info, AlertCircle } from "lucide-react";
 import { EventoItem } from "@/lib/api";
 
 interface EventsSectionProps {
   eventos: EventoItem[];
 }
-
-const BLUE = "#0069e9";
-const BLUE_DARK = "#055bd3";
-const BLUE_LIGHT = "rgba(0, 105, 233, 0.08)";
-const BLUE_BORDER = "rgba(0, 105, 233, 0.22)";
 
 export function EventsSection({ eventos = [] }: EventsSectionProps) {
   const [filtroNivel, setFiltroNivel] = useState<string>("todos");
@@ -39,144 +34,115 @@ export function EventsSection({ eventos = [] }: EventsSectionProps) {
     }
   };
 
-  const badgePorNivel = (nivel: string) => {
+  const getPillNivel = (nivel: string) => {
     switch (nivel.toLowerCase()) {
       case "critico":
         return {
-          icono: <ShieldAlert className="h-3.5 w-3.5 text-red-600" />,
-          bg: "#fef2f2",
-          border: "#fecaca",
-          color: "#991b1b",
-          label: "Alerta Crítica",
+          pillClass: "pill-crit",
+          icon: <ShieldAlert className="w-3 h-3 text-[#b91c1c]" />,
+          label: "Crítico",
         };
       case "aviso":
         return {
-          icono: <AlertTriangle className="h-3.5 w-3.5 text-amber-600" />,
-          bg: "#fffbeb",
-          border: "#fde68a",
-          color: "#92400e",
+          pillClass: "pill-warn",
+          icon: <AlertTriangle className="w-3 h-3 text-[#b45309]" />,
           label: "Aviso",
         };
       case "error":
         return {
-          icono: <AlertCircle className="h-3.5 w-3.5 text-red-600" />,
-          bg: "#fef2f2",
-          border: "#fecaca",
-          color: "#991b1b",
+          pillClass: "pill-crit",
+          icon: <AlertCircle className="w-3 h-3 text-[#b91c1c]" />,
           label: "Error",
         };
       default:
         return {
-          icono: <Info className="h-3.5 w-3.5 text-[#0069e9]" />,
-          bg: BLUE_LIGHT,
-          border: BLUE_BORDER,
-          color: BLUE_DARK,
+          pillClass: "pill-neutral",
+          icon: <Info className="w-3 h-3 text-[#71717a]" />,
           label: "Info",
         };
     }
   };
 
-  type FilterBtnProps = {
-    label: string;
-    value: string;
-  };
-
-  function FilterBtn({ label, value }: FilterBtnProps) {
-    const isActive = filtroNivel === value;
-    return (
-      <button
-        onClick={() => setFiltroNivel(value)}
-        className="px-2.5 py-1 rounded-md text-xs font-semibold transition-colors"
-        style={{
-          background: isActive ? BLUE : "transparent",
-          color: isActive ? "#ffffff" : "#6b7280",
-        }}
-      >
-        {label}
-      </button>
-    );
-  }
-
   return (
-    <section className="dash-card p-6 sm:p-7">
+    <div className="bg-white rounded-2xl border border-[rgba(24,24,27,0.07)] p-5 sm:p-6 shadow-xs">
       {/* Encabezado */}
-      <div className="section-header sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-4 border-b border-[rgba(24,24,27,0.06)] gap-3 mb-4">
         <div>
-          <div className="flex items-center gap-2.5">
-            <h2
-              className="text-xl font-bold tracking-tight text-gray-900"
-              style={{ letterSpacing: "-0.02em" }}
-            >
+          <div className="flex items-center gap-2">
+            <h3 className="text-sm font-semibold tracking-tight text-[#18181b] font-display flex items-center gap-2">
+              <ScrollText className="w-4 h-4 text-[#71717a]" />
               Bitácora de Eventos y Detecciones
-            </h2>
-            <span className="badge-blue">
-              <ScrollText className="h-3 w-3" />
-              Auditoría
-            </span>
+            </h3>
+            <span className="text-xs font-mono text-[#a1a1aa]">({eventos.length})</span>
           </div>
-          <p className="text-xs mt-1 text-gray-500">
-            Registro cronológico de inferencias de visión artificial, reportes automáticos y conectividad de hardware.
+          <p className="text-xs text-[#71717a] mt-0.5">
+            Registro cronológico inmutable de inferencias en GPU, hardware y alertas fitosanitarias.
           </p>
         </div>
 
-        {/* Filtros de severidad */}
-        <div className="flex items-center gap-1 p-1 rounded-lg bg-gray-100 border border-gray-200 self-start sm:self-auto">
-          <FilterBtn label={`Todos (${eventos.length})`} value="todos" />
-          <FilterBtn label="Alertas" value="critico" />
-          <FilterBtn label="Avisos" value="aviso" />
-          <FilterBtn label="Info" value="info" />
+        {/* Filtros tipo Apple Segmented */}
+        <div className="segmented-track self-start sm:self-auto">
+          {[
+            { id: "todos", label: "Todos" },
+            { id: "critico", label: "Alertas" },
+            { id: "aviso", label: "Avisos" },
+            { id: "info", label: "Info" },
+          ].map((item) => (
+            <button
+              key={item.id}
+              onClick={() => setFiltroNivel(item.id)}
+              className={`segmented-item text-xs py-1 px-2.5 ${
+                filtroNivel === item.id ? "active" : ""
+              }`}
+            >
+              {item.label}
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* Lista de Sucesos */}
+      {/* Lista de Registros */}
       <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
         {eventosFiltrados.length === 0 ? (
-          <div className="p-8 text-center rounded-xl border border-gray-200 bg-gray-50">
-            <Clock className="h-6 w-6 mx-auto mb-2 text-gray-400" />
-            <p className="text-xs font-semibold text-gray-600">
-              Sin eventos en la bitácora
-            </p>
-            <p className="text-[11px] mt-0.5 text-gray-400">
-              Los sucesos fitosanitarios y cambios de estado de campo se reflejarán aquí en tiempo real.
+          <div className="p-8 text-center rounded-xl bg-[#fbfbfb] border border-[rgba(24,24,27,0.06)]">
+            <Clock className="w-5 h-5 mx-auto mb-2 text-[#a1a1aa]" />
+            <p className="text-xs font-semibold text-[#18181b]">Sin eventos en este criterio</p>
+            <p className="text-[11px] text-[#71717a] mt-0.5">
+              Los sucesos de campo y diagnósticos de visión aparecerán automáticamente.
             </p>
           </div>
         ) : (
           eventosFiltrados.map((ev) => {
-            const badge = badgePorNivel(ev.nivel);
+            const nivelInfo = getPillNivel(ev.nivel);
             return (
               <div
                 key={ev.id}
-                className="p-3.5 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 border border-gray-200 bg-white hover:border-gray-300 transition-colors"
+                className="p-3 rounded-xl border border-[rgba(24,24,27,0.06)] bg-[#ffffff] hover:border-[rgba(24,24,27,0.12)] transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3"
               >
-                <div className="flex items-start gap-3">
-                  <div
-                    className="p-1.5 rounded-lg border mt-0.5 sm:mt-0"
-                    style={{ background: badge.bg, borderColor: badge.border }}
-                  >
-                    {badge.icono}
-                  </div>
+                <div className="flex items-start gap-2.5">
+                  <div className="mt-0.5 shrink-0">{nivelInfo.icon}</div>
                   <div>
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-xs font-semibold text-gray-900">
+                      <span className="text-xs font-medium text-[#18181b]">
                         {ev.mensaje}
                       </span>
-                      <span className="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded bg-gray-100 border border-gray-200 text-gray-500">
+                      <span className="font-code text-[10px] uppercase px-1.5 py-0.2 rounded bg-[#f4f4f5] text-[#71717a] border border-[rgba(24,24,27,0.06)]">
                         {ev.origen}
                       </span>
                     </div>
                     {ev.detalles && Object.keys(ev.detalles).length > 0 && (
-                      <p className="text-[11px] mt-0.5 text-gray-500 line-clamp-1">
+                      <p className="text-[11px] text-[#71717a] mt-0.5 font-mono line-clamp-1">
                         {JSON.stringify(ev.detalles).replace(/[{}"]/g, " ").trim()}
                       </p>
                     )}
                   </div>
                 </div>
 
-                <div className="text-right self-end sm:self-auto shrink-0">
-                  <div className="text-xs font-mono font-medium text-gray-600">
+                <div className="text-right self-end sm:self-auto shrink-0 font-mono">
+                  <div className="text-xs font-medium text-[#52525b]">
                     {formatearFechaHora(ev.creado_en)}
                   </div>
-                  <div className="text-[10px] text-gray-400">
+                  <div className="text-[10px] text-[#a1a1aa]">
                     {formatearFechaDia(ev.creado_en)}
                   </div>
                 </div>
@@ -185,6 +151,6 @@ export function EventsSection({ eventos = [] }: EventsSectionProps) {
           })
         )}
       </div>
-    </section>
+    </div>
   );
 }

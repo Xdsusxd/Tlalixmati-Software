@@ -1,20 +1,16 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { RefreshCw, CheckCircle, AlertCircle, AlertTriangle, Activity, Zap } from "lucide-react";
+import { RefreshCw, CheckCircle, AlertCircle, AlertTriangle, Activity, Zap, Maximize2 } from "lucide-react";
 import { api, CamaraEstadoResponse, VisionEstadoResponse } from "@/lib/api";
 
 interface LiveCameraSectionProps {
   analisisTexto: string;
   vision?: VisionEstadoResponse | null;
+  compacto?: boolean;
 }
 
-const BLUE = "#0069e9";
-const BLUE_DARK = "#055bd3";
-const BLUE_LIGHT = "rgba(0, 105, 233, 0.08)";
-const BLUE_BORDER = "rgba(0, 105, 233, 0.22)";
-
-export function LiveCameraSection({ analisisTexto, vision }: LiveCameraSectionProps) {
+export function LiveCameraSection({ analisisTexto, vision, compacto = false }: LiveCameraSectionProps) {
   const [streamKey, setStreamKey] = useState<number>(Date.now());
   const [estadoCamara, setEstadoCamara] = useState<CamaraEstadoResponse | null>(null);
 
@@ -37,137 +33,122 @@ export function LiveCameraSection({ analisisTexto, vision }: LiveCameraSectionPr
   const streamUrl = `${api.getStreamUrl()}?t=${streamKey}`;
   const camaraConectada = Boolean(estadoCamara?.conectada);
 
-  // Diagnóstico visual
-  let iconoDiagnostico = <AlertCircle className="h-4 w-4 shrink-0 text-gray-400" />;
+  // Diagnóstico visual agronómico
+  let iconoDiagnostico = <AlertCircle className="w-4 h-4 text-[#a1a1aa] shrink-0" />;
   let textoDiagnostico = "Cámara no conectada. En espera de transmisión óptica desde el hardware de campo.";
-  let etiquetaDerecha = "Hardware óptico en espera";
+  let badgeTexto = "Óptica en espera";
 
   if (camaraConectada) {
     if (vision && vision.activo) {
       if (vision.es_anomalia) {
-        iconoDiagnostico = <AlertTriangle className="h-4 w-4 shrink-0 text-amber-500" />;
-        textoDiagnostico = `Alerta Fitosanitaria: ${vision.clase_actual} (${((vision.confianza || 0) * 100).toFixed(1)}% certeza). Detectada por modelos de IA en GPU.`;
-        etiquetaDerecha = `Inferencia en GPU (${vision.dispositivo || "RTX 4050"})`;
+        iconoDiagnostico = <AlertTriangle className="w-4 h-4 text-[#b45309] shrink-0" />;
+        textoDiagnostico = `Alerta fitosanitaria: ${vision.clase_actual} (${((vision.confianza || 0) * 100).toFixed(1)}% confianza en GPU ${vision.dispositivo || "RTX 4050"}).`;
+        badgeTexto = "Anomalía Fitosanitaria";
       } else {
-        iconoDiagnostico = <CheckCircle className="h-4 w-4 shrink-0 text-[#0069e9]" />;
-        textoDiagnostico = `Follaje Saludable: ${vision.clase_actual || "Sano"} (${((vision.confianza || 0) * 100).toFixed(1)}% certeza, ${vision.conteo_especimenes ?? 0} plantas visibles).`;
-        etiquetaDerecha = `Inferencia en GPU (${vision.dispositivo || "RTX 4050"})`;
+        iconoDiagnostico = <CheckCircle className="w-4 h-4 text-[#15803d] shrink-0" />;
+        textoDiagnostico = `Follaje saludable: ${vision.clase_actual || "Sano"} (${((vision.confianza || 0) * 100).toFixed(1)}% certeza, ${vision.conteo_especimenes ?? 0} plantas visibles).`;
+        badgeTexto = "Follaje Óptimo";
       }
     } else if (analisisTexto && analisisTexto !== "Sin resultados") {
-      iconoDiagnostico = <CheckCircle className="h-4 w-4 shrink-0 text-[#0069e9]" />;
+      iconoDiagnostico = <CheckCircle className="w-4 h-4 text-[#15803d] shrink-0" />;
       textoDiagnostico = analisisTexto;
-      etiquetaDerecha = `Hardware activo: ${estadoCamara?.resolucion}`;
+      badgeTexto = "Transmisión Activa";
     } else {
-      iconoDiagnostico = <Activity className="h-4 w-4 shrink-0 text-gray-500" />;
-      textoDiagnostico = "Cámara transmitiendo en vivo. En espera del ciclo de inferencia de visión artificial en GPU.";
-      etiquetaDerecha = `Hardware activo: ${estadoCamara?.resolucion}`;
+      iconoDiagnostico = <Activity className="w-4 h-4 text-[#71717a] shrink-0" />;
+      textoDiagnostico = "Cámara transmitiendo en directo. Ciclo de inferencia IA en espera.";
+      badgeTexto = "En Directo";
     }
   }
 
   return (
-    <section className="dash-card p-6 sm:p-7">
+    <div className="bg-white rounded-2xl border border-[rgba(24,24,27,0.07)] p-5 sm:p-6 shadow-xs">
       {/* Encabezado */}
-      <div className="section-header sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-4 border-b border-[rgba(24,24,27,0.06)] gap-3 mb-4">
         <div>
-          <div className="flex items-center gap-2.5">
-            <h2
-              className="text-xl font-bold tracking-tight text-gray-900"
-              style={{ letterSpacing: "-0.02em" }}
-            >
-              Cámara en Vivo del Cultivo
-            </h2>
-
-            {/* Badge En Directo */}
-            <div
-              className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border"
-              style={{
-                background: BLUE_LIGHT,
-                borderColor: BLUE_BORDER,
-              }}
+          <div className="flex items-center gap-2">
+            <h3 className="text-sm font-semibold tracking-tight text-[#18181b] font-display">
+              Canal Óptico en Directo
+            </h3>
+            <span
+              className={`pill-status ${
+                camaraConectada ? "pill-ok" : "pill-neutral"
+              }`}
             >
               <span
-                className="h-1.5 w-1.5 rounded-full animate-pulse"
-                style={{ background: BLUE }}
+                className={`w-1.5 h-1.5 rounded-full ${
+                  camaraConectada ? "bg-[#15803d] animate-pulse" : "bg-[#a1a1aa]"
+                }`}
               />
-              <span className="text-[11px] font-semibold text-[#055bd3]">
-                En Directo
-              </span>
-            </div>
-
-            {vision?.activo && (
-              <span className="badge-blue hidden sm:inline-flex">
-                <Zap className="h-3 w-3" />
-                Inferencia Activa
-              </span>
-            )}
+              {camaraConectada ? "En Directo" : "Desconectado"}
+            </span>
           </div>
-          <p className="text-xs mt-1 text-gray-500">
-            Visualización óptica continua del área foliar a máxima resolución y tasa nativa de hardware.
+          <p className="text-xs text-[#71717a] mt-0.5">
+            Supervisión foliar continua transmitida desde el nodo de campo Tlahuicole.
           </p>
         </div>
 
         <button
           onClick={recargarStream}
-          className="btn-secondary self-start sm:self-auto"
+          className="btn-quiet self-start sm:self-auto text-xs py-1.5 px-3"
           title="Refrescar transmisión"
         >
-          <RefreshCw className="h-3.5 w-3.5" />
-          <span>Refrescar Imagen</span>
+          <RefreshCw className="w-3.5 h-3.5" />
+          <span>Refrescar</span>
         </button>
       </div>
 
-      {/* Visor de Video en Vivo */}
-      <div className="mt-1">
-        <div
-          className="relative rounded-xl overflow-hidden aspect-video max-h-[460px] w-full flex items-center justify-center border border-gray-200"
-          style={{ background: "#0c1b30" }}
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            key={streamKey}
-            src={streamUrl}
-            alt="Transmisión en vivo del cultivo"
-            className="w-full h-full object-contain"
+      {/* Visor de Video de Precisión */}
+      <div
+        className={`relative rounded-xl overflow-hidden aspect-video ${
+          compacto ? "max-h-[360px]" : "max-h-[480px]"
+        } w-full flex items-center justify-center bg-[#09090b] border border-[rgba(24,24,27,0.12)]`}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          key={streamKey}
+          src={streamUrl}
+          alt="Transmisión en vivo del cultivo"
+          className="w-full h-full object-contain"
+        />
+
+        {/* HUD Superior Izquierdo: Resolución y Hardware */}
+        <div className="absolute top-3 left-3 flex items-center gap-2 px-2.5 py-1 rounded-md text-[11px] font-mono bg-black/75 text-white/90 border border-white/10 backdrop-blur-md">
+          <span
+            className={`w-1.5 h-1.5 rounded-full ${
+              camaraConectada ? "bg-[#22c55e] animate-pulse" : "bg-neutral-500"
+            }`}
           />
-
-          {/* Indicador de Transmisión */}
-          <div className="absolute top-3 left-3 flex items-center gap-2 px-3 py-1 rounded-lg text-xs font-medium bg-[#0c1b30]/85 text-white/90 border border-white/10 backdrop-blur-xs">
-            <span
-              className={`h-1.5 w-1.5 rounded-full ${camaraConectada ? "animate-pulse" : ""}`}
-              style={{ background: camaraConectada ? "#0069e9" : "#9ca3af" }}
-            />
-            <span>
-              {camaraConectada
-                ? `${estadoCamara?.resolucion} @ ${estadoCamara?.fps} FPS`
-                : "Autodetección en Espera"}
-            </span>
-          </div>
-
-          {/* Badge de inferencia en tiempo real */}
-          {vision?.activo && (
-            <div className="absolute top-3 right-3 flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-mono bg-[#0c1b30]/85 text-[#cce2ff] border border-[#0069e9]/30 backdrop-blur-xs">
-              <span className="h-1.5 w-1.5 rounded-full animate-pulse bg-[#0069e9]" />
-              <span>
-                {vision.clase_actual} ({((vision.confianza || 0) * 100).toFixed(0)}%)
-              </span>
-            </div>
-          )}
-        </div>
-
-        {/* Resumen de Diagnóstico */}
-        <div className="mt-3 p-3.5 rounded-xl flex flex-col sm:flex-row sm:items-center sm:justify-between text-xs gap-2 border border-gray-200 bg-gray-50">
-          <div className="flex items-center gap-2">
-            {iconoDiagnostico}
-            <span className="text-gray-700">
-              <strong className="text-gray-900 font-semibold">Diagnóstico visual:</strong>{" "}
-              {textoDiagnostico}
-            </span>
-          </div>
-          <span className="text-[11px] font-medium text-gray-400 shrink-0">
-            {etiquetaDerecha}
+          <span>
+            {camaraConectada
+              ? `${estadoCamara?.resolucion || "1080p"} · ${estadoCamara?.fps || 30} FPS`
+              : "Autodetección Óptica en Espera"}
           </span>
         </div>
+
+        {/* HUD Superior Derecho: Inferencia IA / GPU */}
+        {vision?.activo && (
+          <div className="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-mono bg-black/75 text-white/90 border border-white/10 backdrop-blur-md">
+            <Zap className="w-3 h-3 text-[#22c55e]" />
+            <span>
+              {vision.clase_actual} ({((vision.confianza || 0) * 100).toFixed(0)}%)
+            </span>
+          </div>
+        )}
       </div>
-    </section>
+
+      {/* Franja de Diagnóstico Agronómico */}
+      <div className="mt-3.5 p-3 rounded-xl bg-[#fbfbfb] border border-[rgba(24,24,27,0.06)] flex flex-col sm:flex-row sm:items-center sm:justify-between text-xs gap-2">
+        <div className="flex items-center gap-2.5 text-[#52525b]">
+          {iconoDiagnostico}
+          <span>
+            <strong className="text-[#18181b] font-medium">Diagnóstico:</strong>{" "}
+            {textoDiagnostico}
+          </span>
+        </div>
+        <span className="text-[11px] font-mono text-[#a1a1aa] shrink-0">
+          {badgeTexto}
+        </span>
+      </div>
+    </div>
   );
 }

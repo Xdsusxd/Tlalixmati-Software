@@ -5,10 +5,11 @@ import {
   FileText,
   Download,
   Plus,
-  CheckCircle,
+  CheckCircle2,
   Clock,
   ShieldAlert,
   Layers,
+  CloudCheck,
 } from "lucide-react";
 import { api, ReporteInfoResponse } from "@/lib/api";
 
@@ -16,12 +17,6 @@ interface ReportsSectionProps {
   reportesIniciales: ReporteInfoResponse[];
 }
 
-const BLUE = "#0069e9";
-const BLUE_DARK = "#055bd3";
-const BLUE_LIGHT = "rgba(0, 105, 233, 0.08)";
-const BLUE_BORDER = "rgba(0, 105, 233, 0.22)";
-
-/** Convierte bytes a string legible */
 function formatearBytes(bytes: number): string {
   if (bytes === 0) return "0 B";
   if (bytes < 1024) return `${bytes} B`;
@@ -32,26 +27,26 @@ function formatearBytes(bytes: number): string {
 const fasesDefault = [
   {
     fase: "Germinación y Emergencia",
-    estado: "Buen estado",
-    detalle: "Establecimiento vigoroso y uniforme del cultivo.",
+    estado: "Completada",
+    detalle: "Establecimiento radicular uniforme y vigoroso.",
     activo: true,
   },
   {
     fase: "Crecimiento Vegetativo",
-    estado: "Buen estado",
-    detalle: "Área foliar óptima sin signos de clorosis.",
+    estado: "En curso",
+    detalle: "Expansión foliar activa con clorofila óptima.",
     activo: true,
   },
   {
     fase: "Floración y Cuajado",
-    estado: "Monitoreo activo",
-    detalle: "Vigilancia constante de humedad y nutrición.",
+    estado: "Programada",
+    detalle: "Monitoreo prioritario de humedad y nutrición.",
     activo: false,
   },
   {
     fase: "Maduración y Cosecha",
-    estado: "Fase programada",
-    detalle: "Proyección favorable según calendario vegetal.",
+    estado: "Fase final",
+    detalle: "Proyección agronómica según calendario vegetal.",
     activo: false,
   },
 ];
@@ -67,135 +62,126 @@ export function ReportsSection({ reportesIniciales }: ReportsSectionProps) {
     try {
       const nuevo = await api.generarReporte(
         "Informe Técnico Agronómico de Seguimiento",
-        "Generación manual solicitada por el usuario desde el panel.",
+        "Generación manual solicitada por el operador desde el panel.",
         "manual"
       );
       if (nuevo) {
         setReportes((prev) => [nuevo, ...prev]);
-        setMensaje("Informe PDF compilado y guardado en Supabase Storage.");
+        setMensaje("Informe técnico compilado y sincronizado con Supabase Storage.");
       }
     } catch {
-      setMensaje("No se pudo compilar el reporte.");
+      setMensaje("No fue posible compilar el reporte en este momento.");
     } finally {
       setGenerando(false);
     }
   };
 
   return (
-    <section className="dash-card p-6 sm:p-7">
-      {/* Encabezado Principal y Acciones */}
-      <div className="section-header lg:flex-row lg:items-center lg:justify-between gap-4">
+    <div className="bg-white rounded-2xl border border-[rgba(24,24,27,0.07)] p-5 sm:p-6 shadow-xs space-y-6">
+      {/* Encabezado y Acciones de Descarga */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-4 border-b border-[rgba(24,24,27,0.06)] gap-3">
         <div>
-          <div className="flex items-center gap-2.5">
-            <h2
-              className="text-xl font-bold tracking-tight text-gray-900"
-              style={{ letterSpacing: "-0.02em" }}
-            >
-              Informes y Reportes del Cultivo
-            </h2>
-            <span className="badge-blue">Supabase Cloud</span>
+          <div className="flex items-center gap-2">
+            <h3 className="text-sm font-semibold tracking-tight text-[#18181b] font-display flex items-center gap-2">
+              <FileText className="w-4 h-4 text-[#71717a]" />
+              Informes Técnicos Agronómicos
+            </h3>
+            <span className="pill-status pill-neutral font-mono text-[10px]">
+              Supabase Storage
+            </span>
           </div>
-          <p className="text-xs mt-1 text-gray-500">
-            Generación automática por detección de anomalías o manual bajo demanda. Incluye evaluación de fases.
+          <p className="text-xs text-[#71717a] mt-0.5">
+            Generación automática ante anomalías fitosanitarias o emisión bajo demanda.
           </p>
         </div>
 
-        {/* Botones de Acción */}
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex items-center gap-2">
           <a
             href="/api/v1/reportes/reciente/descargar"
             download="informe_reciente_tlalixmati.pdf"
-            className="btn-primary"
+            className="btn-graphite text-xs py-1.5 px-3"
           >
-            <Download className="h-4 w-4" />
-            <span>Descargar Reciente (PDF)</span>
+            <Download className="w-3.5 h-3.5" />
+            <span>Descargar Reciente</span>
           </a>
 
           <button
             onClick={handleGenerarManual}
             disabled={generando}
-            className="btn-secondary"
-            title="Generar nuevo reporte técnico en PDF"
+            className="btn-quiet text-xs py-1.5 px-3"
           >
-            <Plus className="h-4 w-4" />
-            <span>{generando ? "Generando..." : "Generar Manual"}</span>
+            <Plus className="w-3.5 h-3.5" />
+            <span>{generando ? "Compilando..." : "Nuevo Informe"}</span>
           </button>
         </div>
       </div>
 
-      {/* Aviso Temporal */}
+      {/* Notificación de compilación exitosa */}
       {mensaje && (
-        <div
-          className="mb-5 p-3 rounded-xl text-xs flex items-center gap-2 border"
-          style={{
-            background: BLUE_LIGHT,
-            borderColor: BLUE_BORDER,
-            color: BLUE_DARK,
-          }}
-        >
-          <CheckCircle className="h-4 w-4 shrink-0 text-[#0069e9]" />
+        <div className="p-3 rounded-xl text-xs flex items-center gap-2 bg-[rgba(21,128,61,0.06)] border border-[rgba(21,128,61,0.18)] text-[#15803d]">
+          <CheckCircle2 className="w-4 h-4 shrink-0" />
           <span>{mensaje}</span>
         </div>
       )}
 
-      {/* 4 Fases Fenológicas del Cultivo */}
-      <div className="mb-6">
-        <h3 className="text-xs font-bold uppercase tracking-wider mb-3 flex items-center gap-2 text-gray-500">
-          <Layers className="h-3.5 w-3.5 text-[#0069e9]" />
-          Estado Fisiológico y Fenológico del Cultivo
-        </h3>
+      {/* Estado Fenológico del Cultivo (Horizontal Apple Step Progress) */}
+      <div>
+        <div className="flex items-center justify-between mb-2.5">
+          <span className="micro-label flex items-center gap-1.5">
+            <Layers className="w-3.5 h-3.5 text-[#71717a]" />
+            Etapas Fenológicas del Ciclo Productivo
+          </span>
+          <span className="text-[11px] font-mono text-[#a1a1aa]">Lote Activo</span>
+        </div>
+
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           {fasesDefault.map((f, idx) => (
             <div
               key={idx}
-              className="p-3.5 rounded-xl flex flex-col justify-between gap-2 border bg-white transition-colors"
-              style={{
-                borderColor: f.activo ? BLUE_BORDER : "#e5e7eb",
-              }}
+              className={`p-3.5 rounded-xl border transition-colors ${
+                f.activo
+                  ? "bg-[#fafafa] border-[rgba(24,24,27,0.14)]"
+                  : "bg-[#ffffff] border-[rgba(24,24,27,0.06)] opacity-70"
+              }`}
             >
-              <div>
-                <span className={`text-xs font-bold line-clamp-1 ${f.activo ? "text-gray-900" : "text-gray-600"}`}>
+              <div className="flex items-center justify-between gap-1 mb-1">
+                <span className="text-xs font-semibold text-[#18181b] truncate">
                   {f.fase}
                 </span>
-                <p className="text-[11px] mt-1 leading-snug text-gray-500">
-                  {f.detalle}
-                </p>
+                <span
+                  className={`pill-status text-[10px] py-0 px-1.5 ${
+                    f.activo ? "pill-ok" : "pill-neutral"
+                  }`}
+                >
+                  {f.estado}
+                </span>
               </div>
-              <span
-                className="text-[10px] font-semibold px-2 py-0.5 rounded-full border self-start"
-                style={{
-                  background: f.activo ? BLUE_LIGHT : "#f3f4f6",
-                  borderColor: f.activo ? BLUE_BORDER : "#e5e7eb",
-                  color: f.activo ? BLUE_DARK : "#6b7280",
-                }}
-              >
-                {f.estado}
-              </span>
+              <p className="text-[11px] text-[#71717a] leading-relaxed">
+                {f.detalle}
+              </p>
             </div>
           ))}
         </div>
       </div>
 
-      {/* Lista de Reportes Almacenados */}
-      <div className="pt-5 border-t border-gray-100">
+      {/* Ledger de Archivos Compilados */}
+      <div className="pt-2">
         <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <Clock className="h-4 w-4 text-[#0069e9]" />
-            <h3 className="text-xs font-bold uppercase tracking-wider text-gray-500">
-              Historial de Informes Fitosanitarios
-            </h3>
+          <div className="flex items-center gap-1.5">
+            <Clock className="w-3.5 h-3.5 text-[#71717a]" />
+            <span className="micro-label">Historial de Reportes Generados</span>
           </div>
-          <span className="text-[11px] font-medium text-gray-400">
-            {reportes.length} informes archivados
+          <span className="text-[11px] font-mono text-[#a1a1aa]">
+            {reportes.length} archivos
           </span>
         </div>
 
         {reportes.length === 0 ? (
-          <div className="p-6 text-center rounded-xl text-xs border border-gray-200 bg-gray-50 text-gray-500">
+          <div className="p-6 text-center rounded-xl bg-[#fbfbfb] border border-[rgba(24,24,27,0.06)] text-xs text-[#71717a]">
             No hay reportes archivados todavía. Genere uno manualmente o espere a una alerta de campo.
           </div>
         ) : (
-          <div className="space-y-2 max-h-64 overflow-y-auto pr-1">
+          <div className="divide-y divide-[rgba(24,24,27,0.06)]">
             {reportes.map((rep) => {
               const esAlerta =
                 rep.alerta_detectada ||
@@ -205,51 +191,47 @@ export function ReportsSection({ reportesIniciales }: ReportsSectionProps) {
               return (
                 <div
                   key={rep.id}
-                  className="p-3.5 rounded-xl border border-gray-200 bg-white hover:border-gray-300 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                  className="py-3 first:pt-1 last:pb-1 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
                 >
                   <div className="flex items-start gap-3">
                     <div
-                      className="p-2 rounded-lg border mt-0.5 sm:mt-0"
-                      style={{
-                        background: esAlerta ? "#fef2f2" : BLUE_LIGHT,
-                        borderColor: esAlerta ? "#fecaca" : BLUE_BORDER,
-                        color: esAlerta ? "#dc2626" : BLUE,
-                      }}
+                      className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ${
+                        esAlerta
+                          ? "bg-[rgba(185,28,28,0.08)] text-[#b91c1c]"
+                          : "bg-[#f4f4f5] text-[#71717a]"
+                      }`}
                     >
                       {esAlerta ? (
-                        <ShieldAlert className="h-4 w-4" />
+                        <ShieldAlert className="w-3.5 h-3.5" />
                       ) : (
-                        <FileText className="h-4 w-4" />
+                        <FileText className="w-3.5 h-3.5" />
                       )}
                     </div>
 
                     <div>
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="text-xs font-bold text-gray-900">
+                        <span className="text-xs font-semibold text-[#18181b]">
                           {rep.titulo}
                         </span>
                         <span
-                          className="text-[10px] font-semibold px-2 py-0.5 rounded-full border"
-                          style={{
-                            background: esAlerta ? "#fef2f2" : BLUE_LIGHT,
-                            borderColor: esAlerta ? "#fecaca" : BLUE_BORDER,
-                            color: esAlerta ? "#991b1b" : BLUE_DARK,
-                          }}
+                          className={`pill-status text-[10px] py-0 px-1.5 ${
+                            esAlerta ? "pill-crit" : "pill-neutral"
+                          }`}
                         >
                           {esAlerta ? "Alerta Automática" : "Seguimiento"}
                         </span>
                       </div>
                       {rep.fases_resumen && (
-                        <p className="text-[11px] mt-0.5 text-gray-500 line-clamp-1">
+                        <p className="text-[11px] text-[#71717a] mt-0.5 line-clamp-1">
                           {rep.fases_resumen}
                         </p>
                       )}
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-3 self-end sm:self-auto shrink-0">
+                  <div className="flex items-center gap-3 self-end sm:self-auto shrink-0 font-mono">
                     <div className="text-right">
-                      <div className="text-xs font-mono font-medium text-gray-600">
+                      <div className="text-xs font-medium text-[#52525b]">
                         {new Date(rep.generado_en).toLocaleDateString([], {
                           month: "short",
                           day: "numeric",
@@ -257,7 +239,7 @@ export function ReportsSection({ reportesIniciales }: ReportsSectionProps) {
                           minute: "2-digit",
                         })}
                       </div>
-                      <div className="text-[10px] font-mono text-gray-400">
+                      <div className="text-[10px] text-[#a1a1aa]">
                         {formatearBytes(rep.tamano_bytes)}
                       </div>
                     </div>
@@ -265,10 +247,10 @@ export function ReportsSection({ reportesIniciales }: ReportsSectionProps) {
                     <a
                       href={rep.url_descarga}
                       download={`informe_${rep.id.substring(0, 8)}.pdf`}
-                      className="btn-secondary p-2"
+                      className="p-1.5 rounded-lg text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] transition-colors"
                       title="Descargar PDF"
                     >
-                      <Download className="h-4 w-4" />
+                      <Download className="w-4 h-4" />
                     </a>
                   </div>
                 </div>
@@ -277,6 +259,6 @@ export function ReportsSection({ reportesIniciales }: ReportsSectionProps) {
           </div>
         )}
       </div>
-    </section>
+    </div>
   );
 }

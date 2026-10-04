@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Thermometer, Droplets, Sun, BatteryMedium, AlertCircle, Activity } from "lucide-react";
+import { Droplets, Thermometer, Sun, BatteryMedium, AlertCircle, TrendingUp } from "lucide-react";
 import {
   ResponsiveContainer,
   LineChart,
@@ -18,67 +18,14 @@ interface TelemetrySectionProps {
   sensoresTexto?: string;
   telemetria?: TelemetriaActual | null;
   historial?: PuntoHistorial[];
-}
-
-const BLUE = "#0069e9";
-const BLUE_DARK = "#055bd3";
-const BLUE_LIGHT = "rgba(0, 105, 233, 0.08)";
-const BLUE_BORDER = "rgba(0, 105, 233, 0.22)";
-
-function MetricCard({
-  icon,
-  label,
-  value,
-  sub,
-  active,
-}: {
-  icon: React.ReactNode;
-  label: string;
-  value: string;
-  sub: string;
-  active: boolean;
-}) {
-  return (
-    <div
-      className="p-4 rounded-xl flex flex-col justify-between gap-2 border bg-white transition-colors"
-      style={{
-        borderColor: active ? BLUE_BORDER : "#e5e7eb",
-      }}
-    >
-      <div className="flex items-center gap-2">
-        <div
-          className="p-2 rounded-lg"
-          style={{
-            background: active ? BLUE_LIGHT : "#f3f4f6",
-            border: `1px solid ${active ? BLUE_BORDER : "#e5e7eb"}`,
-            color: active ? BLUE : "#6b7280",
-          }}
-        >
-          {icon}
-        </div>
-        <span
-          className="text-xs font-semibold"
-          style={{ color: active ? BLUE_DARK : "#6b7280" }}
-        >
-          {label}
-        </span>
-      </div>
-
-      <div className="text-2xl font-bold tracking-tight text-gray-900" style={{ letterSpacing: "-0.03em" }}>
-        {value}
-      </div>
-
-      <span className="text-[11px] font-medium text-gray-400">
-        {sub}
-      </span>
-    </div>
-  );
+  compacto?: boolean;
 }
 
 export function TelemetrySection({
   sensoresTexto,
   telemetria,
   historial = [],
+  compacto = false,
 }: TelemetrySectionProps) {
   const tieneDatos = historial && historial.length > 0;
 
@@ -100,136 +47,172 @@ export function TelemetrySection({
   const radActual = telemetria?.radiacion;
   const batActual = telemetria?.bateria;
 
-  const hasHum  = humActual  !== undefined && humActual  !== null;
+  const hasHum = humActual !== undefined && humActual !== null;
   const hasTemp = tempActual !== undefined && tempActual !== null;
-  const hasRad  = radActual  !== undefined && radActual  !== null;
-  const hasBat  = batActual  !== undefined && batActual  !== null;
+  const hasRad = radActual !== undefined && radActual !== null;
+  const hasBat = batActual !== undefined && batActual !== null;
 
   return (
-    <section className="dash-card p-6 sm:p-7">
-      {/* Encabezado */}
-      <div className="section-header sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <div className="flex items-center gap-2.5">
-            <h2
-              className="text-xl font-bold tracking-tight text-gray-900"
-              style={{ letterSpacing: "-0.02em" }}
-            >
-              Condiciones del Terreno y Clima
-            </h2>
-            <span className="badge-blue">
-              <Activity className="h-3 w-3" />
-              Sondas de Campo
-            </span>
+    <div className="space-y-6">
+      {/* ── Franja Tipográfica de Métricas Clave (Editorial KPI Row) ── */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 py-2">
+        
+        {/* Métrica 1: Humedad de Suelo */}
+        <div className="flex flex-col">
+          <div className="flex items-center gap-1.5 mb-1">
+            <Droplets className="w-3.5 h-3.5 text-[#71717a]" />
+            <span className="micro-label">Humedad Suelo</span>
           </div>
-          <p className="text-xs mt-1 text-gray-500">
-            Parámetros ambientales leídos directamente por las sondas de suelo y microcontrolador ESP32.
-          </p>
-        </div>
-
-        <span className="text-xs px-3 py-1 rounded-full font-medium self-start sm:self-auto border border-gray-200 bg-gray-50 text-gray-600">
-          {telemetria?.resumen_sensores || sensoresTexto || "Sin datos de sensores"}
-        </span>
-      </div>
-
-      {/* Grid de Métricas */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <MetricCard
-          icon={<Droplets className="h-4 w-4" />}
-          label="Humedad de Suelo"
-          value={hasHum ? `${humActual!.toFixed(1)} %` : "-- %"}
-          sub={hasHum ? "Sonda de suelo activa" : "Sin datos de sonda"}
-          active={hasHum}
-        />
-        <MetricCard
-          icon={<Thermometer className="h-4 w-4" />}
-          label="Temperatura"
-          value={hasTemp ? `${tempActual!.toFixed(1)} °C` : "-- °C"}
-          sub={hasTemp ? "Termómetro ambiental activo" : "Sin datos térmicos"}
-          active={hasTemp}
-        />
-        <MetricCard
-          icon={<Sun className="h-4 w-4" />}
-          label="Luminosidad / Sol"
-          value={hasRad ? `${radActual!.toFixed(0)} W/m²` : "-- W/m²"}
-          sub={hasRad ? "Fotocelda operativa" : "Sin lectura lumínica"}
-          active={hasRad}
-        />
-        <MetricCard
-          icon={<BatteryMedium className="h-4 w-4" />}
-          label="Batería de Campo"
-          value={hasBat ? `${batActual!.toFixed(2)} V` : "-- V"}
-          sub={
-            hasBat
-              ? batActual! > 3.6
-                ? "Nivel de carga óptimo"
-                : "Aviso de recarga"
-              : "Sin monitoreo de voltaje"
-          }
-          active={hasBat}
-        />
-      </div>
-
-      {/* Gráfica de Tendencia */}
-      <div className="mt-6">
-        <div className="flex items-center justify-between mb-3">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-gray-500">
-            Evolución de Humedad de Suelo y Temperatura
-          </h3>
-          <span className="text-[11px] text-gray-400">
-            {tieneDatos ? "Registro de últimas 24 horas" : "Aguardando lecturas periódicas"}
+          <div className="flex items-baseline gap-1 mt-1">
+            <span className="text-3xl sm:text-4xl font-numeral text-[#18181b]">
+              {hasHum ? humActual!.toFixed(1) : "--"}
+            </span>
+            <span className="text-xs font-mono text-[#a1a1aa]">%</span>
+          </div>
+          <span className="text-[11px] text-[#71717a] mt-1 font-medium">
+            {hasHum ? "Sonda capacitiva activa" : "Sin señal de sensor"}
           </span>
         </div>
 
-        <div className="h-56 w-full rounded-xl p-3 pt-5 relative bg-gray-50 border border-gray-200">
+        {/* Métrica 2: Temperatura */}
+        <div className="flex flex-col">
+          <div className="flex items-center gap-1.5 mb-1">
+            <Thermometer className="w-3.5 h-3.5 text-[#71717a]" />
+            <span className="micro-label">Temperatura</span>
+          </div>
+          <div className="flex items-baseline gap-1 mt-1">
+            <span className="text-3xl sm:text-4xl font-numeral text-[#18181b]">
+              {hasTemp ? tempActual!.toFixed(1) : "--"}
+            </span>
+            <span className="text-xs font-mono text-[#a1a1aa]">°C</span>
+          </div>
+          <span className="text-[11px] text-[#71717a] mt-1 font-medium">
+            {hasTemp ? "Termometría ambiental" : "Sin lectura térmica"}
+          </span>
+        </div>
+
+        {/* Métrica 3: Radiación / Luz */}
+        <div className="flex flex-col">
+          <div className="flex items-center gap-1.5 mb-1">
+            <Sun className="w-3.5 h-3.5 text-[#71717a]" />
+            <span className="micro-label">Radiación Solar</span>
+          </div>
+          <div className="flex items-baseline gap-1 mt-1">
+            <span className="text-3xl sm:text-4xl font-numeral text-[#18181b]">
+              {hasRad ? radActual!.toFixed(0) : "--"}
+            </span>
+            <span className="text-xs font-mono text-[#a1a1aa]">W/m²</span>
+          </div>
+          <span className="text-[11px] text-[#71717a] mt-1 font-medium">
+            {hasRad ? "Fotocelda en servicio" : "Sin medición lumínica"}
+          </span>
+        </div>
+
+        {/* Métrica 4: Batería */}
+        <div className="flex flex-col">
+          <div className="flex items-center gap-1.5 mb-1">
+            <BatteryMedium className="w-3.5 h-3.5 text-[#71717a]" />
+            <span className="micro-label">Batería de Campo</span>
+          </div>
+          <div className="flex items-baseline gap-1 mt-1">
+            <span className="text-3xl sm:text-4xl font-numeral text-[#18181b]">
+              {hasBat ? batActual!.toFixed(2) : "--"}
+            </span>
+            <span className="text-xs font-mono text-[#a1a1aa]">V</span>
+          </div>
+          <span className="text-[11px] text-[#71717a] mt-1 font-medium">
+            {hasBat ? (batActual! > 3.6 ? "Carga nominal" : "Nivel bajo") : "Sin monitoreo"}
+          </span>
+        </div>
+      </div>
+
+      {/* ── Gráfica de Tendencia Temporal (Recharts minimalista) ── */}
+      <div className="bg-white rounded-2xl border border-[rgba(24,24,27,0.07)] p-5 sm:p-6 shadow-xs">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-4 border-b border-[rgba(24,24,27,0.06)] gap-2 mb-4">
+          <div>
+            <h3 className="text-sm font-semibold tracking-tight text-[#18181b] font-display flex items-center gap-2">
+              <TrendingUp className="w-4 h-4 text-[#71717a]" />
+              Evolución de Suelo y Microclima (24h)
+            </h3>
+            <p className="text-xs text-[#71717a] mt-0.5">
+              Curvas continuas de humedad relativa en sustrato y temperatura ambiental.
+            </p>
+          </div>
+          
+          <div className="text-[11px] font-mono text-[#a1a1aa] self-start sm:self-auto">
+            {telemetria?.resumen_sensores || sensoresTexto || "En espera de telemetría periódica"}
+          </div>
+        </div>
+
+        <div className={`${compacto ? "h-48" : "h-64"} w-full relative pt-2`}>
           {!tieneDatos && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center rounded-xl z-10 text-xs space-y-1 bg-white/80 backdrop-blur-2xs">
-              <AlertCircle className="h-5 w-5 text-gray-400" />
-              <p className="font-semibold text-gray-700">Sin historial registrado</p>
-              <p className="text-[11px] text-gray-400">
-                Las curvas se generarán en cuanto el ESP32 envíe lecturas continuas.
+            <div className="absolute inset-0 flex flex-col items-center justify-center rounded-xl z-10 text-xs bg-white/80 backdrop-blur-2xs">
+              <AlertCircle className="w-5 h-5 text-[#a1a1aa] mb-1.5" />
+              <p className="font-semibold text-[#18181b]">Sin lecturas históricas</p>
+              <p className="text-[11px] text-[#71717a]">
+                La curva se generará al registrar lecturas continuas del microcontrolador ESP32.
               </p>
             </div>
           )}
 
           <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={datosGrafica}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" vertical={false} />
-              <XAxis dataKey="hora" stroke="#9ca3af" fontSize={10} tickLine={false} />
-              <YAxis stroke="#9ca3af" fontSize={10} tickLine={false} domain={[0, "auto"]} />
+            <LineChart data={datosGrafica} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="2 4" stroke="#f0f0f2" vertical={false} />
+              <XAxis
+                dataKey="hora"
+                stroke="#a1a1aa"
+                fontSize={10}
+                tickLine={false}
+                axisLine={false}
+                dy={6}
+              />
+              <YAxis
+                stroke="#a1a1aa"
+                fontSize={10}
+                tickLine={false}
+                axisLine={false}
+                domain={[0, "auto"]}
+              />
               <Tooltip
                 contentStyle={{
                   backgroundColor: "#ffffff",
-                  borderColor: "#e5e7eb",
-                  borderRadius: "0.5rem",
+                  borderColor: "rgba(24,24,27,0.08)",
+                  borderRadius: "10px",
                   fontSize: "12px",
-                  color: "#111827",
-                  boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+                  color: "#18181b",
+                  boxShadow: "0 4px 20px rgba(0,0,0,0.06)",
+                  padding: "8px 12px",
                 }}
+                labelStyle={{ fontWeight: 600, color: "#18181b", marginBottom: "4px" }}
               />
-              <Legend wrapperStyle={{ fontSize: "11px", paddingTop: "6px", color: "#6b7280" }} />
+              <Legend
+                wrapperStyle={{ fontSize: "11px", paddingTop: "12px", color: "#71717a" }}
+                iconType="circle"
+                iconSize={7}
+              />
               <Line
                 type="monotone"
                 dataKey="humedad"
                 name="Humedad Suelo (%)"
-                stroke={BLUE}
+                stroke="#18181b"
                 strokeWidth={2}
                 dot={false}
-                activeDot={{ r: 4, fill: BLUE }}
+                activeDot={{ r: 4, fill: "#18181b" }}
               />
               <Line
                 type="monotone"
                 dataKey="temperatura"
                 name="Temperatura (°C)"
-                stroke="#64748b"
-                strokeWidth={1.75}
+                stroke="#71717a"
+                strokeWidth={1.5}
+                strokeDasharray="4 2"
                 dot={false}
-                activeDot={{ r: 4, fill: "#64748b" }}
+                activeDot={{ r: 4, fill: "#71717a" }}
               />
             </LineChart>
           </ResponsiveContainer>
         </div>
       </div>
-    </section>
+    </div>
   );
 }
