@@ -1,12 +1,17 @@
 "use client";
 
 import React, { useState } from "react";
-import { AlertTriangle, AlertCircle, Info, ShieldAlert, Clock, Filter, ScrollText } from "lucide-react";
+import { AlertTriangle, AlertCircle, Info, ShieldAlert, Clock, ScrollText } from "lucide-react";
 import { EventoItem } from "@/lib/api";
 
 interface EventsSectionProps {
   eventos: EventoItem[];
 }
+
+const BLUE = "#0069e9";
+const BLUE_DARK = "#055bd3";
+const BLUE_LIGHT = "rgba(0, 105, 233, 0.08)";
+const BLUE_BORDER = "rgba(0, 105, 233, 0.22)";
 
 export function EventsSection({ eventos = [] }: EventsSectionProps) {
   const [filtroNivel, setFiltroNivel] = useState<string>("todos");
@@ -38,102 +43,100 @@ export function EventsSection({ eventos = [] }: EventsSectionProps) {
     switch (nivel.toLowerCase()) {
       case "critico":
         return {
-          icono: <ShieldAlert className="h-3.5 w-3.5 text-rose-600" />,
-          clase: "bg-rose-50 text-rose-700 border-rose-200/80",
-          texto: "Alerta Crítica",
+          icono: <ShieldAlert className="h-3.5 w-3.5 text-red-600" />,
+          bg: "#fef2f2",
+          border: "#fecaca",
+          color: "#991b1b",
+          label: "Alerta Crítica",
         };
       case "aviso":
         return {
           icono: <AlertTriangle className="h-3.5 w-3.5 text-amber-600" />,
-          clase: "bg-amber-50 text-amber-700 border-amber-200/80",
-          texto: "Aviso",
+          bg: "#fffbeb",
+          border: "#fde68a",
+          color: "#92400e",
+          label: "Aviso",
         };
       case "error":
         return {
           icono: <AlertCircle className="h-3.5 w-3.5 text-red-600" />,
-          clase: "bg-red-50 text-red-700 border-red-200/80",
-          texto: "Error",
+          bg: "#fef2f2",
+          border: "#fecaca",
+          color: "#991b1b",
+          label: "Error",
         };
       default:
         return {
-          icono: <Info className="h-3.5 w-3.5 text-emerald-600" />,
-          clase: "bg-emerald-50 text-emerald-700 border-emerald-200/80",
-          texto: "Info",
+          icono: <Info className="h-3.5 w-3.5 text-[#0069e9]" />,
+          bg: BLUE_LIGHT,
+          border: BLUE_BORDER,
+          color: BLUE_DARK,
+          label: "Info",
         };
     }
   };
 
+  type FilterBtnProps = {
+    label: string;
+    value: string;
+  };
+
+  function FilterBtn({ label, value }: FilterBtnProps) {
+    const isActive = filtroNivel === value;
+    return (
+      <button
+        onClick={() => setFiltroNivel(value)}
+        className="px-2.5 py-1 rounded-md text-xs font-semibold transition-colors"
+        style={{
+          background: isActive ? BLUE : "transparent",
+          color: isActive ? "#ffffff" : "#6b7280",
+        }}
+      >
+        {label}
+      </button>
+    );
+  }
+
   return (
-    <section className="organic-card p-6 sm:p-7">
+    <section className="dash-card p-6 sm:p-7">
       {/* Encabezado */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-5 border-b border-stone-100 gap-3">
+      <div className="section-header sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <div className="flex items-center space-x-2.5">
-            <h2 className="text-xl font-bold text-stone-900 tracking-tight">
+          <div className="flex items-center gap-2.5">
+            <h2
+              className="text-xl font-bold tracking-tight text-gray-900"
+              style={{ letterSpacing: "-0.02em" }}
+            >
               Bitácora de Eventos y Detecciones
             </h2>
-            <span className="text-xs px-2.5 py-0.5 rounded-full bg-stone-100 text-stone-700 font-medium flex items-center gap-1.5">
-              <ScrollText className="h-3 w-3 text-stone-600" />
+            <span className="badge-blue">
+              <ScrollText className="h-3 w-3" />
               Auditoría
             </span>
           </div>
-          <p className="text-xs text-stone-500 mt-1">
+          <p className="text-xs mt-1 text-gray-500">
             Registro cronológico de inferencias de visión artificial, reportes automáticos y conectividad de hardware.
           </p>
         </div>
 
         {/* Filtros de severidad */}
-        <div className="flex items-center space-x-1.5 bg-stone-100/80 p-1 rounded-xl self-start sm:self-auto text-xs">
-          <button
-            onClick={() => setFiltroNivel("todos")}
-            className={`px-2.5 py-1 rounded-lg font-medium transition-all ${
-              filtroNivel === "todos"
-                ? "bg-white text-stone-900 shadow-sm"
-                : "text-stone-500 hover:text-stone-800"
-            }`}
-          >
-            Todos ({eventos.length})
-          </button>
-          <button
-            onClick={() => setFiltroNivel("critico")}
-            className={`px-2.5 py-1 rounded-lg font-medium transition-all ${
-              filtroNivel === "critico"
-                ? "bg-rose-600 text-white shadow-sm"
-                : "text-rose-700 hover:bg-rose-50"
-            }`}
-          >
-            Alertas
-          </button>
-          <button
-            onClick={() => setFiltroNivel("aviso")}
-            className={`px-2.5 py-1 rounded-lg font-medium transition-all ${
-              filtroNivel === "aviso"
-                ? "bg-amber-600 text-white shadow-sm"
-                : "text-amber-700 hover:bg-amber-50"
-            }`}
-          >
-            Avisos
-          </button>
-          <button
-            onClick={() => setFiltroNivel("info")}
-            className={`px-2.5 py-1 rounded-lg font-medium transition-all ${
-              filtroNivel === "info"
-                ? "bg-emerald-700 text-white shadow-sm"
-                : "text-emerald-700 hover:bg-emerald-50"
-            }`}
-          >
-            Info
-          </button>
+        <div className="flex items-center gap-1 p-1 rounded-lg bg-gray-100 border border-gray-200 self-start sm:self-auto">
+          <FilterBtn label={`Todos (${eventos.length})`} value="todos" />
+          <FilterBtn label="Alertas" value="critico" />
+          <FilterBtn label="Avisos" value="aviso" />
+          <FilterBtn label="Info" value="info" />
         </div>
       </div>
 
       {/* Lista de Sucesos */}
-      <div className="mt-5 space-y-2.5 max-h-72 overflow-y-auto pr-1">
+      <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
         {eventosFiltrados.length === 0 ? (
-          <div className="p-8 text-center bg-stone-50/70 border border-stone-100 rounded-2xl">
-            <Clock className="h-6 w-6 text-stone-400 mx-auto mb-2" />
-            <p className="text-xs font-semibold text-stone-700">Sin eventos en la bitácora</p>
-            <p className="text-[11px] text-stone-400 mt-0.5">
+          <div className="p-8 text-center rounded-xl border border-gray-200 bg-gray-50">
+            <Clock className="h-6 w-6 mx-auto mb-2 text-gray-400" />
+            <p className="text-xs font-semibold text-gray-600">
+              Sin eventos en la bitácora
+            </p>
+            <p className="text-[11px] mt-0.5 text-gray-400">
               Los sucesos fitosanitarios y cambios de estado de campo se reflejarán aquí en tiempo real.
             </p>
           </div>
@@ -143,32 +146,37 @@ export function EventsSection({ eventos = [] }: EventsSectionProps) {
             return (
               <div
                 key={ev.id}
-                className="p-3.5 rounded-2xl bg-white border border-stone-200/70 hover:border-stone-300 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-[0_1px_2px_rgba(0,0,0,0.02)]"
+                className="p-3.5 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 border border-gray-200 bg-white hover:border-gray-300 transition-colors"
               >
-                <div className="flex items-start space-x-3">
-                  <div className={`p-1.5 rounded-xl border mt-0.5 sm:mt-0 ${badge.clase}`}>
+                <div className="flex items-start gap-3">
+                  <div
+                    className="p-1.5 rounded-lg border mt-0.5 sm:mt-0"
+                    style={{ background: badge.bg, borderColor: badge.border }}
+                  >
                     {badge.icono}
                   </div>
                   <div>
-                    <div className="flex items-center space-x-2">
-                      <span className="text-xs font-bold text-stone-900">{ev.mensaje}</span>
-                      <span className="text-[10px] font-mono uppercase bg-stone-100 text-stone-600 px-1.5 py-0.5 rounded border border-stone-200">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-xs font-semibold text-gray-900">
+                        {ev.mensaje}
+                      </span>
+                      <span className="text-[10px] font-mono uppercase px-1.5 py-0.5 rounded bg-gray-100 border border-gray-200 text-gray-500">
                         {ev.origen}
                       </span>
                     </div>
                     {ev.detalles && Object.keys(ev.detalles).length > 0 && (
-                      <p className="text-[11px] text-stone-500 mt-0.5 line-clamp-1">
-                        {JSON.stringify(ev.detalles).replace(/[{}\"]/g, " ").trim()}
+                      <p className="text-[11px] mt-0.5 text-gray-500 line-clamp-1">
+                        {JSON.stringify(ev.detalles).replace(/[{}"]/g, " ").trim()}
                       </p>
                     )}
                   </div>
                 </div>
 
                 <div className="text-right self-end sm:self-auto shrink-0">
-                  <div className="text-xs font-mono font-medium text-stone-600">
+                  <div className="text-xs font-mono font-medium text-gray-600">
                     {formatearFechaHora(ev.creado_en)}
                   </div>
-                  <div className="text-[10px] text-stone-400">
+                  <div className="text-[10px] text-gray-400">
                     {formatearFechaDia(ev.creado_en)}
                   </div>
                 </div>

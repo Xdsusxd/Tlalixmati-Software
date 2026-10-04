@@ -9,6 +9,7 @@ import { TelemetrySection } from "@/components/TelemetrySection";
 import { EventsSection } from "@/components/EventsSection";
 import { ReportsSection } from "@/components/ReportsSection";
 import { AccessGate } from "@/components/AccessGate";
+import { LoadingHeroStage } from "@/components/LoadingHeroStage";
 import {
   api,
   TlahuicoleEstado,
@@ -19,7 +20,10 @@ import {
   CultivoInfo,
   VisionEstadoResponse,
 } from "@/lib/api";
-import { Sprout } from "lucide-react";
+
+const BLUE = "#0069e9";
+const BLUE_LIGHT = "rgba(0, 105, 233, 0.08)";
+const BLUE_BORDER = "rgba(0, 105, 233, 0.22)";
 
 export default function DashboardPage() {
   const [tlahuicole, setTlahuicole] = useState<TlahuicoleEstado | null>(null);
@@ -37,7 +41,6 @@ export default function DashboardPage() {
 
   const verificarSesionYCargarDatos = async () => {
     try {
-      // 1. Primero comprobar autenticación obligatoria
       const authRes = await api.getAuthEstado();
       const estaAutenticado = authRes.autenticado;
       setAutenticado(estaAutenticado);
@@ -45,7 +48,6 @@ export default function DashboardPage() {
       const saludRes = await api.getSalud();
       setApiConectada(saludRes !== null);
 
-      // 2. Si está autenticado, cargar datos privados del cultivo
       if (estaAutenticado) {
         const [
           tlahuicoleRes,
@@ -84,8 +86,6 @@ export default function DashboardPage() {
     } catch {
       setApiConectada(false);
       setAutenticado(false);
-    } finally {
-      setCargando(false);
     }
   };
 
@@ -95,13 +95,20 @@ export default function DashboardPage() {
     return () => clearInterval(interval);
   }, []);
 
-  // Animación suave de entrada con GSAP para el tablero desbloqueado
+  // Animación de entrada con GSAP para las secciones del dashboard
   useEffect(() => {
     if (!cargando && autenticado && containerRef.current) {
+      const children = containerRef.current.children;
       gsap.fromTo(
-        containerRef.current.children,
-        { opacity: 0, y: 12 },
-        { opacity: 1, y: 0, duration: 0.45, stagger: 0.08, ease: "power2.out" }
+        children,
+        { opacity: 0, y: 14 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.4,
+          stagger: 0.08,
+          ease: "power2.out",
+        }
       );
     }
   }, [cargando, autenticado]);
@@ -118,41 +125,31 @@ export default function DashboardPage() {
     setVision(null);
   };
 
-
-  // 1. Estado de carga inicial
+  // 1. Pantalla de Entrada / Loading Hero Stage (solo se muestra al ingresar por primera vez)
   if (cargando) {
     return (
-      <div className="min-h-screen bg-[#F5F5F0] flex flex-col items-center justify-center p-4">
-        <div className="flex flex-col items-center space-y-3">
-          <div className="h-11 w-11 rounded-2xl bg-emerald-900 text-white flex items-center justify-center shadow-md animate-pulse">
-            <Sprout className="h-6 w-6 text-emerald-300" />
-          </div>
-          <span className="text-xs font-semibold text-stone-600 tracking-wide uppercase">
-            Verificando credenciales de acceso...
-          </span>
-        </div>
-      </div>
+      <LoadingHeroStage
+        onComplete={() => setCargando(false)}
+        mensajeCarga="Iniciando plataforma Tlalixmati..."
+      />
     );
   }
 
-  // 2. Si NO está autenticado: BLOQUEO ESTRICTO DEL TABLERO
-  // No se renderiza la cámara, ni la telemetría, ni los reportes de campo
+  // 2. Control de Acceso (si no está autenticado)
   if (!autenticado) {
     return (
       <AccessGate
         apiConectada={apiConectada}
         onLoginSuccess={() => {
-          setCargando(true);
           verificarSesionYCargarDatos();
         }}
       />
     );
   }
 
-  // 3. Tablero Desbloqueado (Usuario Autenticado)
+  // 3. Tablero Desbloqueado y Autenticado (Minimalista Azul)
   return (
-    <div className="min-h-screen bg-[#FBFBF9] flex flex-col">
-      {/* Barra de Navegación Superior */}
+    <div className="min-h-screen flex flex-col bg-[#f8f9fa] text-gray-900 font-sans">
       <Navbar
         apiConectada={apiConectada}
         autenticado={autenticado}
@@ -160,23 +157,38 @@ export default function DashboardPage() {
         onLogout={handleLogout}
       />
 
-      {/* Contenedor Principal */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-7">
-        
         {/* Encabezado del Tablero */}
         <div className="mb-7">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div>
-              <h2 className="text-2xl font-bold tracking-tight text-stone-900 sm:text-3xl">
-                Monitoreo del Cultivo
-              </h2>
-              <p className="mt-1 text-xs sm:text-sm text-stone-600">
+              <div className="flex items-center gap-2.5">
+                <h2
+                  className="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900"
+                  style={{ letterSpacing: "-0.03em" }}
+                >
+                  Monitoreo del Cultivo
+                </h2>
+                <span className="badge-blue">EN VIVO</span>
+              </div>
+              <p className="mt-1 text-xs sm:text-sm text-gray-500">
                 Supervisión agronómica en tiempo real, imágenes ópticas de campo y auditoría de eventos.
               </p>
             </div>
-            
-            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200/60 text-xs font-medium self-start sm:self-auto">
-              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+
+            {/* Badge de cultivo activo */}
+            <div
+              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold self-start sm:self-auto border"
+              style={{
+                background: BLUE_LIGHT,
+                borderColor: BLUE_BORDER,
+                color: "#055bd3",
+              }}
+            >
+              <span
+                className="h-2 w-2 rounded-full animate-pulse"
+                style={{ background: BLUE }}
+              />
               <span>
                 {cultivo
                   ? `${cultivo.nombre}${cultivo.variedad ? ` · ${cultivo.variedad}` : ""}`
@@ -186,39 +198,33 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Módulos Esenciales del Cultivo */}
-        <div ref={containerRef} className="space-y-6">
-          
-          {/* 1. Estado del Equipo de Campo (Tlahuicole) */}
+        {/* Módulos Principales del Tablero */}
+        <div ref={containerRef} className="space-y-5">
           <TlahuicoleSection tlahuicole={tlahuicole} />
 
-          {/* 2. Cámara en Tiempo Real del Cultivo */}
           <LiveCameraSection
             analisisTexto={tlahuicole?.analisis || "Sin anomalías"}
             vision={vision}
           />
 
-
-          {/* 3. Condiciones del Terreno y Clima (Sensores) */}
           <TelemetrySection
             sensoresTexto={tlahuicole?.sensores || "Sin datos"}
             telemetria={telemetria}
             historial={historial}
           />
 
-          {/* 4. Bitácora de Eventos e Incidencias Fitosanitarias */}
           <EventsSection eventos={eventos} />
 
-          {/* 5. Informes Agronómicos en PDF (Automáticos y Manuales con Supabase) */}
           <ReportsSection reportesIniciales={reportes} />
-
         </div>
       </main>
 
       {/* Pie de Página */}
-      <footer className="border-t border-stone-200/80 bg-white/70 py-5 mt-12 text-xs text-stone-500 text-center">
+      <footer className="border-t border-gray-200 bg-white py-5 mt-10 text-xs text-center text-gray-400">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
-          <span>Tlalixmati — Plataforma de Monitoreo Agrícola</span>
+          <span>
+            Tlalixmati<sup className="ml-0.5 text-[#0069e9]">TM</sup> — Plataforma de Monitoreo y Robótica Agrícola
+          </span>
           <span>Unidad de Campo: Tlahuicole (ESP32 + Raspberry Pi)</span>
         </div>
       </footer>
