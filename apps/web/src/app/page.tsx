@@ -7,13 +7,11 @@ import { TlahuicoleSection } from "@/components/TlahuicoleSection";
 import { LiveCameraSection } from "@/components/LiveCameraSection";
 import { TelemetrySection } from "@/components/TelemetrySection";
 import { ReportsSection } from "@/components/ReportsSection";
-import { GpuDiagnosticCard } from "@/components/GpuDiagnosticCard";
 import { LoginModal } from "@/components/LoginModal";
-import { api, GPUInfo, TlahuicoleEstado, ReporteInfoResponse } from "@/lib/api";
+import { api, TlahuicoleEstado, ReporteInfoResponse } from "@/lib/api";
 
 export default function DashboardPage() {
   const [tlahuicole, setTlahuicole] = useState<TlahuicoleEstado | null>(null);
-  const [gpu, setGpu] = useState<GPUInfo | null>(null);
   const [reportes, setReportes] = useState<ReporteInfoResponse[]>([]);
   const [apiConectada, setApiConectada] = useState<boolean>(false);
   const [autenticado, setAutenticado] = useState<boolean>(false);
@@ -24,17 +22,15 @@ export default function DashboardPage() {
 
   const cargarDatos = async () => {
     try {
-      const [saludRes, tlahuicoleRes, gpuRes, authRes, reportesRes] = await Promise.all([
+      const [saludRes, tlahuicoleRes, authRes, reportesRes] = await Promise.all([
         api.getSalud(),
         api.getTlahuicoleEstado(),
-        api.getGpuInfo(),
         api.getAuthEstado(),
         api.getReportes(),
       ]);
 
       setApiConectada(saludRes !== null);
       if (tlahuicoleRes) setTlahuicole(tlahuicoleRes);
-      if (gpuRes) setGpu(gpuRes);
       setAutenticado(authRes.autenticado);
       setReportes(reportesRes);
     } catch {
@@ -46,17 +42,17 @@ export default function DashboardPage() {
 
   useEffect(() => {
     cargarDatos();
-    const interval = setInterval(cargarDatos, 12000); // Refresco suave
+    const interval = setInterval(cargarDatos, 12000);
     return () => clearInterval(interval);
   }, []);
 
-  // Animación de entrada GSAP
+  // Animación suave de entrada con GSAP
   useEffect(() => {
     if (!cargando && containerRef.current) {
       gsap.fromTo(
         containerRef.current.children,
-        { opacity: 0, y: 15 },
-        { opacity: 1, y: 0, duration: 0.45, stagger: 0.08, ease: "power2.out" }
+        { opacity: 0, y: 10 },
+        { opacity: 1, y: 0, duration: 0.4, stagger: 0.07, ease: "power2.out" }
       );
     }
   }, [cargando]);
@@ -67,8 +63,8 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
-      {/* Barra de Navegación */}
+    <div className="min-h-screen bg-[#FBFBF9] flex flex-col">
+      {/* Barra de Navegación Superior */}
       <Navbar
         apiConectada={apiConectada}
         autenticado={autenticado}
@@ -77,55 +73,54 @@ export default function DashboardPage() {
       />
 
       {/* Contenedor Principal */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-7">
         
-        {/* Banner de Contexto */}
-        <div className="mb-8">
-          <div className="flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-2">
+        {/* Encabezado del Tablero */}
+        <div className="mb-7">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
             <div>
-              <h2 className="text-3xl font-black tracking-tight text-stone-900 sm:text-4xl uppercase">
-                Panel de Monitoreo Agrícola
+              <h2 className="text-2xl font-bold tracking-tight text-stone-900 sm:text-3xl">
+                Monitoreo del Cultivo
               </h2>
-              <p className="mt-1 text-sm font-semibold text-stone-600 max-w-2xl">
-                Supervisión fotográfica en vivo, telemetría y diagnósticos de la unidad de campo Tlahuicole.
+              <p className="mt-1 text-xs sm:text-sm text-stone-600">
+                Supervisión agronómica en tiempo real, imágenes de campo y generación de informes técnicos.
               </p>
             </div>
-            <div className="neo-badge text-xs px-3.5 py-1 bg-white text-stone-900 self-start sm:self-auto">
-              Operación Autónoma
+            
+            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200/60 text-xs font-medium self-start sm:self-auto">
+              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span>Cultivo en Seguimiento Activo</span>
             </div>
           </div>
         </div>
 
-        {/* Rejilla de Módulos Neo-Brutalistas */}
-        <div ref={containerRef} className="space-y-8">
+        {/* Módulos Esenciales del Cultivo */}
+        <div ref={containerRef} className="space-y-6">
           
-          {/* 1. Unidad Física de Campo Tlahuicole (ESP32 + Raspberry Pi + Cámara) */}
+          {/* 1. Estado del Equipo de Campo (Tlahuicole) */}
           <TlahuicoleSection tlahuicole={tlahuicole} />
 
-          {/* 2. Cámara en Tiempo Real (Stream MJPEG + Inferencia IA) */}
-          <LiveCameraSection analisisTexto={tlahuicole?.analisis || "Sin resultados"} />
+          {/* 2. Cámara en Tiempo Real del Cultivo */}
+          <LiveCameraSection analisisTexto={tlahuicole?.analisis || "Sin anomalías"} />
 
-          {/* 3. Métricas y Telemetría de Sensores de Suelo y Ambiente */}
+          {/* 3. Condiciones del Terreno y Clima (Sensores) */}
           <TelemetrySection sensoresTexto={tlahuicole?.sensores || "Sin datos"} />
 
-          {/* 4. Informes y Reportes Agronómicos en PDF con Fases e Imágenes */}
+          {/* 4. Informes Agronómicos en PDF (Automáticos y Manuales con Supabase) */}
           <ReportsSection reportesIniciales={reportes} />
-
-          {/* 5. Aceleración por Hardware (GPU NVIDIA RTX 4050 / PyTorch) */}
-          <GpuDiagnosticCard gpu={gpu} />
 
         </div>
       </main>
 
       {/* Pie de Página */}
-      <footer className="border-t-2 border-stone-900 bg-white py-6 mt-16 text-xs font-bold text-stone-600">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <span>TLALIXMATI — Sistema Inteligente de Monitoreo Agrícola</span>
-          <span className="font-mono text-stone-500">Unidad de Campo: Tlahuicole</span>
+      <footer className="border-t border-stone-200/80 bg-white/70 py-5 mt-12 text-xs text-stone-500 text-center">
+        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+          <span>Tlalixmati — Plataforma de Monitoreo Agrícola</span>
+          <span>Unidad de Campo: Tlahuicole (ESP32 + Raspberry Pi)</span>
         </div>
       </footer>
 
-      {/* Modal de Acceso por Contraseña Global */}
+      {/* Modal de Acceso */}
       <LoginModal
         isOpen={isLoginOpen}
         onClose={() => setIsLoginOpen(false)}

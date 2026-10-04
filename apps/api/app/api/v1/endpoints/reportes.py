@@ -1,5 +1,5 @@
 """
-Endpoints para la consulta, generación y descarga de reportes PDF (/api/v1/reportes).
+Endpoints para la gestión, generación y descarga de reportes PDF (/api/v1/reportes).
 """
 
 from typing import List, Optional
@@ -12,18 +12,32 @@ router = APIRouter(prefix="/reportes", tags=["Reportes Agronómicos"])
 
 
 class GenerarReporteRequest(BaseModel):
-    titulo: Optional[str] = Field(default="Reporte Agronómico Periódico", description="Título del informe")
+    titulo: Optional[str] = Field(default="Informe del Cultivo", description="Título del informe")
     notas: Optional[str] = Field(default="", description="Observaciones adicionales de campo")
+    origen: Optional[str] = Field(default="manual", description="Origen: 'manual' o 'automatico'")
+    alerta_detectada: Optional[bool] = Field(default=False, description="Indica si se detectó anomalía")
+    detalle_anomalia: Optional[str] = Field(default="", description="Descripción de la anomalía")
+
+
+class AlertaAutomaticaRequest(BaseModel):
+    detalle_anomalia: Optional[str] = Field(
+        default="Detección óptica: Hojas marchitas con signos visibles de clorosis.",
+        description="Descripción de la anomalía observada en la planta"
+    )
 
 
 class ReporteInfoResponse(BaseModel):
     id: str
     titulo: str
     generado_en: str
+    origen: str
+    alerta_detectada: bool
     tamano_bytes: int
     nombre_archivo: str
     fases_resumen: str
     url_descarga: str
+    supabase_url: Optional[str] = None
+    almacenado_en_supabase: bool = False
 
 
 @router.get(
@@ -43,14 +57,38 @@ async def listar_reportes():
     response_model=ReporteInfoResponse,
     status_code=status.HTTP_201_CREATED,
     summary="Generar nuevo reporte en PDF",
-    description="Crea un reporte agronómico que incluye fases por defecto, metadatos y la captura óptica más reciente."
+    description="Crea un reporte agronómico manual o automático, subiéndolo a Supabase Storage."
 )
 async def generar_reporte(datos: Optional[GenerarReporteRequest] = None):
     """Genera y almacena un nuevo PDF agronómico."""
     srv = get_reporte_service()
-    titulo = datos.titulo if datos and datos.titulo else "Reporte Agronómico Periódico"
+    titulo = datos.titulo if datos and datos.titulo else "Informe del Cultivo"
     notas = datos.notas if datos and datos.notas else ""
-    return srv.generar_reporte(titulo=titulo, notas=notas)
+    origen = datos.origen if datos and datos.origen else "manual"
+    alerta = datos.alerta_detectada if datos else False
+    detalle = datos.detalle_anomalia if datos and datos.detalle_anomalia else ""
+
+    return srv.generar_reporte(
+        titulo=titulo,
+        notas=notas,
+        origen=origen,
+        alerta_detectada=alerta,
+        detalle_anomalia=detalle,
+    )
+
+
+@router.post(
+    "/alerta-automatica",
+    response_model=ReporteInfoResponse,
+    status_code=status.HTTP_201_CREATED,
+    summary="Disparo automático de reporte por planta en mal estado",
+    description="Genera de manera automática un informe de alerta agronómica cuando se detecta una anomalía vegetal."
+)
+async def disparar_alerta_automatica(datos: Optional[AlertaAutomaticaRequest] = None):
+    """Dispara la generación automática por detección de planta en mal estado."""
+    srv = get_reporte_service()
+    detalle = datos.detalle_anomalia if datos and datos.detalle_anomalia else "Signos de estrés foliar y deficiencia hídrica detectados en campo."
+    return srv.disparar_alerta_automatica(detalle=detalle)
 
 
 @router.get(
@@ -63,7 +101,7 @@ async def descargar_reporte_reciente():
     srv = get_reporte_service()
     reportes = srv.listar_reportes()
     if not reportes:
-        nuevo = srv.generar_reporte(titulo="Reporte Agronómico Reciente")
+        nuevo = srv.generar_reporte(titulo="Informe del Cultivo Reciente")
         reporte_id = nuevo["id"]
     else:
         reporte_id = reportes[0]["id"]

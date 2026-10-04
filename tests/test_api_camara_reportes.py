@@ -55,10 +55,28 @@ def test_generar_y_descargar_nuevo_reporte_pdf(cliente: TestClient):
     assert res_gen.status_code == 201
     nuevo_reporte = res_gen.json()
     reporte_id = nuevo_reporte["id"]
-    assert "reporte_tlalixmati_" in nuevo_reporte["nombre_archivo"]
+    assert "reporte_" in nuevo_reporte["nombre_archivo"]
 
     # 2. Descargar el reporte en PDF
     res_down = cliente.get(f"/api/v1/reportes/{reporte_id}/descargar")
     assert res_down.status_code == 200
     assert res_down.headers["content-type"] == "application/pdf"
     assert res_down.content.startswith(b"%PDF-")
+
+
+def test_disparo_automatico_alerta_planta_en_mal_estado(cliente: TestClient):
+    """Verifica que el sistema genere automáticamente un PDF de alerta si se detecta planta en mal estado."""
+    payload = {"detalle_anomalia": "Marchitamiento foliar y estrés hídrico severo detectado."}
+    res = cliente.post("/api/v1/reportes/alerta-automatica", json=payload)
+    assert res.status_code == 201
+    alerta = res.json()
+    assert alerta["origen"] == "automatico"
+    assert alerta["alerta_detectada"] is True
+    assert "ALERTA" in alerta["fases_resumen"]
+
+    # Descarga directa del reporte más reciente (que ahora es la alerta)
+    res_rec = cliente.get("/api/v1/reportes/reciente/descargar")
+    assert res_rec.status_code == 200
+    assert res_rec.headers["content-type"] == "application/pdf"
+    assert res_rec.content.startswith(b"%PDF-")
+
