@@ -1,0 +1,6 @@
+# Dependencias para el servicio Edge en Raspberry Pi
+pyserial>=3.5
+httpx>=0.27.0
+pydantic>=2.6.0
+python-dotenv>=1.0.1
+Pillow>=10.0.0
