@@ -35,7 +35,7 @@ class AuthResponse(BaseModel):
     summary="Iniciar sesión con contraseña global",
     description="Valida la contraseña global de la plataforma y establece una cookie HttpOnly segura."
 )
-async def login(datos: LoginRequest, response: Response):
+async def login(datos: LoginRequest, request: Request, response: Response):
     """Verifica el hash bcrypt de la contraseña y genera la cookie de sesión."""
     if not verificar_password_global(datos.password):
         raise HTTPException(
@@ -45,6 +45,14 @@ async def login(datos: LoginRequest, response: Response):
 
     valor_cookie = crear_cookie_sesion()
     
+    # Detección automática de HTTPS para despliegue en dominio público
+    import os
+    es_https = (
+        request.headers.get("x-forwarded-proto", "").lower() == "https" or
+        request.url.scheme == "https" or
+        os.getenv("COOKIE_SECURE", "false").lower() in ("true", "1")
+    )
+
     # Cookie HttpOnly, SameSite Lax, duración 7 días
     response.set_cookie(
         key=NOMBRE_COOKIE_SESION,
@@ -52,7 +60,7 @@ async def login(datos: LoginRequest, response: Response):
         max_age=DURACION_SESION_SEGUNDOS,
         httponly=True,
         samesite="lax",
-        secure=False, # True en HTTPS / producción
+        secure=es_https,
         path="/"
     )
 

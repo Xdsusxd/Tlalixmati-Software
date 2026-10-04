@@ -1,0 +1,61 @@
+# Orquestación de Producción con Proxy Inverso y Dominio Web
+services:
+  api:
+    build:
+      context: ./apps/api
+      dockerfile: Dockerfile
+    restart: always
+    volumes:
+      - ./.env:/app/.env:ro
+    environment:
+      - PYTHONUNBUFFERED=1
+    networks:
+      - tlalixmati-net
+
+  web:
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile
+    restart: always
+    environment:
+      - NODE_ENV=production
+    depends_on:
+      - api
+    networks:
+      - tlalixmati-net
+
+  proxy:
+    image: nginx:1.27-alpine
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - DOMAIN_NAME=${DOMAIN_NAME:-localhost}
+    volumes:
+      - ./deploy/nginx/templates:/etc/nginx/templates:ro
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/www/certbot
+    depends_on:
+      - api
+      - web
+    networks:
+      - tlalixmati-net
+
+  certbot:
+    image: certbot/certbot:latest
+    profiles: ["ssl"]
+    volumes:
+      - certbot-etc:/etc/letsencrypt
+      - certbot-var:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12d & wait $${!}; done;'"
+    networks:
+      - tlalixmati-net
+
+networks:
+  tlalixmati-net:
+    driver: bridge
+
+volumes:
+  certbot-etc:
+  certbot-var:

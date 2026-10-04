@@ -7,68 +7,111 @@ import { TlahuicoleSection } from "@/components/TlahuicoleSection";
 import { LiveCameraSection } from "@/components/LiveCameraSection";
 import { TelemetrySection } from "@/components/TelemetrySection";
 import { ReportsSection } from "@/components/ReportsSection";
-import { LoginModal } from "@/components/LoginModal";
+import { AccessGate } from "@/components/AccessGate";
 import { api, TlahuicoleEstado, ReporteInfoResponse } from "@/lib/api";
+import { Sprout } from "lucide-react";
 
 export default function DashboardPage() {
   const [tlahuicole, setTlahuicole] = useState<TlahuicoleEstado | null>(null);
   const [reportes, setReportes] = useState<ReporteInfoResponse[]>([]);
   const [apiConectada, setApiConectada] = useState<boolean>(false);
   const [autenticado, setAutenticado] = useState<boolean>(false);
-  const [isLoginOpen, setIsLoginOpen] = useState<boolean>(false);
   const [cargando, setCargando] = useState<boolean>(true);
 
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const cargarDatos = async () => {
+  const verificarSesionYCargarDatos = async () => {
     try {
-      const [saludRes, tlahuicoleRes, authRes, reportesRes] = await Promise.all([
-        api.getSalud(),
-        api.getTlahuicoleEstado(),
-        api.getAuthEstado(),
-        api.getReportes(),
-      ]);
+      // 1. Primero comprobar autenticación obligatoria
+      const authRes = await api.getAuthEstado();
+      const estaAutenticado = authRes.autenticado;
+      setAutenticado(estaAutenticado);
 
+      const saludRes = await api.getSalud();
       setApiConectada(saludRes !== null);
-      if (tlahuicoleRes) setTlahuicole(tlahuicoleRes);
-      setAutenticado(authRes.autenticado);
-      setReportes(reportesRes);
+
+      // 2. Si está autenticado, cargar datos privados del cultivo
+      if (estaAutenticado) {
+        const [tlahuicoleRes, reportesRes] = await Promise.all([
+          api.getTlahuicoleEstado(),
+          api.getReportes(),
+        ]);
+        if (tlahuicoleRes) setTlahuicole(tlahuicoleRes);
+        setReportes(reportesRes);
+      } else {
+        setTlahuicole(null);
+        setReportes([]);
+      }
     } catch {
       setApiConectada(false);
+      setAutenticado(false);
     } finally {
       setCargando(false);
     }
   };
 
   useEffect(() => {
-    cargarDatos();
-    const interval = setInterval(cargarDatos, 12000);
+    verificarSesionYCargarDatos();
+    const interval = setInterval(verificarSesionYCargarDatos, 12000);
     return () => clearInterval(interval);
   }, []);
 
-  // Animación suave de entrada con GSAP
+  // Animación suave de entrada con GSAP para el tablero desbloqueado
   useEffect(() => {
-    if (!cargando && containerRef.current) {
+    if (!cargando && autenticado && containerRef.current) {
       gsap.fromTo(
         containerRef.current.children,
-        { opacity: 0, y: 10 },
-        { opacity: 1, y: 0, duration: 0.4, stagger: 0.07, ease: "power2.out" }
+        { opacity: 0, y: 12 },
+        { opacity: 1, y: 0, duration: 0.45, stagger: 0.08, ease: "power2.out" }
       );
     }
-  }, [cargando]);
+  }, [cargando, autenticado]);
 
   const handleLogout = async () => {
     await api.logout();
     setAutenticado(false);
+    setTlahuicole(null);
+    setReportes([]);
   };
 
+  // 1. Estado de carga inicial
+  if (cargando) {
+    return (
+      <div className="min-h-screen bg-[#F5F5F0] flex flex-col items-center justify-center p-4">
+        <div className="flex flex-col items-center space-y-3">
+          <div className="h-11 w-11 rounded-2xl bg-emerald-900 text-white flex items-center justify-center shadow-md animate-pulse">
+            <Sprout className="h-6 w-6 text-emerald-300" />
+          </div>
+          <span className="text-xs font-semibold text-stone-600 tracking-wide uppercase">
+            Verificando credenciales de acceso...
+          </span>
+        </div>
+      </div>
+    );
+  }
+
+  // 2. Si NO está autenticado: BLOQUEO ESTRICTO DEL TABLERO
+  // No se renderiza la cámara, ni la telemetría, ni los reportes de campo
+  if (!autenticado) {
+    return (
+      <AccessGate
+        apiConectada={apiConectada}
+        onLoginSuccess={() => {
+          setCargando(true);
+          verificarSesionYCargarDatos();
+        }}
+      />
+    );
+  }
+
+  // 3. Tablero Desbloqueado (Usuario Autenticado)
   return (
     <div className="min-h-screen bg-[#FBFBF9] flex flex-col">
       {/* Barra de Navegación Superior */}
       <Navbar
         apiConectada={apiConectada}
         autenticado={autenticado}
-        onOpenLogin={() => setIsLoginOpen(true)}
+        onOpenLogin={() => {}}
         onLogout={handleLogout}
       />
 
@@ -119,13 +162,6 @@ export default function DashboardPage() {
           <span>Unidad de Campo: Tlahuicole (ESP32 + Raspberry Pi)</span>
         </div>
       </footer>
-
-      {/* Modal de Acceso */}
-      <LoginModal
-        isOpen={isLoginOpen}
-        onClose={() => setIsLoginOpen(false)}
-        onSuccess={() => setAutenticado(true)}
-      />
     </div>
   );
 }

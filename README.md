@@ -1,223 +1,138 @@
 # Tlalixmati
 
-## Plataforma Inteligente de Monitoreo Agrícola
+> **Plataforma Inteligente de Monitoreo Agrícola y Diagnóstico Fitosanitario**
 
-**Tlalixmati** es una plataforma integral diseñada para la observación, análisis y gestión de sistemas agrícolas mediante tecnología de vanguardia. Combina hardware de campo, visión artificial e inteligencia artificial para proporcionar información en tiempo real sobre el estado de los cultivos y el entorno.
+Tlalixmati es una solución integral que une software en la nube, visión artificial por computadora y hardware embebido en campo para la supervisión agronómica de cultivos. Su objetivo es proporcionar diagnósticos visuales precisos, telemetría ambiental fidedigna y generación automática de alertas cuando se detecta estrés o deterioro vegetal.
 
-La plataforma abarca desde los dispositivos físicos ubicados en el campo, conocidos lógicamente como Tlahuicole, hasta una infraestructura en la nube y un panel de control avanzado que permite la visualización y análisis de los datos recolectados y las imágenes procesadas.
-
-El objetivo de Tlalixmati es fusionar la ciencia de datos, el aprendizaje automático y la ingeniería electrónica para optimizar las decisiones agrícolas basadas en información precisa, medible y constante, eliminando suposiciones y maximizando la eficiencia.
+El sistema de campo, denominado **Tlahuícole**, opera como una agrupación lógica de componentes físicos reales (microcontrolador **ESP32** para sensores de suelo y ambiente, y **Raspberry Pi** para captura de video de alta definición e inferencia en el borde). Su identidad proviene directamente de los identificadores de silicio de cada dispositivo (MAC en eFuses y serial de CPU), eliminando identificadores inventados o entidades ficticias.
 
 ---
 
-## ¿Qué es Tlalixmati?
+## 1. Arquitectura del Sistema
 
-Tlalixmati representa la totalidad del sistema. Es el ecosistema completo compuesto por:
-*   **Hardware de campo:** Sensores, actuadores, microcontroladores y computadoras de placa reducida.
-*   **Software de borde (Edge):** Procesamiento local de imágenes y lectura de datos.
-*   **Backend y API:** Servicios para la recepción, enrutamiento y almacenamiento de la información.
-*   **Infraestructura Cloud:** Bases de datos, almacenamiento de imágenes y servicios alojados en Supabase.
-*   **Dashboard / Panel de control:** Interfaz de usuario para monitoreo y gestión.
-*   **Inteligencia Artificial:** Modelos de visión artificial para el análisis avanzado de cultivos.
-
----
-
-## ¿Qué es Tlahuicole?
-
-**Tlahuicole** no es un dispositivo independiente, sino la agrupación lógica de los componentes físicos desplegados en el campo. Su identidad no proviene de un nombre asignado, sino que se deriva directamente del hardware que lo compone.
-
-Consiste principalmente en un sistema compuesto por microcontroladores (como el ESP32) para la lectura de sensores y control de actuadores, y computadoras de placa reducida (como la Raspberry Pi) para la captura de imágenes, procesamiento intensivo y ejecución de modelos de IA en el borde.
-
-```text
-              TLALIXMATI
-                  │
-              TLAHUÍCOLE
-          ┌───────┴────────┐
-          │                │
-        ESP32          Raspberry Pi
-          │                │
-      sensores          cámara/IA
-      actuadores        procesamiento
-          │                │
-          └───────┬────────┘
-                  │
-                datos
-                  │
-               Tlalixmati
+```
+                         TLALIXMATI (Cloud / Server)
+                     ┌─────────────────────────────────┐
+                     │  FastAPI Backend (Puerto 8000)  │
+                     │  Next.js Dashboard (Puerto 3000)│
+                     │  Proxy Nginx (Puertos 80 / 443) │
+                     │  Supabase (PostgreSQL + Storage)│
+                     └────────────────┬────────────────┘
+                                      ▲
+                        HTTPS / REST  │  Streaming MJPEG
+                                      ▼
+                        TLAHUÍCOLE (Unidad de Campo)
+          ┌───────────────────────────┴───────────────────────────┐
+          │                                                       │
+    ESP32 (Core 1)                                        Raspberry Pi (Edge)
+  ┌─────────────────────────┐                           ┌─────────────────────────┐
+  │ Firmware C++ / FreeRTOS │  UART Serial (115200)     │ Servicio Edge Python    │
+  │ Lectura ADC 12 bits     │ ◄───────────────────────► │ Autodetección Max FPS   │
+  │ Sonda capacitiva suelo  │     JSON Líneas           │ Cámara CSI / USB HD-4K  │
+  │ Sensor LDR y Batería    │                           │ Orquestador de Visión   │
+  └─────────────────────────┘                           └─────────────────────────┘
 ```
 
 ---
 
-## Arquitectura
+## 2. Pila Tecnológica (Stack)
 
-El proyecto Tlalixmati utiliza una estructura de monorepositorio para centralizar todo el código fuente, facilitando el desarrollo, pruebas y despliegue coordinado.
+| Capa | Tecnologías | Descripción |
+| :--- | :--- | :--- |
+| **Backend & API** | Python 3.10, FastAPI, Pydantic v2, FPDF2 | API REST asíncrona, generación de PDF agronómicos y streaming de video. |
+| **Dashboard Web** | Next.js 16, React 19, TypeScript, Tailwind CSS v4 | Interfaz orgánica minimalista, visualizador en vivo, métricas Recharts y animaciones GSAP. |
+| **Visión & IA** | PyTorch 2.5.1+cu121, Ultralytics YOLOv8, OpenCV | Segmentación vegetal, clasificación de estrés foliar (MobileNetV3) y análisis espectral ExG. |
+| **Aceleración GPU** | NVIDIA GeForce RTX 4050 Laptop GPU, CUDA 12.1 | Inferencia y entrenamiento acelerado localmente por hardware. |
+| **Edge Computing** | Raspberry Pi OS, Python 3, V4L2 | Transmisión de fotogramas a tasa nativa del sensor y puente UART con el ESP32. |
+| **Firmware** | C++, ESP-IDF, FreeRTOS | Tarea en Núcleo 1, lectura de registros ADC analógicos con filtrado de ruido. |
+| **Base de Datos & Cloud**| Supabase (PostgreSQL 15), Supabase Storage | 10 tablas relacionales, buckets `informes-pdf` e `imagenes-cultivo`. |
+| **Infraestructura** | Docker, Docker Compose, Nginx, Let's Encrypt | Contenedorización para desarrollo local y despliegue en dominio público con HTTPS. |
 
-### Flujo de Comunicación
-El flujo de datos sigue este camino:
-`ESP32` ↔ `Raspberry Pi` ↔ `FastAPI` (Backend) ↔ `Supabase` (Base de datos y Storage).
+---
 
-### Estructura del Monorepo (Árbol de Directorios)
+## 3. Principios Fundamentales del Proyecto
 
-```text
+1. **Cero Datos Falsos (Full Producción)**: Ningún componente inventa lecturas de sensores, direcciones MAC ni fotogramas simulados. Si un sensor físico está desconectado, el sistema reporta honestamente `null` o `"Sin datos"`.
+2. **Cámara con Autodetección Máxima Nativa**: Se eliminaron límites artificiales de resolución y FPS. El capturador detecta automáticamente el máximo soportado por el sensor (4K, 2K, 1080p a 30/60 FPS) usando compresión `MJPG` de alto rendimiento.
+3. **Informes PDF Automáticos y Manuales**:
+   * **Automático**: Se dispara de forma autónoma cuando los modelos de IA (YOLO + PyTorch) detectan una planta en mal estado (clorosis, necrosis o estrés hídrico), generando un reporte con encabezado rojo y subiéndolo al bucket `informes-pdf` de Supabase.
+   * **Manual**: Accesible con un clic desde el dashboard para generar reportes fitosanitarios regulares.
+4. **Seguridad y Acceso**: Contraseña global única del sistema mediante hash `bcrypt`, sesión con cookie `HttpOnly` firmada por HMAC-SHA256 y detección automática de HTTPS (`Secure=True`).
+
+---
+
+## 4. Estructura del Monorepositorio
+
+```
 tlalixmati/
-├── api/             # Backend FastAPI
-├── dashboard/       # Frontend Next.js
-├── firmware/        # Código C++ para ESP32
-├── edge/            # Código Python para Raspberry Pi
-├── ai/              # Entrenamiento y modelos (PyTorch, YOLO)
-├── config/          # Archivos de configuración globales
-├── docker-compose.yml
-└── README.md
+├── apps/
+│   ├── api/                     # Backend FastAPI (Servicios, endpoints, PDF y streaming)
+│   └── web/                     # Frontend Next.js (Dashboard minimalista orgánico)
+├── services/
+│   ├── firmware/                # Código C++ para ESP32 (ESP-IDF, FreeRTOS, ADC)
+│   ├── raspberry/               # Servicio Edge para Raspberry Pi (Cámara y UART)
+│   └── vision/                  # Pipeline de IA (PyTorch, YOLOv8, scripts de entrenamiento)
+├── deploy/                      # Infraestructura de despliegue (Nginx, plantillas y SSL)
+├── database/                    # Esquemas SQL y migraciones para Supabase PostgreSQL
+├── docs/                        # Documentación técnica y bitácora de fases
+├── tests/                       # Suite de pruebas automatizadas (41 pruebas pytest)
+├── docker-compose.yml           # Orquestación de desarrollo local
+├── docker-compose.prod.yml      # Orquestación de producción con Proxy Inverso y SSL
+├── run.bat                      # Lanzador interactivo para Windows
+└── pyproject.toml               # Configuración del entorno Python y pruebas
 ```
 
 ---
 
-## Stack Tecnológico
+## 5. Estado del Roadmap
 
-| Componente | Tecnologías |
-| :--- | :--- |
-| **Firmware (Hardware)** | C++, ESP-IDF, CMake |
-| **Raspberry / Edge** | Python 3, OpenCV, NumPy, PyTorch, Ultralytics YOLO |
-| **Inteligencia Artificial** | PyTorch, Ultralytics YOLO, OpenCV, NumPy |
-| **Backend / API** | Python, FastAPI, Pydantic |
-| **Cloud / Base de Datos** | Supabase, PostgreSQL, Supabase Storage |
-| **Frontend (Dashboard)** | Next.js, TypeScript, Tailwind CSS, Recharts, GSAP |
-| **Infraestructura** | Git, GitHub, Docker, Docker Compose |
-
----
-
-## Instalación
-
-Sigue estos pasos para desplegar la plataforma localmente utilizando Docker:
-
-1.  **Clonar el repositorio:**
-    ```bash
-    git clone <url-del-repositorio>
-    cd tlalixmati
-    ```
-2.  **Configurar variables de entorno:**
-    Copia el archivo de ejemplo y configúralo con tus credenciales.
-    ```bash
-    cp .env.example .env
-    ```
-3.  **Configurar Supabase:**
-    Asegúrate de llenar las credenciales de Supabase en el archivo `.env` (`SUPABASE_URL`, `SUPABASE_KEY`).
-4.  **Iniciar los servicios:**
-    Usa Docker Compose para levantar el entorno completo.
-    ```bash
-    docker-compose up -d
-    ```
-5.  **Acceder al Dashboard:**
-    Abre tu navegador web y navega a `http://localhost:3000`.
+| Fase | Título | Estado | Detalle |
+| :---: | :--- | :---: | :--- |
+| **01** | **Fundación del Monorepo** | ✅ Completa | Estructura base, reglas de proyecto y configuración global. |
+| **02** | **Backend y API REST** | ✅ Completa | FastAPI con esquemas Pydantic v2 y endpoints modulares. |
+| **03** | **Base de Datos y Almacenamiento** | ✅ Completa | Esquema PostgreSQL en Supabase y buckets de almacenamiento. |
+| **04** | **Seguridad y Autenticación** | ✅ Completa | Contraseña global única con hash bcrypt y cookies HttpOnly. |
+| **05** | **Dashboard Web Agronómico** | ✅ Completa | Next.js 16, diseño orgánico sin datos falsos y streaming en vivo. |
+| **06** | **Servicio Edge Raspberry Pi** | ✅ Completa | Enlace serial con ESP32 y cámara con autodetección de resolución/FPS. |
+| **07** | **Firmware ESP32 de Producción** | ✅ Completa | Lectura real de ADC oneshot, JSON con nulls e interfaz de locomoción. |
+| **08** | **Pipeline de Visión e IA** | ✅ Completa | Detección YOLOv8, clasificación PyTorch en RTX 4050 y alerta PDF. |
+| **09** | **Despliegue en Dominio Web** | ✅ Completa | Proxy Nginx con SSL/TLS (HTTPS) y streaming MJPEG optimizado. |
+| **10** | **Locomoción Física de Tlahuicole** | ⏳ En espera | Postergado hasta contar con el chasis físico final (ruedas/orugas/riel). |
 
 ---
 
-## Configuración
+## 6. Instalación y Uso
 
-La configuración del sistema se gestiona a través de dos mecanismos principales:
-*   **`system.yaml`**: Archivo centralizado que define parámetros estáticos y configuraciones estructurales del proyecto (rutas, constantes de hardware, definiciones de umbrales predeterminados).
-*   **Variables de Entorno (`.env`)**: Gestiona secretos, credenciales de conexión y parámetros específicos del entorno de ejecución (desarrollo, producción).
-*   **Docker Services**: Cada componente (API, Dashboard) cuenta con su propio `Dockerfile` y configuración dentro de `docker-compose.yml`.
+### Desarrollo Local
+1. Clona el repositorio y crea tu archivo de variables `.env`:
+   ```bash
+   cp .env.example .env
+   ```
+2. Inicia con Docker Compose:
+   ```bash
+   docker compose up -d --build
+   ```
+   O utiliza el lanzador interactivo en Windows:
+   ```bash
+   run.bat
+   ```
+3. Accede al Dashboard en `http://localhost:3000` y a la API en `http://localhost:8000/docs`.
 
----
+### Despliegue en Dominio Público (Producción)
+Consulta la guía completa en [`docs/despliegue/dominio.md`](docs/despliegue/dominio.md):
+```bash
+cp .env.production.example .env
+# Configura DOMAIN_NAME=cultivo.tudominio.com en .env
+docker compose -f docker-compose.prod.yml up -d --build
+```
 
-## Variables de Entorno
-
-| Variable | Descripción | Requerido | Formato | Origen |
-| :--- | :--- | :--- | :--- | :--- |
-| `GLOBAL_PASSWORD` | Contraseña única para acceder al sistema | Sí | String | Usuario |
-| `SUPABASE_URL` | URL del proyecto Supabase | Sí | URL | Supabase |
-| `SUPABASE_KEY` | Clave anónima o de servicio de Supabase | Sí | String | Supabase |
-| `API_PORT` | Puerto donde se expone el backend FastAPI | No | Entero (ej. 8000) | Sistema |
-| `DASHBOARD_PORT` | Puerto donde se expone el frontend Next.js | No | Entero (ej. 3000) | Sistema |
-
----
-
-## Acceso y Seguridad
-
-El sistema está diseñado para uso privado y unificado.
-*   **Contraseña Global:** El acceso al Dashboard está protegido por una contraseña única y global (`GLOBAL_PASSWORD`).
-*   **Sin Gestión de Usuarios:** No se utiliza autenticación de Supabase (Supabase Auth), no hay registro (OAuth) ni roles de múltiples usuarios.
-*   **Sesión Segura:** La sesión se maneja mediante cookies seguras, configuradas como `HttpOnly` y `SameSite` para prevenir ataques XSS y CSRF.
-
----
-
-## Imágenes y Flujo Visual
-
-La plataforma maneja el procesamiento de imágenes siguiendo reglas estrictas:
-*   Las imágenes provienen **ÚNICAMENTE** de hardware de cámara real (Raspberry Pi/Tlahuicole).
-*   **NUNCA** se permite la carga manual de imágenes a través del Dashboard o la API.
-*   **Pipeline Visual:** Hardware de Cámara → Raspberry Pi → API FastAPI → Supabase Storage → Análisis de IA.
+### Ejecutar Pruebas Automatizadas
+```bash
+py -3.10 -m pytest -v
+```
 
 ---
 
-## IA y Computer Vision
+## 7. Licencia
 
-El núcleo analítico se basa en visión artificial.
-*   **Tecnologías:** PyTorch y modelos basados en la arquitectura YOLO.
-*   **Hardware de Entrenamiento:** GPU NVIDIA RTX 4050.
-*   **Prioridad:** El objetivo principal es detectar cambios visibles, anomalías, crecimiento y salud general en los cultivos.
-*   **Estado:** A la fecha, aún no se han entrenado modelos ni se han recopilado conjuntos de datos (datasets). Estos se crearán cuando el hardware real esté operativo.
-
----
-
-## Identidad de Hardware
-
-La identificación de los dispositivos en el sistema está automatizada para evitar errores humanos.
-*   **ESP32:** La identificación se obtiene automáticamente a partir del hardware físico (ej. dirección MAC).
-*   **Raspberry Pi:** La identificación se lee automáticamente a nivel de sistema.
-*   **Sin IDs Manuales:** No se permiten nombres o IDs asignados manualmente (como `tlahuicole-01`).
-*   La estrategia definitiva de emparejamiento (pairing) se diseñará una vez que el hardware físico esté disponible e implementado.
-
----
-
-## Diseño Visual
-
-El Dashboard sigue lineamientos de diseño específicos:
-*   **Estilo:** Minimalista, fluido y profesional, apoyado por animaciones suaves con GSAP.
-*   **Paleta de Colores:** Tonos orgánicos y técnicos. Negro, blanco, gris, verde natural, verde oscuro, marrón, tonos tierra y beige sutil.
-*   **Sensación:** El diseño debe transmitir "tierra", "ciencia", "agricultura" y "tecnología".
-
----
-
-## Roadmap (Fases de Desarrollo)
-
-El desarrollo del proyecto está estructurado en 16 fases:
-
-1.  **FASE 01: Fundación** - Estructura inicial, monorepo, documentación. (ACTUAL)
-2.  **FASE 02: Backend** - Pendiente.
-3.  **FASE 03: Base de Datos** - Pendiente.
-4.  **FASE 04: Dashboard Base** - Pendiente.
-5.  **FASE 05: Seguridad y Acceso** - Pendiente.
-6.  **FASE 06: Hardware Edge** - Pendiente.
-7.  **FASE 07: Firmware Microcontrolador** - Pendiente.
-8.  **FASE 08: Integración Hardware-Backend** - Pendiente.
-9.  **FASE 09: Pipeline de Imágenes** - Pendiente.
-10. **FASE 10: Infraestructura IA** - Pendiente.
-11. **FASE 11: Entrenamiento de Modelos** - Pendiente.
-12. **FASE 12: Inferencia Edge/Cloud** - Pendiente.
-13. **FASE 13: Dashboard Avanzado (Analítica)** - Pendiente.
-14. **FASE 14: Sistema de Alertas** - Pendiente.
-15. **FASE 15: Pruebas de Campo** - Pendiente.
-16. **FASE 16: Optimización y Despliegue** - Pendiente.
-
----
-
-## Estado Actual
-
-Actualmente el proyecto se encuentra en la **FASE 01**.
-
-*   ✅ Estructura base del monorepositorio.
-*   ✅ Documentación principal (README).
-*   ✅ Definición de configuraciones y arquitectura.
-*   ❌ Backend (FASE 02).
-*   ❌ Base de datos (FASE 03).
-*   ❌ Y fases subsiguientes...
-
-Aún no se cuenta con hardware físico ni datos generados por sensores.
-
----
-
-## Licencia
-
-Este proyecto está licenciado bajo la licencia **MIT**.
+Este proyecto está bajo la Licencia **MIT**. Consulta el archivo [`LICENSE`](LICENSE) para más información.
