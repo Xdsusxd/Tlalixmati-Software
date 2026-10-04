@@ -66,18 +66,18 @@ export function EventsSection({ eventos = [] }: EventsSectionProps) {
   return (
     <div className="card-mono p-6 sm:p-7">
       {/* Encabezado */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-4 border-b border-[#27272a] gap-3 mb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-4 border-b border-[#252528] gap-3 mb-4">
         <div>
           <div className="flex items-center gap-2.5">
-            <h3 className="text-base font-extrabold tracking-tight text-white heading-chunky flex items-center gap-2">
-              <ScrollText className="w-4 h-4 text-white" />
+            <h3 className="text-base font-bold tracking-[-0.03em] heading-chunky text-[#e2e8f0] flex items-center gap-2">
+              <ScrollText className="w-4 h-4 text-[#94a3b8]" />
               Bitácora de Eventos y Detecciones
             </h3>
-            <span className="text-xs font-mono font-bold text-gray-400 bg-[#121215] px-2 py-0.5 rounded-full border border-[#27272a]">
+            <span className="font-data text-[0.65rem] font-semibold text-[#64748b] bg-[#101012] px-2 py-0.5 rounded-full border border-[#252528]">
               {eventos.length}
             </span>
           </div>
-          <p className="text-xs font-medium text-gray-400 mt-1">
+          <p className="text-xs font-medium text-[#64748b] mt-1">
             Registro cronológico de inferencias de visión artificial y conectividad de hardware.
           </p>
         </div>

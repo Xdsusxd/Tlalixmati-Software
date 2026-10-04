@@ -51,11 +51,11 @@ export function LoadingHeroStage({
         </desc>
 
         <defs>
-          {/* Shell: gradiente blanco perla a gris claro */}
+          {/* Shell: gradiente pizarra perla a gris slate */}
           <linearGradient id="shellMono" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stopColor="#ffffff" />
-            <stop offset="56%" stopColor="#f4f4f5" />
-            <stop offset="100%" stopColor="#e4e4e7" />
+            <stop offset="0%" stopColor="#e2e8f0" />
+            <stop offset="56%" stopColor="#cbd5e1" />
+            <stop offset="100%" stopColor="#94a3b8" />
           </linearGradient>
 
           {/* Visor: negro carbón a negro puro */}

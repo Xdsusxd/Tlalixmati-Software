@@ -63,31 +63,29 @@ export function LiveCameraSection({ analisisTexto, vision, compacto = false }: L
   return (
     <div className="card-mono p-6 sm:p-7">
       {/* Encabezado */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-4 border-b border-[#27272a] gap-3 mb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-4 border-b border-[#252528] gap-3 mb-4">
         <div>
           <div className="flex items-center gap-2.5">
-            <h3 className="text-base font-extrabold tracking-tight text-white heading-chunky">
+            <h3 className="text-base font-bold tracking-[-0.03em] heading-chunky text-[#e2e8f0]">
               Cámara en Vivo del Cultivo
             </h3>
-            <span
-              className={camaraConectada ? "pill-mono-active" : "pill-mono-subtle"}
-            >
+            <span className={camaraConectada ? "pill-mono-active" : "pill-mono-subtle"}>
               <span
                 className={`w-1.5 h-1.5 rounded-full ${
-                  camaraConectada ? "bg-white animate-pulse" : "bg-gray-500"
+                  camaraConectada ? "bg-[#cbd5e1] animate-pulse" : "bg-[#475569]"
                 }`}
               />
               {camaraConectada ? "En Directo" : "Desconectado"}
             </span>
           </div>
-          <p className="text-xs font-medium text-gray-400 mt-1">
+          <p className="text-xs font-medium text-[#64748b] mt-1">
             Supervisión foliar continua transmitida directamente desde el nodo de campo.
           </p>
         </div>
 
         <button
           onClick={recargarStream}
-          className="btn-outline-gray self-start sm:self-auto text-xs py-1.5 px-3"
+          className="btn-outline-gray self-start sm:self-auto text-sm"
           title="Refrescar transmisión"
         >
           <RefreshCw className="w-3.5 h-3.5" />
@@ -95,11 +93,11 @@ export function LiveCameraSection({ analisisTexto, vision, compacto = false }: L
         </button>
       </div>
 
-      {/* Visor de Video en Negro Puro con Borde Gris */}
+      {/* Visor de Video en Negro Puro */}
       <div
         className={`relative rounded-2xl overflow-hidden aspect-video ${
           compacto ? "max-h-[380px]" : "max-h-[500px]"
-        } w-full flex items-center justify-center bg-[#000000] border border-[#27272a]`}
+        } w-full flex items-center justify-center bg-[#000000] border border-[#252528]`}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
@@ -109,11 +107,11 @@ export function LiveCameraSection({ analisisTexto, vision, compacto = false }: L
           className="w-full h-full object-contain"
         />
 
-        {/* HUD Superior Izquierdo: Hardware y FPS */}
-        <div className="absolute top-3.5 left-3.5 flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-mono font-bold bg-[#121215]/90 text-white border border-[#2e2e33] backdrop-blur-md">
+        {/* HUD Superior Izquierdo */}
+        <div className="absolute top-3.5 left-3.5 flex items-center gap-2 px-3 py-1.5 rounded-xl font-data text-xs font-semibold bg-[#101012]/90 text-[#cbd5e1] border border-[#32323a] backdrop-blur-md">
           <span
             className={`w-2 h-2 rounded-full ${
-              camaraConectada ? "bg-white animate-pulse" : "bg-gray-600"
+              camaraConectada ? "bg-[#94a3b8] animate-pulse" : "bg-[#475569]"
             }`}
           />
           <span>
@@ -125,8 +123,8 @@ export function LiveCameraSection({ analisisTexto, vision, compacto = false }: L
 
         {/* HUD Superior Derecho: Inferencia IA */}
         {vision?.activo && (
-          <div className="absolute top-3.5 right-3.5 flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-mono font-bold bg-[#121215]/90 text-white border border-[#2e2e33] backdrop-blur-md">
-            <Zap className="w-3.5 h-3.5 text-white" />
+          <div className="absolute top-3.5 right-3.5 flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-data text-xs font-semibold bg-[#101012]/90 text-[#cbd5e1] border border-[#32323a] backdrop-blur-md">
+            <Zap className="w-3.5 h-3.5 text-[#94a3b8]" />
             <span>
               {vision.clase_actual} ({((vision.confianza || 0) * 100).toFixed(0)}%)
             </span>
@@ -134,16 +132,16 @@ export function LiveCameraSection({ analisisTexto, vision, compacto = false }: L
         )}
       </div>
 
-      {/* Franja de Diagnóstico Agronómico en Gris Carbón */}
-      <div className="mt-4 p-3.5 rounded-xl bg-[#121215] border border-[#27272a] flex flex-col sm:flex-row sm:items-center sm:justify-between text-xs gap-2">
-        <div className="flex items-center gap-2.5 text-gray-300">
+      {/* Franja de Diagnóstico Agronómico */}
+      <div className="mt-4 p-3.5 rounded-xl bg-[#101012] border border-[#252528] flex flex-col sm:flex-row sm:items-center sm:justify-between text-xs gap-2">
+        <div className="flex items-center gap-2.5 text-[#cbd5e1]">
           {iconoDiagnostico}
           <span>
-            <strong className="text-white font-bold">Diagnóstico:</strong>{" "}
-            <span className="font-medium text-gray-400">{textoDiagnostico}</span>
+            <strong className="text-[#e2e8f0] font-semibold">Diagnóstico:</strong>{" "}
+            <span className="font-medium text-[#64748b]">{textoDiagnostico}</span>
           </span>
         </div>
-        <span className="text-xs font-bold font-mono text-gray-400 bg-[#18181b] px-2.5 py-0.5 rounded-lg border border-[#27272a] shrink-0">
+        <span className="font-data text-xs font-semibold text-[#94a3b8] bg-[#161618] px-2.5 py-0.5 rounded-lg border border-[#252528] shrink-0">
           {badgeTexto}
         </span>
       </div>

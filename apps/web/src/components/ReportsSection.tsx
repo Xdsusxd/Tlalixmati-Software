@@ -78,27 +78,27 @@ export function ReportsSection({ reportesIniciales }: ReportsSectionProps) {
   return (
     <div className="card-mono p-6 sm:p-7 space-y-6">
       {/* Encabezado y Acciones de Descarga */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-4 border-b border-[#27272a] gap-3">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-4 border-b border-[#252528] gap-3">
         <div>
           <div className="flex items-center gap-2.5">
-            <h3 className="text-base font-extrabold tracking-tight text-white heading-chunky flex items-center gap-2">
-              <FileText className="w-4 h-4 text-white" />
+            <h3 className="text-base font-bold tracking-[-0.03em] heading-chunky text-[#e2e8f0] flex items-center gap-2">
+              <FileText className="w-4 h-4 text-[#94a3b8]" />
               Informes Técnicos del Cultivo
             </h3>
-            <span className="pill-mono-subtle font-mono text-[10px] font-bold">
+            <span className="pill-mono-subtle font-data text-[0.65rem] font-semibold">
               Supabase Storage
             </span>
           </div>
-          <p className="text-xs font-medium text-gray-400 mt-1">
+          <p className="text-xs font-medium text-[#64748b] mt-1">
             Generación automática ante anomalías fitosanitarias o emisión bajo demanda.
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5">
           <a
             href="/api/v1/reportes/reciente/descargar"
             download="informe_reciente_tlalixmati.pdf"
-            className="btn-black text-xs py-2 px-3.5"
+            className="btn-black text-sm"
           >
             <Download className="w-4 h-4" />
             <span>Descargar Reciente (PDF)</span>
@@ -107,7 +107,7 @@ export function ReportsSection({ reportesIniciales }: ReportsSectionProps) {
           <button
             onClick={handleGenerarManual}
             disabled={generando}
-            className="btn-outline-gray text-xs py-2 px-3.5"
+            className="btn-outline-gray text-sm"
           >
             <Plus className="w-4 h-4" />
             <span>{generando ? "Compilando..." : "Nuevo Informe"}</span>

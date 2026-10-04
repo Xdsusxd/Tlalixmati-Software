@@ -150,9 +150,9 @@ export default function DashboardPage() {
     );
   }
 
-  // 3. Tablero Desbloqueado y Autenticado (Gris y Negro Principales)
+  // 3. Tablero Desbloqueado y Autenticado
   return (
-    <div className="min-h-screen flex flex-col bg-[#0f0f11] text-[#f4f4f5] font-friendly">
+    <div className="min-h-screen flex flex-col bg-[#0d0d0f] text-[#cbd5e1] font-friendly">
       <Navbar
         apiConectada={apiConectada}
         autenticado={autenticado}
@@ -164,13 +164,13 @@ export default function DashboardPage() {
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         
-        {/* Encabezado Principal con Tipografía Gruesa y Amigable (Sin Parcela Experimental) */}
-        <div className="mb-7 flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-3 border-b border-[#27272a] pb-4">
+        {/* Encabezado Principal con Tipografía (Sin Parcela Experimental) */}
+        <div className="mb-7 flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-3 border-b border-[#252528] pb-4">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="micro-label text-gray-500">Plataforma Agrícola</span>
+              <span className="micro-label">Plataforma Agrícola</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-white heading-chunky">
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-[-0.04em] heading-display">
               {vistaActiva === "panorama" && "Supervisión del Cultivo"}
               {vistaActiva === "camara" && "Cámara en Vivo & Visión Artificial"}
               {vistaActiva === "telemetria" && "Condiciones del Terreno & Clima"}
@@ -278,14 +278,14 @@ export default function DashboardPage() {
         </div>
       </main>
 
-      {/* Pie de Página en Gris Carbón */}
-      <footer className="border-t border-[#27272a] bg-[#121215] py-6 mt-12 text-xs text-gray-500">
+      {/* Pie de Página */}
+      <footer className="border-t border-[#252528] bg-[#111113] py-5 mt-12 text-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <span className="font-extrabold text-white">Tlalixmati</span>
-            <span className="font-medium text-gray-400">— Plataforma Inteligente de Monitoreo & Robótica Agrícola</span>
+            <span className="font-bold text-sm text-[#e2e8f0] tracking-[-0.03em] heading-chunky">Tlalixmati</span>
+            <span className="font-medium text-[#475569]">— Plataforma Inteligente de Monitoreo & Robótica Agrícola</span>
           </div>
-          <div className="font-mono text-xs font-semibold text-gray-500">
+          <div className="font-data text-[0.65rem] font-semibold text-[#334155]">
             Nodo de Campo: Tlahuicole (ESP32 + Raspberry Pi)
           </div>
         </div>
