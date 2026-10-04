@@ -1,0 +1,153 @@
+{
+  "modelo": "MobileNetV3-Small (Custom Foliar Stress Head)",
+  "dispositivo": "cuda:0",
+  "gpu": "NVIDIA GeForce RTX 4050 Laptop GPU",
+  "epocas_totales": 15,
+  "duracion_segundos": 137.23,
+  "mejor_exactitud_val": 100.0,
+  "ruta_pesos": "services/vision/pesos/clasificador_estres.pt",
+  "metricas_por_clase": {
+    "SANO": {
+      "total_muestras": 75,
+      "aciertos": 75,
+      "precision_porcentaje": 100.0
+    },
+    "CLOROSIS": {
+      "total_muestras": 75,
+      "aciertos": 75,
+      "precision_porcentaje": 100.0
+    },
+    "ESTRES_HIDRICO": {
+      "total_muestras": 75,
+      "aciertos": 75,
+      "precision_porcentaje": 100.0
+    },
+    "NECROSIS": {
+      "total_muestras": 75,
+      "aciertos": 75,
+      "precision_porcentaje": 100.0
+    }
+  },
+  "historial": [
+    {
+      "epoca": 1,
+      "train_loss": 0.7818769565650395,
+      "train_acc": 81.28571428571428,
+      "val_loss": 0.21072110593318938,
+      "val_acc": 94.33333333333334,
+      "segundos": 21.467753887176514
+    },
+    {
+      "epoca": 2,
+      "train_loss": 0.1672116648725101,
+      "train_acc": 95.57142857142857,
+      "val_loss": 0.06619785539805889,
+      "val_acc": 97.66666666666667,
+      "segundos": 7.756462574005127
+    },
+    {
+      "epoca": 3,
+      "train_loss": 0.09914624406024813,
+      "train_acc": 96.78571428571429,
+      "val_loss": 0.02797076561798652,
+      "val_acc": 99.66666666666667,
+      "segundos": 8.09931492805481
+    },
+    {
+      "epoca": 4,
+      "train_loss": 0.06037725518324545,
+      "train_acc": 98.21428571428571,
+      "val_loss": 0.017410818468779326,
+      "val_acc": 100.0,
+      "segundos": 8.103140354156494
+    },
+    {
+      "epoca": 5,
+      "train_loss": 0.04562490303601537,
+      "train_acc": 99.0,
+      "val_loss": 0.007404430620372295,
+      "val_acc": 100.0,
+      "segundos": 8.242188930511475
+    },
+    {
+      "epoca": 6,
+      "train_loss": 0.04107743754450764,
+      "train_acc": 98.78571428571429,
+      "val_loss": 0.006138668352117141,
+      "val_acc": 100.0,
+      "segundos": 8.230889797210693
+    },
+    {
+      "epoca": 7,
+      "train_loss": 0.038072909893734116,
+      "train_acc": 98.78571428571429,
+      "val_loss": 0.009929770485808452,
+      "val_acc": 99.66666666666667,
+      "segundos": 7.9791717529296875
+    },
+    {
+      "epoca": 8,
+      "train_loss": 0.032680858357011205,
+      "train_acc": 98.78571428571429,
+      "val_loss": 0.014653794514015318,
+      "val_acc": 99.66666666666667,
+      "segundos": 8.220363855361938
+    },
+    {
+      "epoca": 9,
+      "train_loss": 0.020322171383138212,
+      "train_acc": 99.42857142857143,
+      "val_loss": 0.005441795595688745,
+      "val_acc": 100.0,
+      "segundos": 8.4653000831604
+    },
+    {
+      "epoca": 10,
+      "train_loss": 0.030476311331481806,
+      "train_acc": 98.85714285714286,
+      "val_loss": 0.004219722229366501,
+      "val_acc": 100.0,
+      "segundos": 7.964258670806885
+    },
+    {
+      "epoca": 11,
+      "train_loss": 0.023830217553768306,
+      "train_acc": 99.35714285714286,
+      "val_loss": 0.006251415457809344,
+      "val_acc": 100.0,
+      "segundos": 8.169532299041748
+    },
+    {
+      "epoca": 12,
+      "train_loss": 0.03140436318702996,
+      "train_acc": 99.0,
+      "val_loss": 0.0037215561411964395,
+      "val_acc": 100.0,
+      "segundos": 7.981869697570801
+    },
+    {
+      "epoca": 13,
+      "train_loss": 0.02363779298711701,
+      "train_acc": 99.28571428571429,
+      "val_loss": 0.0038381668688574184,
+      "val_acc": 100.0,
+      "segundos": 8.530654907226562
+    },
+    {
+      "epoca": 14,
+      "train_loss": 0.022677852918194342,
+      "train_acc": 99.14285714285714,
+      "val_loss": 0.0033915627317037435,
+      "val_acc": 100.0,
+      "segundos": 8.359816789627075
+    },
+    {
+      "epoca": 15,
+      "train_loss": 0.01757571803738496,
+      "train_acc": 99.5,
+      "val_loss": 0.003490073730936274,
+      "val_acc": 100.0,
+      "segundos": 8.51386833190918
+    }
+  ]
+}

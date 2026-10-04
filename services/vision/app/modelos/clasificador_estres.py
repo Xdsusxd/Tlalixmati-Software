@@ -69,7 +69,7 @@ class ClasificadorEstresFoliar:
         """Carga pesos si existe archivo local de entrenamiento previo."""
         if self.ruta_pesos and Path(self.ruta_pesos).exists():
             try:
-                checkpoint = torch.load(self.ruta_pesos, map_location=self.dispositivo)
+                checkpoint = torch.load(self.ruta_pesos, map_location=self.dispositivo, weights_only=True)
                 if isinstance(checkpoint, dict) and "state_dict" in checkpoint:
                     self.modelo.load_state_dict(checkpoint["state_dict"])
                 else:

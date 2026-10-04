@@ -1,0 +1,25 @@
+# Configuración de Dataset para Detección Foliar en Tlalixmati
+path: "C:/PROYECTS/proyecto/tlalixmati/services/vision/dataset/yolo"
+train: train/images
+val: val/images
+test: test/images
+
+nc: 17
+names:
+  0: Apple Scab Leaf
+  1: Apple rust leaf
+  2: Bell_pepper leaf spot
+  3: Corn Gray leaf spot
+  4: Corn leaf blight
+  5: Corn rust leaf
+  6: Potato leaf early blight
+  7: Potato leaf late blight
+  8: Squash Powdery mildew leaf
+  9: Tomato Early blight leaf
+  10: Tomato Septoria leaf spot
+  11: Tomato leaf bacterial spot
+  12: Tomato leaf late blight
+  13: Tomato leaf mosaic virus
+  14: Tomato leaf yellow virus
+  15: Tomato mold leaf
+  16: grape leaf black rot

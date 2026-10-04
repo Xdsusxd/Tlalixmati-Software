@@ -1,0 +1,21 @@
+{
+  "origen_datos": [
+    "deep-plants/AGM_HS (Hugging Face / AgricolaModerna)",
+    "GVJahnavi/Plant_village_subset (PlantVillage)",
+    "rick003/plant-disease-clean-v1 (Roboflow Clean v1)"
+  ],
+  "distribucion_train": {
+    "sano": 350,
+    "clorosis": 350,
+    "estres_hidrico": 350,
+    "necrosis": 350
+  },
+  "distribucion_val": {
+    "sano": 75,
+    "clorosis": 75,
+    "estres_hidrico": 75,
+    "necrosis": 75
+  },
+  "total_train": 1400,
+  "total_val": 300
+}
