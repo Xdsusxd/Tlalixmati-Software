@@ -38,50 +38,52 @@ export function EventsSection({ eventos = [] }: EventsSectionProps) {
     switch (nivel.toLowerCase()) {
       case "critico":
         return {
-          pillClass: "pill-crit",
-          icon: <ShieldAlert className="w-3 h-3 text-[#b91c1c]" />,
-          label: "Crítico",
+          pillClass: "pill-mono-active",
+          icon: <ShieldAlert className="w-3.5 h-3.5 text-white" />,
+          label: "Alerta Crítica",
         };
       case "aviso":
         return {
-          pillClass: "pill-warn",
-          icon: <AlertTriangle className="w-3 h-3 text-[#b45309]" />,
+          pillClass: "pill-mono-subtle border-gray-400 text-[#111111] font-bold",
+          icon: <AlertTriangle className="w-3.5 h-3.5 text-[#111111]" />,
           label: "Aviso",
         };
       case "error":
         return {
-          pillClass: "pill-crit",
-          icon: <AlertCircle className="w-3 h-3 text-[#b91c1c]" />,
+          pillClass: "pill-mono-active",
+          icon: <AlertCircle className="w-3.5 h-3.5 text-white" />,
           label: "Error",
         };
       default:
         return {
-          pillClass: "pill-neutral",
-          icon: <Info className="w-3 h-3 text-[#71717a]" />,
+          pillClass: "pill-mono-subtle",
+          icon: <Info className="w-3.5 h-3.5 text-gray-500" />,
           label: "Info",
         };
     }
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-[rgba(24,24,27,0.07)] p-5 sm:p-6 shadow-xs">
+    <div className="card-mono p-6 sm:p-7">
       {/* Encabezado */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-4 border-b border-[rgba(24,24,27,0.06)] gap-3 mb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-4 border-b border-gray-100 gap-3 mb-4">
         <div>
-          <div className="flex items-center gap-2">
-            <h3 className="text-sm font-semibold tracking-tight text-[#18181b] font-display flex items-center gap-2">
-              <ScrollText className="w-4 h-4 text-[#71717a]" />
+          <div className="flex items-center gap-2.5">
+            <h3 className="text-base font-extrabold tracking-tight text-[#111111] heading-chunky flex items-center gap-2">
+              <ScrollText className="w-4 h-4 text-[#111111]" />
               Bitácora de Eventos y Detecciones
             </h3>
-            <span className="text-xs font-mono text-[#a1a1aa]">({eventos.length})</span>
+            <span className="text-xs font-mono font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full border border-gray-200">
+              {eventos.length}
+            </span>
           </div>
-          <p className="text-xs text-[#71717a] mt-0.5">
-            Registro cronológico inmutable de inferencias en GPU, hardware y alertas fitosanitarias.
+          <p className="text-xs font-medium text-gray-500 mt-1">
+            Registro cronológico de inferencias de visión artificial y conectividad de hardware.
           </p>
         </div>
 
-        {/* Filtros tipo Apple Segmented */}
-        <div className="segmented-track self-start sm:self-auto">
+        {/* Filtros en Blanco, Negro y Gris */}
+        <div className="segmented-track-mono self-start sm:self-auto">
           {[
             { id: "todos", label: "Todos" },
             { id: "critico", label: "Alertas" },
@@ -91,7 +93,7 @@ export function EventsSection({ eventos = [] }: EventsSectionProps) {
             <button
               key={item.id}
               onClick={() => setFiltroNivel(item.id)}
-              className={`segmented-item text-xs py-1 px-2.5 ${
+              className={`segmented-item-mono text-xs py-1.5 px-3 ${
                 filtroNivel === item.id ? "active" : ""
               }`}
             >
@@ -101,13 +103,13 @@ export function EventsSection({ eventos = [] }: EventsSectionProps) {
         </div>
       </div>
 
-      {/* Lista de Registros */}
-      <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
+      {/* Lista de Registros Monocromáticos */}
+      <div className="space-y-2.5 max-h-72 overflow-y-auto pr-1">
         {eventosFiltrados.length === 0 ? (
-          <div className="p-8 text-center rounded-xl bg-[#fbfbfb] border border-[rgba(24,24,27,0.06)]">
-            <Clock className="w-5 h-5 mx-auto mb-2 text-[#a1a1aa]" />
-            <p className="text-xs font-semibold text-[#18181b]">Sin eventos en este criterio</p>
-            <p className="text-[11px] text-[#71717a] mt-0.5">
+          <div className="p-8 text-center rounded-2xl bg-gray-50 border border-gray-200">
+            <Clock className="w-6 h-6 mx-auto mb-2 text-gray-400" />
+            <p className="text-xs font-extrabold text-[#111111]">Sin eventos en este criterio</p>
+            <p className="text-xs font-medium text-gray-500 mt-0.5">
               Los sucesos de campo y diagnósticos de visión aparecerán automáticamente.
             </p>
           </div>
@@ -117,21 +119,25 @@ export function EventsSection({ eventos = [] }: EventsSectionProps) {
             return (
               <div
                 key={ev.id}
-                className="p-3 rounded-xl border border-[rgba(24,24,27,0.06)] bg-[#ffffff] hover:border-[rgba(24,24,27,0.12)] transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                className="p-3.5 rounded-xl border border-gray-200 bg-white hover:border-gray-400 transition-colors flex flex-col sm:flex-row sm:items-center justify-between gap-3"
               >
-                <div className="flex items-start gap-2.5">
-                  <div className="mt-0.5 shrink-0">{nivelInfo.icon}</div>
+                <div className="flex items-start gap-3">
+                  <span className={`${nivelInfo.pillClass} shrink-0 mt-0.5`}>
+                    {nivelInfo.icon}
+                    <span>{nivelInfo.label}</span>
+                  </span>
+
                   <div>
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="text-xs font-medium text-[#18181b]">
+                      <span className="text-xs font-bold text-[#111111]">
                         {ev.mensaje}
                       </span>
-                      <span className="font-code text-[10px] uppercase px-1.5 py-0.2 rounded bg-[#f4f4f5] text-[#71717a] border border-[rgba(24,24,27,0.06)]">
+                      <span className="font-mono text-[10px] font-bold uppercase px-1.5 py-0.5 rounded bg-gray-100 text-gray-600 border border-gray-200">
                         {ev.origen}
                       </span>
                     </div>
                     {ev.detalles && Object.keys(ev.detalles).length > 0 && (
-                      <p className="text-[11px] text-[#71717a] mt-0.5 font-mono line-clamp-1">
+                      <p className="text-xs text-gray-500 mt-1 font-mono line-clamp-1 font-medium">
                         {JSON.stringify(ev.detalles).replace(/[{}"]/g, " ").trim()}
                       </p>
                     )}
@@ -139,10 +145,10 @@ export function EventsSection({ eventos = [] }: EventsSectionProps) {
                 </div>
 
                 <div className="text-right self-end sm:self-auto shrink-0 font-mono">
-                  <div className="text-xs font-medium text-[#52525b]">
+                  <div className="text-xs font-bold text-gray-800">
                     {formatearFechaHora(ev.creado_en)}
                   </div>
-                  <div className="text-[10px] text-[#a1a1aa]">
+                  <div className="text-[10px] font-semibold text-gray-400">
                     {formatearFechaDia(ev.creado_en)}
                   </div>
                 </div>

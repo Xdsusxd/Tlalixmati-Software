@@ -1,20 +1,23 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Plus_Jakarta_Sans, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const plusJakarta = Plus_Jakarta_Sans({
+  variable: "--font-friendly",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+  display: "swap",
 });
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Tlalixmati — Plataforma Inteligente de Monitoreo Agrícola",
-  description: "Dashboard de supervisión agronómica y estado del sistema físico de campo Tlahuicole.",
+  title: "Tlalixmati — Robótica y Monitoreo Agrícola",
+  description: "Plataforma de supervisión agronómica de campo y robótica Tlahuicole.",
 };
 
 export default function RootLayout({
@@ -23,8 +26,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col bg-[#FBFBF9] text-stone-900">{children}</body>
+    <html lang="es" className={`${plusJakarta.variable} ${geistMono.variable} h-full antialiased`}>
+      <body className="min-h-full flex flex-col bg-[#F9F9F9] text-[#111111]">{children}</body>
     </html>
   );
 }

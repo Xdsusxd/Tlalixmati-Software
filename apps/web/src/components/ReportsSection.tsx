@@ -9,7 +9,6 @@ import {
   Clock,
   ShieldAlert,
   Layers,
-  CloudCheck,
 } from "lucide-react";
 import { api, ReporteInfoResponse } from "@/lib/api";
 
@@ -77,20 +76,20 @@ export function ReportsSection({ reportesIniciales }: ReportsSectionProps) {
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-[rgba(24,24,27,0.07)] p-5 sm:p-6 shadow-xs space-y-6">
+    <div className="card-mono p-6 sm:p-7 space-y-6">
       {/* Encabezado y Acciones de Descarga */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-4 border-b border-[rgba(24,24,27,0.06)] gap-3">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-4 border-b border-gray-100 gap-3">
         <div>
-          <div className="flex items-center gap-2">
-            <h3 className="text-sm font-semibold tracking-tight text-[#18181b] font-display flex items-center gap-2">
-              <FileText className="w-4 h-4 text-[#71717a]" />
-              Informes Técnicos Agronómicos
+          <div className="flex items-center gap-2.5">
+            <h3 className="text-base font-extrabold tracking-tight text-[#111111] heading-chunky flex items-center gap-2">
+              <FileText className="w-4 h-4 text-[#111111]" />
+              Informes Técnicos del Cultivo
             </h3>
-            <span className="pill-status pill-neutral font-mono text-[10px]">
+            <span className="pill-mono-subtle font-mono text-[10px] font-bold">
               Supabase Storage
             </span>
           </div>
-          <p className="text-xs text-[#71717a] mt-0.5">
+          <p className="text-xs font-medium text-gray-500 mt-1">
             Generación automática ante anomalías fitosanitarias o emisión bajo demanda.
           </p>
         </div>
@@ -99,64 +98,66 @@ export function ReportsSection({ reportesIniciales }: ReportsSectionProps) {
           <a
             href="/api/v1/reportes/reciente/descargar"
             download="informe_reciente_tlalixmati.pdf"
-            className="btn-graphite text-xs py-1.5 px-3"
+            className="btn-black text-xs py-2 px-3.5"
           >
-            <Download className="w-3.5 h-3.5" />
-            <span>Descargar Reciente</span>
+            <Download className="w-4 h-4" />
+            <span>Descargar Reciente (PDF)</span>
           </a>
 
           <button
             onClick={handleGenerarManual}
             disabled={generando}
-            className="btn-quiet text-xs py-1.5 px-3"
+            className="btn-outline-gray text-xs py-2 px-3.5"
           >
-            <Plus className="w-3.5 h-3.5" />
+            <Plus className="w-4 h-4" />
             <span>{generando ? "Compilando..." : "Nuevo Informe"}</span>
           </button>
         </div>
       </div>
 
-      {/* Notificación de compilación exitosa */}
+      {/* Notificación monocromática */}
       {mensaje && (
-        <div className="p-3 rounded-xl text-xs flex items-center gap-2 bg-[rgba(21,128,61,0.06)] border border-[rgba(21,128,61,0.18)] text-[#15803d]">
-          <CheckCircle2 className="w-4 h-4 shrink-0" />
+        <div className="p-3.5 rounded-xl text-xs flex items-center gap-2.5 bg-gray-100 border border-gray-300 text-[#111111] font-bold">
+          <CheckCircle2 className="w-4 h-4 shrink-0 text-[#111111]" />
           <span>{mensaje}</span>
         </div>
       )}
 
-      {/* Estado Fenológico del Cultivo (Horizontal Apple Step Progress) */}
+      {/* Estado Fenológico del Cultivo */}
       <div>
-        <div className="flex items-center justify-between mb-2.5">
+        <div className="flex items-center justify-between mb-3">
           <span className="micro-label flex items-center gap-1.5">
-            <Layers className="w-3.5 h-3.5 text-[#71717a]" />
+            <Layers className="w-3.5 h-3.5 text-[#111111]" />
             Etapas Fenológicas del Ciclo Productivo
           </span>
-          <span className="text-[11px] font-mono text-[#a1a1aa]">Lote Activo</span>
+          <span className="text-xs font-mono font-bold text-gray-500">Lote Activo</span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
           {fasesDefault.map((f, idx) => (
             <div
               key={idx}
-              className={`p-3.5 rounded-xl border transition-colors ${
+              className={`p-4 rounded-2xl border transition-colors ${
                 f.activo
-                  ? "bg-[#fafafa] border-[rgba(24,24,27,0.14)]"
-                  : "bg-[#ffffff] border-[rgba(24,24,27,0.06)] opacity-70"
+                  ? "bg-white border-[#111111] shadow-2xs"
+                  : "bg-gray-50 border-gray-200 opacity-75"
               }`}
             >
-              <div className="flex items-center justify-between gap-1 mb-1">
-                <span className="text-xs font-semibold text-[#18181b] truncate">
+              <div className="flex items-center justify-between gap-1 mb-1.5">
+                <span className="text-xs font-extrabold text-[#111111] truncate">
                   {f.fase}
                 </span>
                 <span
-                  className={`pill-status text-[10px] py-0 px-1.5 ${
-                    f.activo ? "pill-ok" : "pill-neutral"
+                  className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                    f.activo
+                      ? "bg-[#111111] text-white"
+                      : "bg-gray-200 text-gray-700"
                   }`}
                 >
                   {f.estado}
                 </span>
               </div>
-              <p className="text-[11px] text-[#71717a] leading-relaxed">
+              <p className="text-xs text-gray-600 font-medium leading-relaxed">
                 {f.detalle}
               </p>
             </div>
@@ -164,24 +165,24 @@ export function ReportsSection({ reportesIniciales }: ReportsSectionProps) {
         </div>
       </div>
 
-      {/* Ledger de Archivos Compilados */}
+      {/* Historial de Reportes Generados */}
       <div className="pt-2">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-1.5">
-            <Clock className="w-3.5 h-3.5 text-[#71717a]" />
-            <span className="micro-label">Historial de Reportes Generados</span>
+            <Clock className="w-3.5 h-3.5 text-[#111111]" />
+            <span className="micro-label">Historial de Reportes Compilados</span>
           </div>
-          <span className="text-[11px] font-mono text-[#a1a1aa]">
+          <span className="text-xs font-mono font-bold text-gray-500">
             {reportes.length} archivos
           </span>
         </div>
 
         {reportes.length === 0 ? (
-          <div className="p-6 text-center rounded-xl bg-[#fbfbfb] border border-[rgba(24,24,27,0.06)] text-xs text-[#71717a]">
+          <div className="p-6 text-center rounded-2xl bg-gray-50 border border-gray-200 text-xs text-gray-600 font-medium">
             No hay reportes archivados todavía. Genere uno manualmente o espere a una alerta de campo.
           </div>
         ) : (
-          <div className="divide-y divide-[rgba(24,24,27,0.06)]">
+          <div className="divide-y divide-gray-100">
             {reportes.map((rep) => {
               const esAlerta =
                 rep.alerta_detectada ||
@@ -191,38 +192,40 @@ export function ReportsSection({ reportesIniciales }: ReportsSectionProps) {
               return (
                 <div
                   key={rep.id}
-                  className="py-3 first:pt-1 last:pb-1 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                  className="py-3.5 first:pt-1 last:pb-1 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
                 >
                   <div className="flex items-start gap-3">
                     <div
-                      className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ${
+                      className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 mt-0.5 ${
                         esAlerta
-                          ? "bg-[rgba(185,28,28,0.08)] text-[#b91c1c]"
-                          : "bg-[#f4f4f5] text-[#71717a]"
+                          ? "bg-[#111111] text-white"
+                          : "bg-gray-100 text-[#111111]"
                       }`}
                     >
                       {esAlerta ? (
-                        <ShieldAlert className="w-3.5 h-3.5" />
+                        <ShieldAlert className="w-4 h-4" />
                       ) : (
-                        <FileText className="w-3.5 h-3.5" />
+                        <FileText className="w-4 h-4" />
                       )}
                     </div>
 
                     <div>
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="text-xs font-semibold text-[#18181b]">
+                        <span className="text-xs font-extrabold text-[#111111]">
                           {rep.titulo}
                         </span>
                         <span
-                          className={`pill-status text-[10px] py-0 px-1.5 ${
-                            esAlerta ? "pill-crit" : "pill-neutral"
+                          className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                            esAlerta
+                              ? "bg-[#111111] text-white"
+                              : "bg-gray-100 text-gray-700 border border-gray-200"
                           }`}
                         >
                           {esAlerta ? "Alerta Automática" : "Seguimiento"}
                         </span>
                       </div>
                       {rep.fases_resumen && (
-                        <p className="text-[11px] text-[#71717a] mt-0.5 line-clamp-1">
+                        <p className="text-xs text-gray-500 mt-0.5 line-clamp-1 font-medium">
                           {rep.fases_resumen}
                         </p>
                       )}
@@ -231,7 +234,7 @@ export function ReportsSection({ reportesIniciales }: ReportsSectionProps) {
 
                   <div className="flex items-center gap-3 self-end sm:self-auto shrink-0 font-mono">
                     <div className="text-right">
-                      <div className="text-xs font-medium text-[#52525b]">
+                      <div className="text-xs font-bold text-[#111111]">
                         {new Date(rep.generado_en).toLocaleDateString([], {
                           month: "short",
                           day: "numeric",
@@ -239,7 +242,7 @@ export function ReportsSection({ reportesIniciales }: ReportsSectionProps) {
                           minute: "2-digit",
                         })}
                       </div>
-                      <div className="text-[10px] text-[#a1a1aa]">
+                      <div className="text-[11px] font-semibold text-gray-400">
                         {formatearBytes(rep.tamano_bytes)}
                       </div>
                     </div>
@@ -247,7 +250,7 @@ export function ReportsSection({ reportesIniciales }: ReportsSectionProps) {
                     <a
                       href={rep.url_descarga}
                       download={`informe_${rep.id.substring(0, 8)}.pdf`}
-                      className="p-1.5 rounded-lg text-[#71717a] hover:text-[#18181b] hover:bg-[#f4f4f5] transition-colors"
+                      className="p-2 rounded-xl text-gray-600 hover:text-[#111111] hover:bg-gray-100 transition-colors"
                       title="Descargar PDF"
                     >
                       <Download className="w-4 h-4" />

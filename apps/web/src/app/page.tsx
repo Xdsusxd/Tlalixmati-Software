@@ -100,14 +100,14 @@ export default function DashboardPage() {
       gsap.to(mainContentRef.current, {
         opacity: 0,
         y: 6,
-        duration: 0.15,
+        duration: 0.14,
         ease: "power2.in",
         onComplete: () => {
           setVistaActiva(nuevaVista);
           gsap.fromTo(
             mainContentRef.current,
             { opacity: 0, y: 10 },
-            { opacity: 1, y: 0, duration: 0.28, ease: "power2.out" }
+            { opacity: 1, y: 0, duration: 0.25, ease: "power2.out" }
           );
         },
       });
@@ -128,7 +128,7 @@ export default function DashboardPage() {
     setVision(null);
   };
 
-  // 1. Pantalla de Entrada / Loading Hero Stage (solo se muestra al ingresar)
+  // 1. Pantalla de Entrada / Hero Stage en Gris y Negro (solo se muestra al entrar)
   if (cargando) {
     return (
       <LoadingHeroStage
@@ -150,9 +150,9 @@ export default function DashboardPage() {
     );
   }
 
-  // 3. Tablero Desbloqueado y Autenticado (Apple-Grade Minimalist Architecture)
+  // 3. Tablero Desbloqueado y Autenticado (Monocromático: Blanco, Negro y Gris)
   return (
-    <div className="min-h-screen flex flex-col bg-[#fbfbfb] text-[#18181b] font-sans">
+    <div className="min-h-screen flex flex-col bg-[#f8f8fa] text-[#111111] font-friendly">
       <Navbar
         apiConectada={apiConectada}
         autenticado={autenticado}
@@ -169,40 +169,40 @@ export default function DashboardPage() {
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         
-        {/* Encabezado Editorial de la Vista */}
-        <div className="mb-6 flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-2 border-b border-[rgba(24,24,27,0.06)] pb-4">
+        {/* Encabezado Principal con Tipografía Gruesa y Amigable */}
+        <div className="mb-7 flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-3 border-b border-gray-200 pb-4">
           <div>
             <div className="flex items-center gap-2">
-              <span className="micro-label">Plataforma Agronómica</span>
-              <span className="text-[#a1a1aa] text-xs">/</span>
-              <span className="text-xs font-mono text-[#71717a]">
+              <span className="micro-label">Plataforma Agrícola</span>
+              <span className="text-gray-400 text-xs">/</span>
+              <span className="text-xs font-mono font-bold text-gray-500">
                 {cultivo?.ubicacion || "Lote de Producción"}
               </span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-semibold tracking-[-0.03em] text-[#18181b] font-display mt-1">
-              {vistaActiva === "panorama" && "Supervisión Integral de Campo"}
-              {vistaActiva === "camara" && "Canal de Visión Óptica & GPU"}
-              {vistaActiva === "telemetria" && "Análisis Físico & Microclimático"}
-              {vistaActiva === "hardware" && "Topología de Nodos Tlahuicole"}
-              {vistaActiva === "informes" && "Informes Técnicos & Auditoría"}
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#111111] heading-chunky mt-1">
+              {vistaActiva === "panorama" && "Supervisión del Cultivo"}
+              {vistaActiva === "camara" && "Cámara en Vivo & Visión Artificial"}
+              {vistaActiva === "telemetria" && "Condiciones del Terreno & Clima"}
+              {vistaActiva === "hardware" && "Equipo de Campo (Tlahuicole)"}
+              {vistaActiva === "informes" && "Informes del Cultivo & Bitácora"}
             </h1>
           </div>
 
-          <div className="text-xs text-[#71717a] font-mono self-start sm:self-auto">
+          <div className="text-xs font-mono font-bold text-gray-500 bg-white px-3 py-1 rounded-full border border-gray-200 self-start sm:self-auto shadow-2xs">
             {cultivo
               ? `${cultivo.nombre} · Ciclo Activo`
               : "Lote de Monitoreo Activo"}
           </div>
         </div>
 
-        {/* Contenedor con animación suave de cambio de vista */}
+        {/* Contenedor dinámico de vistas */}
         <div ref={mainContentRef}>
           {/* ═══════════════════════════════════════════════════════════════
-             VISTA 1: PANORAMA (Executive Asymmetrical Dashboard)
+             VISTA 1: PANORAMA (Composición Monocromática Asimétrica)
              ═══════════════════════════════════════════════════════════════ */}
           {vistaActiva === "panorama" && (
             <div className="space-y-7">
-              {/* Franja de KPIs Tipográficos Suizos (respirando con espacio) */}
+              {/* Franja de KPIs Tipográficos Gruesos */}
               <TelemetrySection
                 sensoresTexto={tlahuicole?.sensores}
                 telemetria={telemetria}
@@ -213,14 +213,13 @@ export default function DashboardPage() {
               {/* Grid Asimétrico: Óptica a la izquierda, Inteligencia a la derecha */}
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
                 
-                {/* Columna Principal (7 columnas): Cámara y Visión en Vivo */}
+                {/* Columna Principal (7 columnas): Cámara y Reportes */}
                 <div className="lg:col-span-7 space-y-6">
                   <LiveCameraSection
                     analisisTexto={tlahuicole?.analisis || "Sin anomalías"}
                     vision={vision}
                   />
 
-                  {/* Informes Técnicos rápidos */}
                   <ReportsSection reportesIniciales={reportes} />
                 </div>
 
@@ -235,7 +234,7 @@ export default function DashboardPage() {
           )}
 
           {/* ═══════════════════════════════════════════════════════════════
-             VISTA 2: CÁMARA & VISIÓN (Full-width Optical Station)
+             VISTA 2: CÁMARA & VISIÓN
              ═══════════════════════════════════════════════════════════════ */}
           {vistaActiva === "camara" && (
             <div className="space-y-6">
@@ -252,7 +251,7 @@ export default function DashboardPage() {
           )}
 
           {/* ═══════════════════════════════════════════════════════════════
-             VISTA 3: TELEMETRÍA (Deep-dive Sensors & Trends)
+             VISTA 3: TELEMETRÍA
              ═══════════════════════════════════════════════════════════════ */}
           {vistaActiva === "telemetria" && (
             <div className="space-y-6">
@@ -266,7 +265,7 @@ export default function DashboardPage() {
           )}
 
           {/* ═══════════════════════════════════════════════════════════════
-             VISTA 4: HARDWARE (Tlahuicole Profiler)
+             VISTA 4: HARDWARE
              ═══════════════════════════════════════════════════════════════ */}
           {vistaActiva === "hardware" && (
             <div className="space-y-6">
@@ -294,14 +293,14 @@ export default function DashboardPage() {
         </div>
       </main>
 
-      {/* Pie de Página Editorial */}
-      <footer className="border-t border-[rgba(24,24,27,0.06)] bg-[#ffffff] py-6 mt-12 text-xs text-[#a1a1aa]">
+      {/* Pie de Página (Sin la palabra Studio) */}
+      <footer className="border-t border-gray-200 bg-white py-6 mt-12 text-xs text-gray-500">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <span className="font-semibold text-[#18181b] font-display">Tlalixmati</span>
-            <span>— Plataforma Inteligente de Monitoreo & Robótica Agrícola</span>
+            <span className="font-extrabold text-[#111111]">Tlalixmati</span>
+            <span className="font-medium">— Plataforma Inteligente de Monitoreo & Robótica Agrícola</span>
           </div>
-          <div className="font-mono text-[11px] text-[#71717a]">
+          <div className="font-mono text-xs font-semibold text-gray-400">
             Nodo de Campo: Tlahuicole (ESP32 + Raspberry Pi)
           </div>
         </div>

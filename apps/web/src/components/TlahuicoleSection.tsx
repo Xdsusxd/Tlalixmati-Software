@@ -20,7 +20,7 @@ export function TlahuicoleSection({ tlahuicole }: TlahuicoleSectionProps) {
 
   const hardwareNodes = [
     {
-      icon: <Cpu className="w-4 h-4" />,
+      icon: <Cpu className="w-5 h-5" />,
       titulo: "Sensores de Suelo y Ambiente",
       nodo: "Módulo Microcontrolador ESP32",
       conectado: esp32Conectado,
@@ -30,7 +30,7 @@ export function TlahuicoleSection({ tlahuicole }: TlahuicoleSectionProps) {
       tipoId: "MAC",
     },
     {
-      icon: <Server className="w-4 h-4" />,
+      icon: <Server className="w-5 h-5" />,
       titulo: "Nodo Edge de Procesamiento",
       nodo: "Unidad Raspberry Pi",
       conectado: rpiConectada,
@@ -40,7 +40,7 @@ export function TlahuicoleSection({ tlahuicole }: TlahuicoleSectionProps) {
       tipoId: "Serial",
     },
     {
-      icon: <Camera className="w-4 h-4" />,
+      icon: <Camera className="w-5 h-5" />,
       titulo: "Sensor Óptico de Campo",
       nodo: "Cámara de Monitoreo",
       conectado: camConectada,
@@ -52,50 +52,48 @@ export function TlahuicoleSection({ tlahuicole }: TlahuicoleSectionProps) {
   ];
 
   return (
-    <div className="bg-white rounded-2xl border border-[rgba(24,24,27,0.07)] p-5 sm:p-6 shadow-xs">
+    <div className="card-mono p-6 sm:p-7">
       {/* Encabezado */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-4 border-b border-[rgba(24,24,27,0.06)] gap-3 mb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pb-4 border-b border-gray-100 gap-3 mb-4">
         <div>
-          <div className="flex items-center gap-2">
-            <h3 className="text-sm font-semibold tracking-tight text-[#18181b] font-display">
-              Topología de Hardware (Tlahuicole)
+          <div className="flex items-center gap-2.5">
+            <h3 className="text-base font-extrabold tracking-tight text-[#111111] heading-chunky">
+              Equipo de Campo (Tlahuicole)
             </h3>
             <span
-              className={`pill-status ${
-                sistemaActivo ? "pill-ok" : "pill-neutral"
-              }`}
+              className={sistemaActivo ? "pill-mono-active" : "pill-mono-subtle"}
             >
               <span
                 className={`w-1.5 h-1.5 rounded-full ${
-                  sistemaActivo ? "bg-[#15803d]" : "bg-[#a1a1aa]"
+                  sistemaActivo ? "bg-white animate-pulse" : "bg-gray-400"
                 }`}
               />
               {sistemaActivo ? "Sistema Operativo" : "Hardware en Espera"}
             </span>
           </div>
-          <p className="text-xs text-[#71717a] mt-0.5">
-            Estado de enlace e identidad de los componentes físicos desplegados en terreno.
+          <p className="text-xs font-medium text-gray-500 mt-1">
+            Supervisión física de los nodos de campo encargados de adquirir datos y transmitir video.
           </p>
         </div>
 
-        <div className="text-[11px] font-mono text-[#a1a1aa] self-start sm:self-auto">
+        <div className="text-xs font-mono font-bold text-gray-500 bg-gray-100 px-3 py-1 rounded-full border border-gray-200 self-start sm:self-auto">
           {tlahuicole?.resumen_operativo || "Protocolo de bus activo"}
         </div>
       </div>
 
       {/* Lista de Nodos Físicos */}
-      <div className="divide-y divide-[rgba(24,24,27,0.06)]">
+      <div className="divide-y divide-gray-100">
         {hardwareNodes.map((item, idx) => (
           <div
             key={idx}
-            className="py-3.5 first:pt-1 last:pb-1 flex flex-col md:flex-row md:items-center justify-between gap-3"
+            className="py-4 first:pt-1 last:pb-1 flex flex-col md:flex-row md:items-center justify-between gap-3"
           >
-            <div className="flex items-start gap-3">
+            <div className="flex items-start gap-3.5">
               <div
-                className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ${
+                className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 mt-0.5 ${
                   item.conectado
-                    ? "bg-[#18181b] text-white"
-                    : "bg-[#f4f4f5] text-[#71717a]"
+                    ? "bg-[#111111] text-white shadow-xs"
+                    : "bg-gray-100 text-gray-500"
                 }`}
               >
                 {item.icon}
@@ -103,14 +101,14 @@ export function TlahuicoleSection({ tlahuicole }: TlahuicoleSectionProps) {
 
               <div>
                 <div className="flex items-center gap-2 flex-wrap">
-                  <h4 className="text-xs font-semibold text-[#18181b]">
+                  <h4 className="text-sm font-extrabold text-[#111111]">
                     {item.titulo}
                   </h4>
-                  <span className="text-[11px] text-[#71717a]">
+                  <span className="text-xs font-semibold text-gray-500">
                     · {item.nodo}
                   </span>
                 </div>
-                <p className="text-[11px] text-[#71717a] mt-0.5 leading-relaxed">
+                <p className="text-xs text-gray-500 mt-0.5 leading-relaxed font-medium">
                   {item.descripcion}
                 </p>
               </div>
@@ -118,20 +116,18 @@ export function TlahuicoleSection({ tlahuicole }: TlahuicoleSectionProps) {
 
             <div className="flex items-center gap-3 self-end md:self-auto shrink-0">
               {item.identificador ? (
-                <span className="font-code text-[11px] px-2 py-0.5 rounded bg-[#f4f4f5] border border-[rgba(24,24,27,0.06)] text-[#52525b]">
+                <span className="font-mono text-xs font-bold px-2.5 py-1 rounded-lg bg-gray-100 border border-gray-200 text-[#111111]">
                   {item.tipoId}: {item.identificador}
                 </span>
               ) : null}
 
               <span
-                className={`pill-status ${
-                  item.conectado ? "pill-ok" : "pill-neutral"
-                }`}
+                className={item.conectado ? "pill-mono-active" : "pill-mono-subtle"}
               >
                 {item.conectado ? (
-                  <CheckCircle2 className="w-3 h-3 text-[#15803d]" />
+                  <CheckCircle2 className="w-3.5 h-3.5 text-white" />
                 ) : (
-                  <CircleDashed className="w-3 h-3 text-[#a1a1aa]" />
+                  <CircleDashed className="w-3.5 h-3.5 text-gray-400" />
                 )}
                 <span>{item.estadoTexto}</span>
               </span>

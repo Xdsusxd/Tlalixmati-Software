@@ -1,60 +1,40 @@
 @import "tailwindcss";
 
 /* ═══════════════════════════════════════════════════════════════
-   TLALIXMATI — DESIGN SYSTEM: EDITORIAL / APPLE-INSPIRED MINIMALISM
-   Filosofía: Precisión, tipografía, espacio negativo, sobriedad.
-   Paleta: Graphite, Stone, Off-white, Blanco puro, Negro.
-   Zero Neon, Zero Glowing Artifacts, Zero Cyberpunk.
+   TLALIXMATI — DESIGN SYSTEM: BLANCO, NEGRO & GRIS
+   Tipografía: Gruesa, amigable, única (Plus Jakarta Sans).
+   Paleta: 100% Monocromática (Blanco, Negro, Grises). Acentos en Negro.
+   Zero Neón, Zero Colores Artificiales, Zero Studio.
    ═══════════════════════════════════════════════════════════════ */
 
 :root {
-  --font-sans: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, sans-serif;
-  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-sans: var(--font-friendly), system-ui, -apple-system, sans-serif;
+  --font-mono: var(--font-geist-mono), monospace;
 
-  /* ── Superficies & Fondos ── */
-  --bg-canvas: #fbfbfb;
+  /* ── Paleta Estricta: Negro, Blanco y Gris ── */
+  --black: #111111;
+  --black-deep: #000000;
+  --white: #ffffff;
+  --gray-50: #f8f8fa;
+  --gray-100: #f1f1f3;
+  --gray-200: #e4e4e7;
+  --gray-300: #d4d4d8;
+  --gray-400: #a1a1aa;
+  --gray-500: #71717a;
+  --gray-600: #52525b;
+  --gray-700: #3f3f46;
+  --gray-800: #27272a;
+  --gray-900: #18181b;
+
+  /* ── Superficies ── */
+  --bg-canvas: #f8f8fa;
   --bg-surface: #ffffff;
-  --bg-subtle: #f4f4f5;
-  --bg-muted: #e4e4e7;
-  --bg-elevated: #ffffff;
+  --bg-subtle: #f1f1f3;
 
-  /* ── Textos & Contraste Tipográfico ── */
-  --text-primary: #18181b;     /* Graphite 900 */
-  --text-secondary: #71717a;   /* Stone 500 */
-  --text-tertiary: #a1a1aa;    /* Stone 400 */
-  --text-quaternary: #d4d4d8;  /* Stone 300 */
-  --text-inverse: #ffffff;
-
-  /* ── Bordes y Separadores Sutiles ── */
-  --border-subtle: rgba(24, 24, 27, 0.06);
-  --border-regular: rgba(24, 24, 27, 0.10);
-  --border-strong: rgba(24, 24, 27, 0.18);
-  --border-focus: #18181b;
-
-  /* ── Acentos Semánticos Sóbrios (Nunca Neón) ── */
-  --accent-primary: #18181b;   /* Grafito sólido */
-  --accent-surface: #27272a;
-  --state-ok: #15803d;         /* Verde botánico profundo */
-  --state-ok-subtle: rgba(21, 128, 61, 0.08);
-  --state-warn: #b45309;       /* Ámbar tierra */
-  --state-warn-subtle: rgba(180, 83, 9, 0.08);
-  --state-crit: #b91c1c;       /* Carmín sobrio */
-  --state-crit-subtle: rgba(185, 28, 28, 0.08);
-  --state-info: #0369a1;       /* Azul pizarra */
-  --state-info-subtle: rgba(3, 105, 161, 0.08);
-
-  /* ── Sombras Apple Multi-Layered Diffuse ── */
-  --shadow-subtle: 0 1px 2px rgba(0, 0, 0, 0.03), 0 2px 8px rgba(0, 0, 0, 0.02);
-  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.04), 0 6px 24px rgba(0, 0, 0, 0.03);
-  --shadow-elevated: 0 4px 6px -1px rgba(0, 0, 0, 0.04), 0 12px 32px -4px rgba(0, 0, 0, 0.06);
-
-  /* ── Radios Modernos y Proporcionales ── */
-  --radius-xs: 6px;
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 20px;
-  --radius-full: 9999px;
+  /* ── Bordes y Líneas ── */
+  --border-subtle: #e4e4e7;
+  --border-hover: #d4d4d8;
+  --border-dark: #111111;
 }
 
 * {
@@ -70,219 +50,312 @@ html, body {
 
 body {
   background-color: var(--bg-canvas);
-  color: var(--text-primary);
+  color: var(--black);
   font-family: var(--font-sans);
-  letter-spacing: -0.012em;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* ── Tipografía Suiza / Jerarquías ── */
-.font-display {
+/* ── Tipografía Amigable y Gruesa ── */
+.font-friendly {
   font-family: var(--font-sans);
+  letter-spacing: -0.025em;
+}
+
+.heading-chunky {
+  font-family: var(--font-sans);
+  font-weight: 800;
   letter-spacing: -0.035em;
-  font-weight: 600;
+  color: var(--black);
 }
 
-.font-numeral {
+.font-numeral-bold {
   font-family: var(--font-sans);
-  font-feature-settings: "tnum" 1, "cv05" 1;
-  letter-spacing: -0.04em;
-  font-weight: 500;
-}
-
-.font-code {
-  font-family: var(--font-mono);
   font-feature-settings: "tnum" 1;
-  letter-spacing: -0.01em;
+  font-weight: 800;
+  letter-spacing: -0.03em;
 }
 
-/* ── Componentes de Superficie ── */
-.surface-card {
-  background: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-subtle);
-  transition: border-color 0.18s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+.micro-label {
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  color: var(--gray-500);
 }
 
-.surface-card:hover {
-  border-color: var(--border-regular);
-  box-shadow: var(--shadow-card);
-}
-
-/* Tarjeta minimalista sin bordes pesados: separación por whitespace y sutil fondo */
-.surface-flat {
-  background: var(--bg-surface);
-  border-radius: var(--radius-lg);
-  transition: background-color 0.18s ease;
-}
-
-/* ── Botones Apple-Grade ── */
-.btn-graphite {
+/* ── Botones Monocromáticos (Acentos en Negro) ── */
+.btn-black {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background: #18181b;
+  padding: 0.55rem 1.15rem;
+  background: var(--black);
   color: #ffffff;
-  font-weight: 500;
+  font-weight: 700;
   font-size: 0.8125rem;
-  border-radius: var(--radius-sm);
-  border: 1px solid transparent;
+  border-radius: 0.625rem;
+  border: 1px solid var(--black);
   cursor: pointer;
-  transition: background 0.15s ease, transform 0.1s ease;
+  transition: all 0.15s ease;
 }
-.btn-graphite:hover {
+.btn-black:hover {
   background: #27272a;
+  border-color: #27272a;
 }
-.btn-graphite:active {
-  transform: scale(0.985);
+.btn-black:active {
+  transform: scale(0.98);
 }
-.btn-graphite:disabled {
-  opacity: 0.45;
+.btn-black:disabled {
+  opacity: 0.35;
   cursor: not-allowed;
   transform: none;
 }
 
-.btn-quiet {
+.btn-outline-gray {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.5rem 0.875rem;
-  background: transparent;
-  color: var(--text-secondary);
-  font-weight: 500;
+  padding: 0.55rem 1.15rem;
+  background: #ffffff;
+  color: var(--gray-800);
+  font-weight: 700;
   font-size: 0.8125rem;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border-regular);
+  border-radius: 0.625rem;
+  border: 1.5px solid var(--gray-200);
   cursor: pointer;
-  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: all 0.15s ease;
 }
-.btn-quiet:hover {
-  background: var(--bg-subtle);
-  color: var(--text-primary);
-  border-color: var(--border-strong);
+.btn-outline-gray:hover {
+  background: var(--gray-100);
+  color: var(--black);
+  border-color: var(--gray-400);
 }
-.btn-quiet:active {
-  transform: scale(0.985);
-}
-.btn-quiet:disabled {
-  opacity: 0.40;
-  cursor: not-allowed;
+.btn-outline-gray:active {
+  transform: scale(0.98);
 }
 
-/* ── Segmented Control (Pills Apple) ── */
-.segmented-track {
+/* ── Segmented Control Monocromático ── */
+.segmented-track-mono {
   display: inline-flex;
   align-items: center;
-  gap: 2px;
-  background: #f0f0f2;
-  padding: 3px;
-  border-radius: var(--radius-md);
-  border: 1px solid rgba(0, 0, 0, 0.04);
+  gap: 3px;
+  background: #ebebee;
+  padding: 4px;
+  border-radius: 0.75rem;
 }
 
-.segmented-item {
+.segmented-item-mono {
   display: inline-flex;
   align-items: center;
-  gap: 0.375rem;
-  padding: 0.375rem 0.875rem;
+  gap: 0.4rem;
+  padding: 0.4rem 0.95rem;
   font-size: 0.75rem;
-  font-weight: 500;
-  border-radius: calc(var(--radius-md) - 3px);
-  color: var(--text-secondary);
+  font-weight: 700;
+  border-radius: 0.55rem;
+  color: var(--gray-600);
   background: transparent;
   border: none;
   cursor: pointer;
   transition: all 0.15s ease;
   white-space: nowrap;
 }
-
-.segmented-item:hover {
-  color: var(--text-primary);
+.segmented-item-mono:hover {
+  color: var(--black);
 }
-
-.segmented-item.active {
+.segmented-item-mono.active {
   background: #ffffff;
-  color: var(--text-primary);
-  font-weight: 600;
+  color: var(--black);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
-/* ── Pills & Badges ── */
-.pill-status {
+/* ── Tarjetas Monocromáticas con Bordes Suaves ── */
+.card-mono {
+  background: #ffffff;
+  border: 1.5px solid var(--border-subtle);
+  border-radius: 1.15rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02), 0 6px 20px rgba(0, 0, 0, 0.02);
+  transition: border-color 0.18s ease;
+}
+.card-mono:hover {
+  border-color: var(--gray-300);
+}
+
+/* ── Píldoras de Estado Monocromáticas (Sin verde/amarillo/rojo) ── */
+.pill-mono-active {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  padding: 0.2rem 0.6rem;
-  border-radius: var(--radius-full);
-  font-size: 0.6875rem;
-  font-weight: 500;
-  letter-spacing: 0.01em;
-}
-
-.pill-ok {
-  background: var(--state-ok-subtle);
-  color: var(--state-ok);
-  border: 1px solid rgba(21, 128, 61, 0.15);
-}
-
-.pill-warn {
-  background: var(--state-warn-subtle);
-  color: var(--state-warn);
-  border: 1px solid rgba(180, 83, 9, 0.15);
-}
-
-.pill-crit {
-  background: var(--state-crit-subtle);
-  color: var(--state-crit);
-  border: 1px solid rgba(185, 28, 28, 0.15);
-}
-
-.pill-neutral {
-  background: var(--bg-subtle);
-  color: var(--text-secondary);
-  border: 1px solid var(--border-subtle);
-}
-
-/* ── Micro-labels Suizos ── */
-.micro-label {
-  font-size: 0.6875rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  font-weight: 600;
-  color: var(--text-tertiary);
-}
-
-/* ── Scrollbars Discretos ── */
-::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
-}
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: #d4d4d8;
+  padding: 0.22rem 0.65rem;
   border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  background: var(--black);
+  color: #ffffff;
 }
-::-webkit-scrollbar-thumb:hover {
-  background: #a1a1aa;
+
+.pill-mono-subtle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.22rem 0.65rem;
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  background: var(--gray-100);
+  color: var(--gray-700);
+  border: 1px solid var(--gray-200);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   INTRO / HERO STAGE EN GRIS Y NEGRO
+   Casco Robótico con Ensamblaje en Blanco, Gris y Negro
+   ═══════════════════════════════════════════════════════════════ */
+
+.hero-stage-mono {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100svh;
+  min-height: 100%;
+  isolation: isolate;
+  overflow: hidden;
+  z-index: 100;
+  color: #ffffff;
+  font-family: var(--font-sans);
+  /* Fondo monocromático profundo */
+  background:
+    radial-gradient(circle at 50% 48%, rgba(60, 60, 65, 0.25) 0%, rgba(25, 25, 28, 0.6) 50%, rgba(10, 10, 12, 1) 100%),
+    linear-gradient(135deg, #18181b 0%, #09090b 100%);
+}
+
+.hero-brand-mono {
+  position: absolute;
+  top: 6.05%;
+  left: 4.5%;
+  margin: 0;
+  white-space: nowrap;
+  font-size: clamp(2.2rem, 5vw, 4.8rem);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: #ffffff;
+}
+
+.hero-brand-mono sup {
+  display: inline-block;
+  margin-left: .03em;
+  font-size: .40em;
+  font-weight: 800;
+  line-height: 1;
+  vertical-align: top;
+  color: var(--gray-400);
+}
+
+.hero-robot-mono {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(34vw, 50svh);
+  max-width: 440px;
+  max-height: 50svh;
+  height: auto;
+  display: block;
+  filter: drop-shadow(0 6px 24px rgba(0, 0, 0, 0.6));
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.hero-subtitle-mono {
+  position: absolute;
+  right: 4.5%;
+  bottom: 6.45%;
+  margin: 0;
+  white-space: nowrap;
+  font-size: clamp(1.8rem, 4.2vw, 4.2rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--gray-400);
+}
+
+.hero-edge-mono {
+  position: absolute;
+  top: 2%;
+  right: 1%;
+  width: 2px;
+  height: 9.8%;
+  border-radius: 2px;
+  background: var(--gray-500);
+}
+
+.hero-footer-mono {
+  position: absolute;
+  bottom: 2.8%;
+  left: 4.5%;
+  right: 4.5%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 10;
+}
+
+/* Media queries responsive del robot */
+@media (max-aspect-ratio: 1/1) {
+  .hero-brand-mono { top: 5.5%; left: 7%; font-size: clamp(2.2rem, 9.5vw, 3.8rem); }
+  .hero-robot-mono { top: 50%; left: 50%; width: min(76%, 42svh); max-height: 42svh; transform: translate(-50%, -50%); }
+  .hero-subtitle-mono { right: 7%; bottom: 7%; font-size: clamp(1.8rem, 8vw, 3.2rem); }
+}
+
+/* ── Coreografía de Ensamblaje en Blanco, Gris y Negro ── */
+@media (prefers-reduced-motion: no-preference) {
+  .hero-stage-mono.is-entering .hero-brand-mono {
+    will-change: transform, opacity, clip-path;
+    animation: brand-reveal 1s cubic-bezier(.16,1,.3,1) .12s backwards;
+  }
+  .hero-stage-mono.is-entering .hero-subtitle-mono {
+    will-change: transform, opacity, clip-path;
+    animation: studio-reveal .86s cubic-bezier(.16,1,.3,1) 1.08s backwards;
+  }
+  .hero-stage-mono.is-entering .hero-edge-mono {
+    transform-origin: 50% 0;
+    will-change: transform, opacity;
+    animation: edge-reveal .62s cubic-bezier(.22,1,.36,1) .22s backwards;
+  }
+
+  @keyframes brand-reveal  { from { opacity: 0; clip-path: inset(0 0 100% 0); transform: translateY(28px); } }
+  @keyframes studio-reveal { from { opacity: 0; clip-path: inset(100% 0 0 0); transform: translateY(22px); } }
+  @keyframes edge-reveal   { from { opacity: 0; transform: scaleY(0); } }
+
+  .hero-robot-mono .piece { transform-box: fill-box; transform-origin: center; }
+  .hero-robot-mono .rear-left  { animation: assemble-left  .9s  cubic-bezier(.16,1,.3,1) .24s backwards; }
+  .hero-robot-mono .rear-right { animation: assemble-right .9s  cubic-bezier(.16,1,.3,1) .24s backwards; }
+  .hero-robot-mono .ear-left   { animation: dock-left      .82s cubic-bezier(.16,1,.3,1) .34s backwards; }
+  .hero-robot-mono .ear-right  { animation: dock-right     .82s cubic-bezier(.16,1,.3,1) .34s backwards; }
+  .hero-robot-mono .jaw-left   { animation: jaw-left-in    .88s cubic-bezier(.16,1,.3,1) .43s backwards; }
+  .hero-robot-mono .jaw-right  { animation: jaw-right-in   .88s cubic-bezier(.16,1,.3,1) .43s backwards; }
+  .hero-robot-mono .jaw-center { animation: jaw-center-in  .92s cubic-bezier(.16,1,.3,1) .50s backwards; }
+  .hero-robot-mono .visor      { animation: visor-seat     .92s cubic-bezier(.16,1,.3,1) .56s backwards; }
+  .hero-robot-mono .crown-fin  { animation: fin-seat       .96s cubic-bezier(.16,1,.3,1) .62s backwards; }
+  .hero-robot-mono .seams      { animation: detail-reveal  .62s cubic-bezier(.22,1,.36,1) .92s backwards; }
+  .hero-robot-mono .face-details { animation: detail-reveal .68s cubic-bezier(.22,1,.36,1) 1.02s backwards; }
+
+  @keyframes assemble-left  { from { opacity: 0; transform: translate(-20px,-9px) rotate(-1.2deg) scale(.985); } }
+  @keyframes assemble-right { from { opacity: 0; transform: translate(20px,-9px) rotate(1.2deg) scale(.985); } }
+  @keyframes dock-left      { from { opacity: 0; transform: translateX(-25px) scale(.98); } }
+  @keyframes dock-right     { from { opacity: 0; transform: translateX(25px) scale(.98); } }
+  @keyframes jaw-left-in    { from { opacity: 0; transform: translate(-15px,15px) rotate(-.8deg); } }
+  @keyframes jaw-right-in   { from { opacity: 0; transform: translate(15px,15px) rotate(.8deg); } }
+  @keyframes jaw-center-in  { from { opacity: 0; transform: translateY(18px) scale(.985); } }
+  @keyframes visor-seat     { from { opacity: 0; transform: translateY(7px) scale(.955,.98); } }
+  @keyframes fin-seat       { from { opacity: 0; transform: translateY(-24px) scaleY(.96); } }
+  @keyframes detail-reveal  { from { opacity: 0; } }
 }
 
 /* ── Focus Accesible ── */
 *:focus-visible {
-  outline: 2px solid #18181b;
+  outline: 2px solid var(--black);
   outline-offset: 2px;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
 }
