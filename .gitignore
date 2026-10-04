@@ -69,3 +69,11 @@ Thumbs.db
 .env.development.local
 .env.test.local
 .env.production.local
+
+# Pesos de Modelos IA y Datasets
+*.pt
+*.pth
+*.onnx
+services/vision/dataset/imagenes/
+services/vision/dataset/etiquetas/
+services/vision/pesos/

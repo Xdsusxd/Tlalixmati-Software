@@ -95,3 +95,19 @@ async def estado_camara():
             "Cámara física en espera de conexión"
         )
     )
+
+
+@router.get(
+    "/snapshot",
+    summary="Capturar fotograma estático instantáneo",
+    description="Retorna el fotograma JPEG más reciente para descarga, archivo o inspección por IA."
+)
+@router.get(
+    "/frame_reciente",
+    include_in_schema=False
+)
+async def snapshot_camara():
+    """Retorna la imagen binaria JPEG actual."""
+    srv = get_camara_service()
+    frame_bytes = srv.obtener_ultimo_frame()
+    return Response(content=frame_bytes, media_type="image/jpeg")
