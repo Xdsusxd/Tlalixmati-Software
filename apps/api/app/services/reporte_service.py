@@ -52,6 +52,36 @@ class ReporteService:
     def __init__(self):
         self._reportes: Dict[str, dict] = {}
         self._archivos_pdf: Dict[str, bytes] = {}
+        self._cargar_historial_desde_bd()
+
+    def _cargar_historial_desde_bd(self):
+        """Carga reportes históricos reales guardados en la tabla PostgreSQL reports."""
+        try:
+            cfg = get_configuracion()
+            conn = psycopg2.connect(cfg.database_url)
+            with conn.cursor() as cur:
+                cur.execute(
+                    "SELECT id, report_type, title, file_url, metadata, created_at FROM reports ORDER BY created_at DESC LIMIT 50;"
+                )
+                filas = cur.fetchall()
+                for fila in filas:
+                    r_id, r_type, title, file_url, meta_json, created_at = fila
+                    self._reportes[str(r_id)] = {
+                        "id": str(r_id),
+                        "titulo": title or "Informe de Cultivo",
+                        "generado_en": created_at.strftime("%Y-%m-%d %H:%M:%S UTC") if created_at else "",
+                        "origen": r_type or "manual",
+                        "alerta_detectada": "ALERTA" in (title or "").upper() or r_type == "automatico",
+                        "tamano_bytes": 0,
+                        "nombre_archivo": f"{r_id}.pdf",
+                        "fases_resumen": "Reporte Histórico",
+                        "url_descarga": f"/api/v1/reportes/{r_id}/descargar",
+                        "supabase_url": file_url,
+                        "almacenado_en_supabase": file_url is not None,
+                    }
+            conn.close()
+        except Exception:
+            pass
 
     def _subir_a_supabase(self, nombre_archivo: str, pdf_bytes: bytes) -> Optional[str]:
         """Sube el archivo PDF generado al bucket privado 'informes-pdf' en Supabase Storage."""
@@ -94,7 +124,7 @@ class ReporteService:
                 )
             conn.close()
         except Exception:
-            pass # Continuar si la conexión directa falla
+            pass
 
     def generar_reporte(
         self,
@@ -137,43 +167,26 @@ class ReporteService:
             pdf.ln(1)
             pdf.set_font("helvetica", "", 9)
             pdf.set_text_color(153, 27, 27)
-            msg = detalle_anomalia if detalle_anomalia else "Signos visibles de clorosis y deficit hidrico detectados por la camara de campo."
+            msg = detalle_anomalia if detalle_anomalia else "Signos visibles de clorosis y deficit foliar detectados por la camara de campo."
             pdf.cell(0, 5, f"  * Detalle de incidencia: {msg}", new_x="LMARGIN", new_y="NEXT")
-            pdf.cell(0, 5, "  * Accion recomendada: Revision presencial de riego y sustrato en la seccion afectada.", new_x="LMARGIN", new_y="NEXT")
+            pdf.cell(0, 5, "  * Accion recomendada: Revision presencial de riego y estado foliar en la seccion afectada.", new_x="LMARGIN", new_y="NEXT")
             pdf.ln(3)
 
-        # 4. Evaluación de Fases Fenológicas
+        # 4. Evaluación Fitosanitaria Real de Parcela
         pdf.set_fill_color(244, 245, 240)
         pdf.set_font("helvetica", "B", 10)
         pdf.set_text_color(20, 83, 45)
-        pdf.cell(0, 7, "  EVALUACION DE FASES DEL CULTIVO", fill=True, new_x="LMARGIN", new_y="NEXT")
+        pdf.cell(0, 7, "  EVALUACION FITOSANITARIA Y CONDICIONES DE CAMPO", fill=True, new_x="LMARGIN", new_y="NEXT")
         pdf.ln(2)
 
+        pdf.set_font("helvetica", "", 9)
+        pdf.set_text_color(40, 40, 40)
         if alerta_detectada:
-            fases = [
-                ("Fase 1: Germinacion y Emergencia", "Buen estado - Establecimiento concluido"),
-                ("Fase 2: Crecimiento Vegetativo y Desarrollo Foliar", "ALERTA - Follaje con anomalia / Requiere atencion"),
-                ("Fase 3: Floracion y Cuajado de Fruto", "Monitoreo prioritario - Vigilancia estricta"),
-                ("Fase 4: Maduracion y Precosecha", "Fase programada"),
-            ]
+            pdf.cell(0, 5, "  * Condicion general: ALERTA FITOSANITARIA ACTIVA", new_x="LMARGIN", new_y="NEXT")
+            pdf.cell(0, 5, f"  * Observacion: {detalle_anomalia if detalle_anomalia else 'Anomalia vegetal registrada'}", new_x="LMARGIN", new_y="NEXT")
         else:
-            fases = [
-                ("Fase 1: Germinacion y Emergencia", "Buen estado - Establecimiento vigoroso y uniforme"),
-                ("Fase 2: Crecimiento Vegetativo y Desarrollo Foliar", "Buen estado - Area foliar optima y sin clorosis"),
-                ("Fase 3: Floracion y Cuajado de Fruto", "Monitoreo preventivo - Vigilancia activa"),
-                ("Fase 4: Maduracion y Precosecha", "Fase programada - Proyeccion favorable"),
-            ]
-
-        for nombre_fase, estado_fase in fases:
-            pdf.set_font("helvetica", "B", 9)
-            pdf.set_text_color(40, 40, 40)
-            pdf.cell(85, 6, f"  * {nombre_fase}:", new_x="RIGHT", new_y="TOP")
-            pdf.set_font("helvetica", "", 9)
-            if "ALERTA" in estado_fase:
-                pdf.set_text_color(185, 28, 28)
-            else:
-                pdf.set_text_color(22, 101, 52)
-            pdf.cell(0, 6, estado_fase, new_x="LMARGIN", new_y="NEXT")
+            pdf.cell(0, 5, "  * Condicion general: Monitoreo regular sin alertas activas.", new_x="LMARGIN", new_y="NEXT")
+            pdf.cell(0, 5, "  * Inspeccion: Seguimiento continuo de cultivo y terreno.", new_x="LMARGIN", new_y="NEXT")
 
         pdf.ln(4)
 
@@ -198,21 +211,20 @@ class ReporteService:
             if os.path.exists(tmp_path):
                 os.remove(tmp_path)
 
-        # 6. Diagnóstico y Modelos de IA
+        # 6. Diagnóstico y Seguimiento Agronómico
         pdf.set_fill_color(244, 245, 240)
         pdf.set_font("helvetica", "B", 10)
         pdf.set_text_color(20, 83, 45)
-        pdf.cell(0, 7, "  ESTADO DE MODELOS DE INTELIGENCIA ARTIFICIAL", fill=True, new_x="LMARGIN", new_y="NEXT")
+        pdf.cell(0, 7, "  DIAGNOSTICO Y SEGUIMIENTO AUTOMATIZADO", fill=True, new_x="LMARGIN", new_y="NEXT")
         pdf.ln(2)
 
         pdf.set_font("helvetica", "", 9)
         pdf.set_text_color(60, 60, 60)
-        pdf.cell(0, 5, "Vision YOLOv8: Deteccion de especimenes vegetales en espera de dataset.", new_x="LMARGIN", new_y="NEXT")
-        pdf.cell(0, 5, "Modelo PyTorch: Segmentacion de anomalias foliares y deficit hidrico.", new_x="LMARGIN", new_y="NEXT")
+        pdf.cell(0, 5, "Monitoreo fotogrametrico y diagnostico continuo de follaje.", new_x="LMARGIN", new_y="NEXT")
         if notas:
             pdf.ln(2)
             pdf.set_font("helvetica", "I", 9)
-            pdf.cell(0, 5, f"Observaciones registradas: {notas}", new_x="LMARGIN", new_y="NEXT")
+            pdf.cell(0, 5, f"Observaciones de campo: {notas}", new_x="LMARGIN", new_y="NEXT")
 
         pdf_bytes = bytes(pdf.output())
 
@@ -220,6 +232,7 @@ class ReporteService:
         supabase_url = self._subir_a_supabase(nombre_archivo, pdf_bytes)
 
         # 8. Metadatos del informe
+        fases_res = "ALERTA FITOSANITARIA" if alerta_detectada else "Monitoreo de Campo"
         info_reporte = {
             "id": reporte_id,
             "titulo": titulo,
@@ -228,7 +241,7 @@ class ReporteService:
             "alerta_detectada": alerta_detectada,
             "tamano_bytes": len(pdf_bytes),
             "nombre_archivo": nombre_archivo,
-            "fases_resumen": "Fase 2: ALERTA" if alerta_detectada else "Fase 1: Buen estado | Fase 2: Buen estado",
+            "fases_resumen": fases_res,
             "url_descarga": f"/api/v1/reportes/{reporte_id}/descargar",
             "supabase_url": supabase_url,
             "almacenado_en_supabase": supabase_url is not None,
@@ -271,10 +284,4 @@ def get_reporte_service() -> ReporteService:
     global _reporte_service_instancia
     if _reporte_service_instancia is None:
         _reporte_service_instancia = ReporteService()
-        # Generar un reporte inicial de referencia
-        _reporte_service_instancia.generar_reporte(
-            titulo="Informe Agronómico Inicial del Cultivo",
-            notas="Verificación inicial de instalación del sistema Tlalixmati.",
-            origen="manual",
-        )
     return _reporte_service_instancia

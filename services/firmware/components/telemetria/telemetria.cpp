@@ -40,18 +40,36 @@ std::string TransmisorTelemetria::formatear_trama_json(
     const std::string& mac_dispositivo,
     const tlalixmati::sensores::LecturaSensores& lectura
 ) {
-    char buffer[256] = {0};
+    char hum_buf[16] = "null";
+    if (lectura.sensor_humedad_conectado) {
+        std::snprintf(hum_buf, sizeof(hum_buf), "%.1f", lectura.humedad_suelo_pct);
+    }
 
-    // Formatear JSON limpio compatible con la Raspberry Pi
+    char temp_buf[16] = "null";
+    if (lectura.sensor_temperatura_conectado) {
+        std::snprintf(temp_buf, sizeof(temp_buf), "%.1f", lectura.temperatura_celsius);
+    }
+
+    char rad_buf[16] = "null";
+    if (lectura.radiacion_lux > 0.0f) {
+        std::snprintf(rad_buf, sizeof(rad_buf), "%.0f", lectura.radiacion_lux);
+    }
+
+    char bat_buf[16] = "null";
+    if (lectura.voltaje_bateria > 0.0f) {
+        std::snprintf(bat_buf, sizeof(bat_buf), "%.2f", lectura.voltaje_bateria);
+    }
+
+    char buffer[256] = {0};
     std::snprintf(
         buffer,
         sizeof(buffer),
-        "{\"mac\":\"%s\",\"humedad_suelo\":%.1f,\"temperatura\":%.1f,\"radiacion\":%.0f,\"bateria\":%.2f}\n",
+        "{\"mac\":\"%s\",\"humedad_suelo\":%s,\"temperatura\":%s,\"radiacion\":%s,\"bateria\":%s}\n",
         mac_dispositivo.c_str(),
-        lectura.humedad_suelo_pct,
-        lectura.temperatura_celsius,
-        lectura.radiacion_lux,
-        lectura.voltaje_bateria
+        hum_buf,
+        temp_buf,
+        rad_buf,
+        bat_buf
     );
 
     return std::string(buffer);

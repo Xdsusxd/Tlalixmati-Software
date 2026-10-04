@@ -35,13 +35,11 @@ def test_camara_recibir_frame_exitoso(cliente: TestClient):
 
 
 def test_listar_reportes_iniciales(cliente: TestClient):
-    """Verifica que el servicio retorne la lista de reportes anteriores."""
+    """Verifica que el servicio retorne la lista de reportes disponibles."""
     res = cliente.get("/api/v1/reportes")
     assert res.status_code == 200
     lista = res.json()
     assert isinstance(lista, list)
-    assert len(lista) >= 1
-    assert "Fase 1" in lista[0]["fases_resumen"]
 
 
 def test_generar_y_descargar_nuevo_reporte_pdf(cliente: TestClient):
