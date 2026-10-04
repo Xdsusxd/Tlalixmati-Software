@@ -80,8 +80,13 @@ export function TlahuicoleSection({ tlahuicole }: TlahuicoleSectionProps) {
             </p>
           </div>
 
-          <div className="mt-4 pt-2.5 border-t border-stone-200/60 text-[11px] text-stone-500 font-medium">
-            {esp32Conectado ? "Transmitiendo lecturas" : "Esperando conexión del microcontrolador"}
+          <div className="mt-4 pt-2.5 border-t border-stone-200/60 flex items-center justify-between text-[11px] text-stone-500 font-medium">
+            <span>{esp32Conectado ? "Transmitiendo lecturas" : "Esperando conexión del microcontrolador"}</span>
+            {esp32?.identificador_hardware && (
+              <span className="font-mono text-[10px] bg-stone-200/70 px-1.5 py-0.5 rounded text-stone-700" title="MAC de hardware real">
+                MAC: {esp32.identificador_hardware}
+              </span>
+            )}
           </div>
         </div>
 
@@ -114,8 +119,13 @@ export function TlahuicoleSection({ tlahuicole }: TlahuicoleSectionProps) {
             </p>
           </div>
 
-          <div className="mt-4 pt-2.5 border-t border-stone-200/60 text-[11px] text-stone-500 font-medium">
-            {rpiConectada ? "Servicio de video activo" : "Esperando enlace de la unidad edge"}
+          <div className="mt-4 pt-2.5 border-t border-stone-200/60 flex items-center justify-between text-[11px] text-stone-500 font-medium">
+            <span>{rpiConectada ? "Servicio Edge activo" : "Esperando enlace de la unidad edge"}</span>
+            {rpi?.identificador_hardware && (
+              <span className="font-mono text-[10px] bg-stone-200/70 px-1.5 py-0.5 rounded text-stone-700" title="Serial de hardware real">
+                Serial: {rpi.identificador_hardware}
+              </span>
+            )}
           </div>
         </div>
 
@@ -132,7 +142,7 @@ export function TlahuicoleSection({ tlahuicole }: TlahuicoleSectionProps) {
                   <span className="text-[11px] text-stone-500">Óptica de Campo</span>
                 </div>
               </div>
-              <span className="text-[11px] px-2.5 py-0.5 rounded-full font-medium bg-stone-200/80 text-stone-600">
+              <span className={`text-[11px] px-2.5 py-0.5 rounded-full font-medium ${cam?.estado === "Conectado" ? "bg-emerald-100 text-emerald-800" : "bg-stone-200/80 text-stone-600"}`}>
                 {cam?.estado === "Conectado" ? "Transmitiendo" : "En espera"}
               </span>
             </div>
@@ -142,8 +152,9 @@ export function TlahuicoleSection({ tlahuicole }: TlahuicoleSectionProps) {
             </p>
           </div>
 
-          <div className="mt-4 pt-2.5 border-t border-stone-200/60 text-[11px] text-stone-500 font-medium">
-            Solo captura fotográfica física real
+          <div className="mt-4 pt-2.5 border-t border-stone-200/60 flex items-center justify-between text-[11px] text-stone-500 font-medium">
+            <span>{cam?.estado === "Conectado" ? "Óptica activa" : "Sin hardware conectado"}</span>
+            <span className="text-[10px] text-stone-400">Captura física</span>
           </div>
         </div>
 

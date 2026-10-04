@@ -17,6 +17,7 @@ import {
   PuntoHistorial,
   EventoItem,
   CultivoInfo,
+  VisionEstadoResponse,
 } from "@/lib/api";
 import { Sprout } from "lucide-react";
 
@@ -27,6 +28,7 @@ export default function DashboardPage() {
   const [historial, setHistorial] = useState<PuntoHistorial[]>([]);
   const [eventos, setEventos] = useState<EventoItem[]>([]);
   const [cultivo, setCultivo] = useState<CultivoInfo | null>(null);
+  const [vision, setVision] = useState<VisionEstadoResponse | null>(null);
   const [apiConectada, setApiConectada] = useState<boolean>(false);
   const [autenticado, setAutenticado] = useState<boolean>(false);
   const [cargando, setCargando] = useState<boolean>(true);
@@ -52,6 +54,7 @@ export default function DashboardPage() {
           histRes,
           eventosRes,
           cultivoRes,
+          visionRes,
         ] = await Promise.all([
           api.getTlahuicoleEstado(),
           api.getReportes(),
@@ -59,6 +62,7 @@ export default function DashboardPage() {
           api.getTelemetriaHistorial(24),
           api.getEventos(30),
           api.getCultivoActivo(),
+          api.getVisionEstado(),
         ]);
 
         if (tlahuicoleRes) setTlahuicole(tlahuicoleRes);
@@ -67,6 +71,7 @@ export default function DashboardPage() {
         setHistorial(histRes);
         setEventos(eventosRes);
         setCultivo(cultivoRes);
+        setVision(visionRes);
       } else {
         setTlahuicole(null);
         setReportes([]);
@@ -74,6 +79,7 @@ export default function DashboardPage() {
         setHistorial([]);
         setEventos([]);
         setCultivo(null);
+        setVision(null);
       }
     } catch {
       setApiConectada(false);
@@ -109,7 +115,9 @@ export default function DashboardPage() {
     setHistorial([]);
     setEventos([]);
     setCultivo(null);
+    setVision(null);
   };
+
 
   // 1. Estado de carga inicial
   if (cargando) {
@@ -185,7 +193,11 @@ export default function DashboardPage() {
           <TlahuicoleSection tlahuicole={tlahuicole} />
 
           {/* 2. Cámara en Tiempo Real del Cultivo */}
-          <LiveCameraSection analisisTexto={tlahuicole?.analisis || "Sin anomalías"} />
+          <LiveCameraSection
+            analisisTexto={tlahuicole?.analisis || "Sin anomalías"}
+            vision={vision}
+          />
+
 
           {/* 3. Condiciones del Terreno y Clima (Sensores) */}
           <TelemetrySection

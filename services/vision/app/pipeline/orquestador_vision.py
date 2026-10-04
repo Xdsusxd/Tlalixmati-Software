@@ -89,7 +89,10 @@ class OrquestadorVision:
             ret_encode, buf_anotado = cv2.imencode(".jpg", fotograma_anotado, [cv2.IMWRITE_JPEG_QUALITY, 85])
             bytes_anotados = buf_anotado.tobytes() if ret_encode else imagen_bytes
 
-            # 5. Si la planta está en mal estado, disparar reporte automático a Supabase
+            # 5. Notificar diagnóstico a la API de Tlalixmati para actualizar tablero en vivo
+            self._enviar_diagnostico_a_api(diagnostico_final)
+
+            # 6. Si la planta está en mal estado, disparar reporte automático a Supabase
             if es_anomalia:
                 self._evaluar_y_disparar_alerta(diagnostico_final, bytes_anotados)
 
@@ -101,6 +104,24 @@ class OrquestadorVision:
         except Exception as e:
             logger.error(f"Error al procesar fotograma en orquestador de visión: {e}")
             return {"exito": False, "motivo": str(e)}
+
+    def _enviar_diagnostico_a_api(self, diagnostico: Dict):
+        """Notifica el resultado de la inferencia a la API para alimentar el estado general."""
+        url = f"{self.config.api_url}/api/v1/vision/diagnostico"
+        payload = {
+            "clase": diagnostico.get("clase", "SANO"),
+            "confianza": float(diagnostico.get("confianza", 0.0)),
+            "es_anomalia": bool(diagnostico.get("es_anomalia", False)),
+            "indice_anomalia": float(diagnostico.get("indice_anomalia", 0.0)),
+            "conteo_especimenes": int(diagnostico.get("conteo_especimenes", 0)),
+            "dispositivo": self.config.dispositivo,
+            "detalles": diagnostico.get("indices_color", {}),
+        }
+        try:
+            with httpx.Client(timeout=3.0) as client:
+                client.post(url, json=payload)
+        except Exception as e:
+            logger.debug(f"Aviso al remitir diagnóstico a API: {e}")
 
     def _evaluar_y_disparar_alerta(self, diagnostico: Dict, fotograma_anotado_bytes: bytes) -> bool:
         """

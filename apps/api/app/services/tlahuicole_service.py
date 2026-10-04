@@ -52,6 +52,10 @@ class TlahuicoleService:
         telem = get_telemetria_service().obtener_actual()
         sensores_resumen = telem.resumen_sensores if telem.conectado else "Sin datos"
 
+        # Obtener diagnóstico de visión artificial si hay inferencias activas
+        from apps.api.app.services.vision_service import get_vision_service
+        analisis_resumen = get_vision_service().obtener_resumen_diagnostico()
+
         return TlahuicoleEstado(
             nombre="Tlahuicole",
             naturaleza="Agrupación lógica de componentes de campo (ESP32 + Raspberry Pi)",
@@ -60,7 +64,7 @@ class TlahuicoleService:
             raspberry=rpi_estado,
             camara=camara_estado,
             sensores=sensores_resumen,
-            analisis="Sin resultados",
+            analisis=analisis_resumen,
             perifericos_adicionales=[],
             resumen_operativo=resumen
         )

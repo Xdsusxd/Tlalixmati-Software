@@ -20,6 +20,7 @@ from packages.schemas.telemetria import (
 )
 from packages.schemas.evento import NivelEvento, EventoIn, EventoOut
 from packages.schemas.cultivo import CultivoIn, CultivoOut
+from packages.schemas.vision import VisionDiagnosticoIn, VisionEstadoOut
 
 __all__ = [
     "TipoComponente",
@@ -42,5 +43,8 @@ __all__ = [
     "EventoOut",
     "CultivoIn",
     "CultivoOut",
+    "VisionDiagnosticoIn",
+    "VisionEstadoOut",
 ]
+
 

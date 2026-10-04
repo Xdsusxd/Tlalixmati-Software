@@ -14,6 +14,7 @@ from apps.api.app.api.v1.endpoints import (
     sistema,
     telemetria,
     tlahuicole,
+    vision,
 )
 
 api_v1_router = APIRouter(prefix="/api/v1")
@@ -29,4 +30,6 @@ api_v1_router.include_router(reportes.router)
 api_v1_router.include_router(telemetria.router)
 api_v1_router.include_router(eventos.router)
 api_v1_router.include_router(cultivos.router)
+api_v1_router.include_router(vision.router)
+
 

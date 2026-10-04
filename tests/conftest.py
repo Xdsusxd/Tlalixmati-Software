@@ -29,6 +29,7 @@ def reiniciar_servicios_aislamiento():
     from apps.api.app.services.telemetria_service import get_telemetria_service
     from apps.api.app.services.evento_service import get_evento_service
     from apps.api.app.services.cultivo_service import get_cultivo_service
+    from apps.api.app.services.vision_service import get_vision_service
 
     def _reset():
         comp_srv = get_componente_service()
@@ -45,7 +46,12 @@ def reiniciar_servicios_aislamiento():
         cul_srv = get_cultivo_service()
         cul_srv._cultivo_activo_memoria = None
 
+        vis_srv = get_vision_service()
+        vis_srv._ultimo_diagnostico = None
+        vis_srv._ultima_marca = None
+
     _reset()
     yield
     _reset()
+
 

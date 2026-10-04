@@ -8,6 +8,7 @@ from apps.api.app.services.tlahuicole_service import TlahuicoleService
 from apps.api.app.services.telemetria_service import TelemetriaService, get_telemetria_service
 from apps.api.app.services.evento_service import EventoService, get_evento_service
 from apps.api.app.services.cultivo_service import CultivoService, get_cultivo_service
+from apps.api.app.services.vision_service import VisionService, get_vision_service
 
 __all__ = [
     "SistemaService",
@@ -20,5 +21,8 @@ __all__ = [
     "get_evento_service",
     "CultivoService",
     "get_cultivo_service",
+    "VisionService",
+    "get_vision_service",
 ]
+
 

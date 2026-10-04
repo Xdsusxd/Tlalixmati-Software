@@ -116,6 +116,19 @@ export interface CultivoInfo {
   activo: boolean;
 }
 
+export interface VisionEstadoResponse {
+  activo: boolean;
+  clase_actual: string | null;
+  confianza: number | null;
+  es_anomalia: boolean;
+  indice_anomalia: number | null;
+  conteo_especimenes: number | null;
+  dispositivo: string | null;
+  ultima_inferencia: string | null;
+  resumen_diagnostico: string;
+}
+
+
 
 export const api = {
   getStreamUrl(): string {
@@ -290,5 +303,16 @@ export const api = {
       return null;
     }
   },
+
+  async getVisionEstado(): Promise<VisionEstadoResponse | null> {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/v1/vision/estado`, { cache: "no-store" });
+      if (!res.ok) return null;
+      return await res.json();
+    } catch {
+      return null;
+    }
+  },
 };
+
 
