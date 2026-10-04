@@ -39,11 +39,15 @@ echo Selecciona el modo de ejecucion:
 echo   [1] Modo Docker (Levanta contenedores de API y Web en segundo plano)
 echo   [2] Modo Desarrollo Local (Abre consolas separadas con recarga en vivo)
 echo   [3] Detener Contenedores Docker (docker compose down)
+echo   [4] Iniciar Daemon de Vision e IA (Supervision continua en GPU RTX 4050)
+echo   [5] Diagnostico de GPU y Modelos de IA
 echo.
-set /p OPCION="Elige una opcion [1, 2 o 3] (Por defecto 1): "
+set /p OPCION="Elige una opcion [1-5] (Por defecto 1): "
 
 if "%OPCION%"=="2" goto modo_local
 if "%OPCION%"=="3" goto detener_docker
+if "%OPCION%"=="4" goto modo_vision
+if "%OPCION%"=="5" goto modo_diagnostico_ia
 
 :modo_docker
 echo.
@@ -102,5 +106,18 @@ echo.
 echo Deteniendo todos los contenedores...
 docker compose down
 echo [OK] Contenedores detenidos.
+pause
+exit /b 0
+
+:modo_vision
+echo.
+echo [*] Iniciando Daemon de Vision e Inteligencia Artificial en GPU...
+start "Tlalixmati Vision IA (RTX 4050)" cmd /k "cd /d "%~dp0" && set PYTHONPATH=%~dp0 && py -3.10 services/vision/app/main.py --modo continuo --intervalo 3.0"
+echo [OK] Daemon iniciado en consola independiente.
+exit /b 0
+
+:modo_diagnostico_ia
+echo.
+py -3.10 services/vision/app/main.py --modo diagnostico
 pause
 exit /b 0
