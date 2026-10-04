@@ -6,14 +6,27 @@ import { Navbar } from "@/components/Navbar";
 import { TlahuicoleSection } from "@/components/TlahuicoleSection";
 import { LiveCameraSection } from "@/components/LiveCameraSection";
 import { TelemetrySection } from "@/components/TelemetrySection";
+import { EventsSection } from "@/components/EventsSection";
 import { ReportsSection } from "@/components/ReportsSection";
 import { AccessGate } from "@/components/AccessGate";
-import { api, TlahuicoleEstado, ReporteInfoResponse } from "@/lib/api";
+import {
+  api,
+  TlahuicoleEstado,
+  ReporteInfoResponse,
+  TelemetriaActual,
+  PuntoHistorial,
+  EventoItem,
+  CultivoInfo,
+} from "@/lib/api";
 import { Sprout } from "lucide-react";
 
 export default function DashboardPage() {
   const [tlahuicole, setTlahuicole] = useState<TlahuicoleEstado | null>(null);
   const [reportes, setReportes] = useState<ReporteInfoResponse[]>([]);
+  const [telemetria, setTelemetria] = useState<TelemetriaActual | null>(null);
+  const [historial, setHistorial] = useState<PuntoHistorial[]>([]);
+  const [eventos, setEventos] = useState<EventoItem[]>([]);
+  const [cultivo, setCultivo] = useState<CultivoInfo | null>(null);
   const [apiConectada, setApiConectada] = useState<boolean>(false);
   const [autenticado, setAutenticado] = useState<boolean>(false);
   const [cargando, setCargando] = useState<boolean>(true);
@@ -32,15 +45,35 @@ export default function DashboardPage() {
 
       // 2. Si está autenticado, cargar datos privados del cultivo
       if (estaAutenticado) {
-        const [tlahuicoleRes, reportesRes] = await Promise.all([
+        const [
+          tlahuicoleRes,
+          reportesRes,
+          telemRes,
+          histRes,
+          eventosRes,
+          cultivoRes,
+        ] = await Promise.all([
           api.getTlahuicoleEstado(),
           api.getReportes(),
+          api.getTelemetriaActual(),
+          api.getTelemetriaHistorial(24),
+          api.getEventos(30),
+          api.getCultivoActivo(),
         ]);
+
         if (tlahuicoleRes) setTlahuicole(tlahuicoleRes);
         setReportes(reportesRes);
+        setTelemetria(telemRes);
+        setHistorial(histRes);
+        setEventos(eventosRes);
+        setCultivo(cultivoRes);
       } else {
         setTlahuicole(null);
         setReportes([]);
+        setTelemetria(null);
+        setHistorial([]);
+        setEventos([]);
+        setCultivo(null);
       }
     } catch {
       setApiConectada(false);
@@ -52,7 +85,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     verificarSesionYCargarDatos();
-    const interval = setInterval(verificarSesionYCargarDatos, 12000);
+    const interval = setInterval(verificarSesionYCargarDatos, 10000);
     return () => clearInterval(interval);
   }, []);
 
@@ -72,6 +105,10 @@ export default function DashboardPage() {
     setAutenticado(false);
     setTlahuicole(null);
     setReportes([]);
+    setTelemetria(null);
+    setHistorial([]);
+    setEventos([]);
+    setCultivo(null);
   };
 
   // 1. Estado de carga inicial
@@ -126,13 +163,17 @@ export default function DashboardPage() {
                 Monitoreo del Cultivo
               </h2>
               <p className="mt-1 text-xs sm:text-sm text-stone-600">
-                Supervisión agronómica en tiempo real, imágenes de campo y generación de informes técnicos.
+                Supervisión agronómica en tiempo real, imágenes ópticas de campo y auditoría de eventos.
               </p>
             </div>
             
             <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200/60 text-xs font-medium self-start sm:self-auto">
               <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span>Cultivo en Seguimiento Activo</span>
+              <span>
+                {cultivo
+                  ? `${cultivo.nombre}${cultivo.variedad ? ` · ${cultivo.variedad}` : ""}`
+                  : "Lote de Monitoreo Activo"}
+              </span>
             </div>
           </div>
         </div>
@@ -147,9 +188,16 @@ export default function DashboardPage() {
           <LiveCameraSection analisisTexto={tlahuicole?.analisis || "Sin anomalías"} />
 
           {/* 3. Condiciones del Terreno y Clima (Sensores) */}
-          <TelemetrySection sensoresTexto={tlahuicole?.sensores || "Sin datos"} />
+          <TelemetrySection
+            sensoresTexto={tlahuicole?.sensores || "Sin datos"}
+            telemetria={telemetria}
+            historial={historial}
+          />
 
-          {/* 4. Informes Agronómicos en PDF (Automáticos y Manuales con Supabase) */}
+          {/* 4. Bitácora de Eventos e Incidencias Fitosanitarias */}
+          <EventsSection eventos={eventos} />
+
+          {/* 5. Informes Agronómicos en PDF (Automáticos y Manuales con Supabase) */}
           <ReportsSection reportesIniciales={reportes} />
 
         </div>

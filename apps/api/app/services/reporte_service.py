@@ -252,6 +252,24 @@ class ReporteService:
         self._archivos_pdf[reporte_id] = pdf_bytes
         self._guardar_en_base_datos(info_reporte)
 
+        # Registrar en la bitácora de eventos y auditoría
+        try:
+            from apps.api.app.services.evento_service import get_evento_service
+            nivel_ev = "critico" if alerta_detectada else "info"
+            get_evento_service().registrar_evento(
+                nivel=nivel_ev,
+                origen="SISTEMA_REPORTES",
+                mensaje=f"{'ALERTA FITOSANITARIA: ' if alerta_detectada else 'Nuevo informe generado: '}{titulo}",
+                detalles={
+                    "reporte_id": reporte_id,
+                    "origen": origen,
+                    "alerta_detectada": alerta_detectada,
+                    "detalle_anomalia": detalle_anomalia,
+                }
+            )
+        except Exception:
+            pass
+
         return info_reporte
 
     def listar_reportes(self) -> List[dict]:

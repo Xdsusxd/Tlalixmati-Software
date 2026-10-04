@@ -7,9 +7,12 @@ from apps.api.app.api.v1.endpoints import (
     auth,
     camara,
     componentes,
+    cultivos,
+    eventos,
     reportes,
     salud,
     sistema,
+    telemetria,
     tlahuicole,
 )
 
@@ -23,3 +26,7 @@ api_v1_router.include_router(componentes.router)
 api_v1_router.include_router(tlahuicole.router)
 api_v1_router.include_router(camara.router)
 api_v1_router.include_router(reportes.router)
+api_v1_router.include_router(telemetria.router)
+api_v1_router.include_router(eventos.router)
+api_v1_router.include_router(cultivos.router)
+

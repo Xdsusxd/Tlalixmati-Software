@@ -73,6 +73,50 @@ export interface AuthResponse {
   mensaje: string;
 }
 
+export interface TelemetriaActual {
+  conectado: boolean;
+  mac: string | null;
+  humedad_suelo: number | null;
+  temperatura: number | null;
+  radiacion: number | null;
+  bateria: number | null;
+  ultima_lectura: string | null;
+  resumen_sensores: string;
+}
+
+export interface PuntoHistorial {
+  fecha_hora: string;
+  humedad_suelo: number | null;
+  temperatura: number | null;
+  radiacion: number | null;
+  bateria: number | null;
+}
+
+export interface HistorialTelemetriaResponse {
+  total_puntos: number;
+  puntos: PuntoHistorial[];
+}
+
+export interface EventoItem {
+  id: string;
+  nivel: "info" | "aviso" | "error" | "critico";
+  origen: string;
+  mensaje: string;
+  detalles: Record<string, any>;
+  creado_en: string;
+}
+
+export interface CultivoInfo {
+  id: string;
+  nombre: string;
+  variedad: string | null;
+  fecha_inicio: string | null;
+  ubicacion: string | null;
+  notas: string | null;
+  activo: boolean;
+}
+
+
 export const api = {
   getStreamUrl(): string {
     return `${API_BASE_URL}/api/v1/camara/stream`;
@@ -205,4 +249,46 @@ export const api = {
       return { autenticado: false, mensaje: "Error al cerrar sesión" };
     }
   },
+
+  async getTelemetriaActual(): Promise<TelemetriaActual | null> {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/v1/telemetria/actual`, { cache: "no-store" });
+      if (!res.ok) return null;
+      return await res.json();
+    } catch {
+      return null;
+    }
+  },
+
+  async getTelemetriaHistorial(horas = 24): Promise<PuntoHistorial[]> {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/v1/telemetria/historial?horas=${horas}`, { cache: "no-store" });
+      if (!res.ok) return [];
+      const data: HistorialTelemetriaResponse = await res.json();
+      return data.puntos || [];
+    } catch {
+      return [];
+    }
+  },
+
+  async getEventos(limite = 30): Promise<EventoItem[]> {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/v1/eventos?limite=${limite}`, { cache: "no-store" });
+      if (!res.ok) return [];
+      return await res.json();
+    } catch {
+      return [];
+    }
+  },
+
+  async getCultivoActivo(): Promise<CultivoInfo | null> {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/v1/cultivos/activo`, { cache: "no-store" });
+      if (!res.ok) return null;
+      return await res.json();
+    } catch {
+      return null;
+    }
+  },
 };
+

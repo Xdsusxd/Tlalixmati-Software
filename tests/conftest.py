@@ -23,11 +23,29 @@ def cliente() -> TestClient:
 
 
 @pytest.fixture(autouse=True)
-def reiniciar_servicio_componentes():
-    """Reinicia el estado en memoria de los componentes antes de cada prueba para aislamiento."""
-    srv = get_componente_service()
-    srv._registros.clear()
-    srv._ultimos_estados.clear()
+def reiniciar_servicios_aislamiento():
+    """Reinicia el estado en memoria de los servicios antes y después de cada prueba para aislamiento total."""
+    from apps.api.app.services.componente_service import get_componente_service
+    from apps.api.app.services.telemetria_service import get_telemetria_service
+    from apps.api.app.services.evento_service import get_evento_service
+    from apps.api.app.services.cultivo_service import get_cultivo_service
+
+    def _reset():
+        comp_srv = get_componente_service()
+        comp_srv._registros.clear()
+        comp_srv._ultimos_estados.clear()
+
+        telem_srv = get_telemetria_service()
+        telem_srv._ultima_lectura = None
+        telem_srv._ultima_marca = None
+
+        ev_srv = get_evento_service()
+        ev_srv._eventos_memoria.clear()
+
+        cul_srv = get_cultivo_service()
+        cul_srv._cultivo_activo_memoria = None
+
+    _reset()
     yield
-    srv._registros.clear()
-    srv._ultimos_estados.clear()
+    _reset()
+

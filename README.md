@@ -97,7 +97,8 @@ tlalixmati/
 | **07** | **Firmware ESP32 de Producción** | ✅ Completa | Lectura real de ADC oneshot, JSON con nulls e interfaz de locomoción. |
 | **08** | **Pipeline de Visión e IA** | ✅ Completa | Detección YOLOv8, clasificación PyTorch en RTX 4050 y alerta PDF. |
 | **09** | **Despliegue en Dominio Web** | ✅ Completa | Proxy Nginx con SSL/TLS (HTTPS) y streaming MJPEG optimizado. |
-| **10** | **Locomoción Física de Tlahuicole** | ⏳ En espera | Postergado hasta contar con el chasis físico final (ruedas/orugas/riel). |
+| **10** | **Telemetría, Bitácora y Cultivos** | ✅ Completa | Ingesta real desde ESP32, persistencia en PostgreSQL, bitácora de eventos y gráfica histórica. |
+| **11** | **Locomoción Física de Tlahuicole** | ⏳ En espera | Postergado hasta contar con el chasis físico final (motores, drivers y actuadores). |
 
 ---
 

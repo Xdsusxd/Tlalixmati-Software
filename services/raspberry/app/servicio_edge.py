@@ -94,7 +94,6 @@ class ServicioEdgeRaspberry:
         datos = self.enlace_esp32.leer_telemetria()
         if datos:
             logger.info(f"Lectura recibida del ESP32: {datos}")
-            # Si el ESP32 envía su MAC física, registrarlo en la API
             mac = datos.get("mac")
             if mac and len(str(mac)) >= 8:
                 try:
@@ -109,6 +108,22 @@ class ServicioEdgeRaspberry:
                         client.post(url, json=payload)
                 except Exception:
                     pass
+
+            # Reenviar mediciones de sensores al endpoint de telemetría de la API
+            try:
+                url_telem = f"{self.config.api_url}/api/v1/telemetria/recibir"
+                payload_telem = {
+                    "mac": str(mac) if mac else (self.serial_hardware or "ESP32_FIELD"),
+                    "humedad_suelo": datos.get("humedad_suelo"),
+                    "temperatura": datos.get("temperatura"),
+                    "radiacion": datos.get("radiacion"),
+                    "bateria": datos.get("bateria"),
+                }
+                with httpx.Client(timeout=3.0) as client:
+                    client.post(url_telem, json=payload_telem)
+            except Exception as e:
+                logger.debug(f"Aviso al reenviar telemetría: {e}")
+
         return datos
 
     def ejecutar_ciclo(self) -> dict:

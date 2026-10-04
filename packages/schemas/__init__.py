@@ -12,6 +12,14 @@ from packages.schemas.componente import (
 from packages.schemas.error import DetalleError, ErrorResponse
 from packages.schemas.sistema import GPUInfo, SaludResponse, SistemaConfiguracionResumen
 from packages.schemas.tlahuicole import TlahuicoleEstado
+from packages.schemas.telemetria import (
+    TelemetriaLecturaIn,
+    TelemetriaActualOut,
+    PuntoHistorialOut,
+    HistorialTelemetriaResponse,
+)
+from packages.schemas.evento import NivelEvento, EventoIn, EventoOut
+from packages.schemas.cultivo import CultivoIn, CultivoOut
 
 __all__ = [
     "TipoComponente",
@@ -25,4 +33,14 @@ __all__ = [
     "SistemaConfiguracionResumen",
     "DetalleError",
     "ErrorResponse",
+    "TelemetriaLecturaIn",
+    "TelemetriaActualOut",
+    "PuntoHistorialOut",
+    "HistorialTelemetriaResponse",
+    "NivelEvento",
+    "EventoIn",
+    "EventoOut",
+    "CultivoIn",
+    "CultivoOut",
 ]
+

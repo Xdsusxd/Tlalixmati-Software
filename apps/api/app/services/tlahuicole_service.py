@@ -47,6 +47,11 @@ class TlahuicoleService:
             estado_general = EstadoConexion.NO_CONECTADO
             resumen = "Sin componentes físicos conectados. Hardware no detectado en campo."
 
+        # Obtener telemetría de sensores si hay comunicación activa
+        from apps.api.app.services.telemetria_service import get_telemetria_service
+        telem = get_telemetria_service().obtener_actual()
+        sensores_resumen = telem.resumen_sensores if telem.conectado else "Sin datos"
+
         return TlahuicoleEstado(
             nombre="Tlahuicole",
             naturaleza="Agrupación lógica de componentes de campo (ESP32 + Raspberry Pi)",
@@ -54,7 +59,7 @@ class TlahuicoleService:
             esp32=esp32_estado,
             raspberry=rpi_estado,
             camara=camara_estado,
-            sensores="Sin datos",
+            sensores=sensores_resumen,
             analisis="Sin resultados",
             perifericos_adicionales=[],
             resumen_operativo=resumen
